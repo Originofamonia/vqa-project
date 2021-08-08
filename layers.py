@@ -22,10 +22,10 @@ import torch.nn.functional as F
 
 
 class NeighbourhoodGraphConvolution(Module):
-    '''
+    """
     Implementation of: https://arxiv.org/pdf/1611.08402.pdf where we consider
     a fixed sized neighbourhood of nodes for each feature
-    '''
+    """
 
     def __init__(self,
                  in_feat_dim,
@@ -70,13 +70,13 @@ class NeighbourhoodGraphConvolution(Module):
         self.precision_rho.data.uniform_(0.0, 1.0)
 
     def forward(self, neighbourhood_features, neighbourhood_pseudo_coord):
-        '''
+        """
         ## Inputs:
         - neighbourhood_features (batch_size, K, neighbourhood_size, in_feat_dim)
         - neighbourhood_pseudo_coord (batch_size, K, neighbourhood_size, coordinate_dim)
         ## Returns:
         - convolved_features (batch_size, K, neighbourhood_size, out_feat_dim)
-        '''
+        """
 
         # set parameters
         batch_size = neighbourhood_features.size(0)
@@ -89,7 +89,7 @@ class NeighbourhoodGraphConvolution(Module):
             batch_size*K, neighbourhood_size, self.n_kernels)
 
         # compute convolved features
-        neighbourhood_features = neighbourhood_features.view(
+        neighbourhood_features = neighbourhood_features.reshape(
             batch_size*K, neighbourhood_size, -1)
         convolved_features = self.convolution(neighbourhood_features, weights)
         convolved_features = convolved_features.view(-1, K, self.out_feat_dim)
@@ -97,12 +97,12 @@ class NeighbourhoodGraphConvolution(Module):
         return convolved_features
 
     def get_gaussian_weights(self, pseudo_coord):
-        '''
+        """
         ## Inputs:
         - pseudo_coord (batch_size, K, K, pseudo_coord_dim)
         ## Returns:
         - weights (batch_size*K, neighbourhood_size, n_kernels)
-        '''
+        """
 
         # compute rho weights
         diff = (pseudo_coord[:, :, :, 0].contiguous().view(-1, 1) - self.mean_rho.view(1, -1))**2
@@ -124,13 +124,13 @@ class NeighbourhoodGraphConvolution(Module):
         return weights
 
     def convolution(self, neighbourhood, weights):
-        '''
+        """
         ## Inputs:
         - neighbourhood (batch_size*K, neighbourhood_size, in_feat_dim)
         - weights (batch_size*K, neighbourhood_size, n_kernels)
         ## Returns:
         - convolved_features (batch_size*K, out_feat_dim)
-        '''
+        """
         # patch operator
         weighted_neighbourhood = torch.bmm(
             weights.transpose(1, 2), neighbourhood)
@@ -145,14 +145,13 @@ class NeighbourhoodGraphConvolution(Module):
 
 class GraphLearner(Module):
     def __init__(self, in_feature_dim, combined_feature_dim, K, dropout=0.0):
-        super(GraphLearner, self).__init__()
-
-        '''
+        """
         ## Variables:
         - in_feature_dim: dimensionality of input features
         - combined_feature_dim: dimensionality of the joint hidden embedding
         - K: number of graph nodes/objects on the image
-        '''
+        """
+        super(GraphLearner, self).__init__()
 
         # Parameters
         self.in_dim = in_feature_dim
@@ -171,12 +170,12 @@ class GraphLearner(Module):
         self.edge_layer_2 = nn.utils.weight_norm(self.edge_layer_2)
 
     def forward(self, graph_nodes):
-        '''
+        """
         ## Inputs:
         - graph_nodes (batch_size, K, in_feat_dim): input features
         ## Returns:
         - adjacency matrix (batch_size, K, K)
-        '''
+        """
 
         graph_nodes = graph_nodes.view(-1, self.in_dim)
 
