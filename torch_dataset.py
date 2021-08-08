@@ -171,7 +171,6 @@ class VQA_Dataset(Dataset):
 
 
 class VQA_Dataset_Test(Dataset):
-
     def __init__(self, data_dir, emb_dim=300, train=True):
         self.data_dir = data_dir
         self.emb_dim = emb_dim
