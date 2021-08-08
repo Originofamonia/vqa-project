@@ -23,14 +23,16 @@ import argparse
 import string
 from tqdm import tqdm
 from spacy.tokenizer import Tokenizer
-import en_core_web_sm
+# import en_core_web_sm
+import spacy
 
 try:
     import cPickle as pickle
 except:
     import pickle
 
-nlp = en_core_web_sm.load()
+# nlp = en_core_web_sm.load()
+nlp = spacy.load('en_core_web_sm')
 tokenizer = Tokenizer(nlp.vocab)
 exclude = set(string.punctuation)
 

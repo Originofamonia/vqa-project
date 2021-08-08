@@ -61,7 +61,7 @@ def features_to_zarr(phase):
                 item['image_w'] = int(item['image_w'])
                 item['num_boxes'] = int(item['num_boxes'])
                 for field in ['boxes', 'features']:
-                    encoded_str = base64.decodestring(
+                    encoded_str = base64.decodebytes(
                         item[field].encode('utf-8'))
                     item[field] = np.frombuffer(encoded_str,
                                                 dtype=np.float32).reshape((item['num_boxes'], -1))
