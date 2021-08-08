@@ -381,6 +381,10 @@ def trainval(args):
     model = model.cuda()
     criterion = criterion.cuda()
 
+    if torch.cuda.device_count() > 1:
+        print('Let\'s use {} GPUs!'.format(torch.cuda.device_count()))
+        model = nn.DataParallel(model)
+
     # Define the optimizer
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
 
