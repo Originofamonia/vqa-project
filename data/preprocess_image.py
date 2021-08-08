@@ -22,11 +22,10 @@ import base64
 import numpy as np
 import csv
 import sys
-import h5py
+# import h5py
 import pandas as pd
 import zarr
 from tqdm import tqdm
-
 
 csv.field_size_limit(sys.maxsize)
 
@@ -64,19 +63,18 @@ def features_to_zarr(phase):
                     encoded_str = base64.decodebytes(
                         item[field].encode('utf-8'))
                     item[field] = np.frombuffer(encoded_str,
-                                                dtype=np.float32).reshape((item['num_boxes'], -1))
+                                                dtype=np.float32).reshape(
+                        (item['num_boxes'], -1))
                 # append to zarr files
                 boxes.create_dataset(item['image_id'], data=item['boxes'])
                 features.create_dataset(item['image_id'], data=item['features'])
                 # image_size dict
                 image_size[item['image_id']] = {
-                    'image_h':item['image_h'],
-                    'image_w':item['image_w'],
+                    'image_h': item['image_h'],
+                    'image_w': item['image_w'],
                 }
 
-
     # convert dict to pandas dataframe
-    
 
     # create image sizes csv
     print('Writing image sizes csv...')
@@ -93,10 +91,12 @@ def features_to_zarr(phase):
     image_sizes.to_csv(phase + '_image_size.csv')
 
 
-if __name__ == '__main__':
+def main():
     parser = argparse.ArgumentParser(
-                        description='Preprocessing for VQA v2 image data')
-    parser.add_argument('--data', nargs='+', help='trainval, and/or test, list of data phases to be processed', required=True)
+        description='Preprocessing for VQA v2 image data')
+    parser.add_argument('--data', nargs='+',
+                        help='trainval, and/or test, list of data phases to be processed',
+                        required=True)
     args, unparsed = parser.parse_known_args()
     if len(unparsed) != 0:
         raise SystemExit('Unknown argument: {}'.format(unparsed))
@@ -111,3 +111,7 @@ if __name__ == '__main__':
             features_to_zarr(phase)
 
     print('Done')
+
+
+if __name__ == '__main__':
+    main()

@@ -71,11 +71,12 @@ class NeighbourhoodGraphConvolution(Module):
 
     def forward(self, neighbourhood_features, neighbourhood_pseudo_coord):
         """
-        ## Inputs:
-        - neighbourhood_features (batch_size, K, neighbourhood_size, in_feat_dim)
-        - neighbourhood_pseudo_coord (batch_size, K, neighbourhood_size, coordinate_dim)
-        ## Returns:
-        - convolved_features (batch_size, K, neighbourhood_size, out_feat_dim)
+        Inputs: - neighbourhood_features (batch_size, K,
+        neighbourhood_size, in_feat_dim)
+        - neighbourhood_pseudo_coord (batch_size, K, neighbourhood_size,
+        coordinate_dim)
+        Returns: - convolved_features (batch_size, K, neighbourhood_size,
+        out_feat_dim)
         """
 
         # set parameters

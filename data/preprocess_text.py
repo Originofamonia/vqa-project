@@ -38,7 +38,6 @@ exclude = set(string.punctuation)
 
 
 def process_answers(q, phase, n_answers=3000):
-
     # find the n_answers most common answers
     counts = {}
     for row in q:
@@ -69,7 +68,7 @@ def process_answers(q, phase, n_answers=3000):
     json.dump(q, open('vqa_' + phase + '_final_3000.json', 'w'))
 
 
-def process_questions(q):
+def process_questions(q, phase):
     # build question dictionary
     def build_vocab(questions):
         count_thr = 0
@@ -89,17 +88,18 @@ def process_questions(q):
         vocab = [w for w, n in counts.items() if n > count_thr]
         bad_count = sum(counts[w] for w in bad_words)
         print('number of bad words: %d/%d = %.2f%%' %
-              (len(bad_words), len(counts), len(bad_words)*100.0/len(counts)))
-        print('number of words in vocab would be %d' % (len(vocab), ))
+              (len(bad_words), len(counts),
+               len(bad_words) * 100.0 / len(counts)))
+        print('number of words in vocab would be %d' % (len(vocab),))
         print('number of UNKs: %d/%d = %.2f%%' %
-              (bad_count, total_words, bad_count*100.0/total_words))
+              (bad_count, total_words, bad_count * 100.0 / total_words))
 
         return vocab
 
     vocab = build_vocab(q)
     # a 1-indexed vocab translation table
-    itow = {i+1: w for i, w in enumerate(vocab)}
-    wtoi = {w: i+1 for i, w in enumerate(vocab)}  # inverse table
+    itow = {i + 1: w for i, w in enumerate(vocab)}
+    wtoi = {w: i + 1 for i, w in enumerate(vocab)}  # inverse table
     pickle.dump({'itow': itow, 'wtoi': wtoi}, open(phase + '_q_dict.p', 'wb'))
 
 
@@ -107,7 +107,8 @@ def tokenize_questions(qa, phase):
     qas = len(qa)
     for i, row in enumerate(tqdm(qa)):
         row['question_toked'] = [t.text if '?' not in t.text else t.text[:-1]
-                                 for t in tokenizer(row['question'].lower())]  # get spacey tokens and remove question marks
+                                 for t in tokenizer(row['question'].lower())]
+        # get spacey tokens and remove question marks
         if i == qas - 1:
             json.dump(qa, open('vqa_' + phase + '_toked.json', 'w'))
 
@@ -137,11 +138,14 @@ def combine_qa(questions, annotations, phase):
     json.dump(data, open('vqa_' + phase + '_combined.json', 'w'))
 
 
-if __name__ == '__main__':
+def main():
     parser = argparse.ArgumentParser(
-                        description='Preprocessing for VQA v2 text data')
-    parser.add_argument('--data', nargs='+', help='train, val and/or test, list of data phases to be processed', required=True)
-    parser.add_argument('--nanswers', default=3000, help='number of top answers to consider for classification.')
+        description='Preprocessing for VQA v2 text data')
+    parser.add_argument('--data', nargs='+',
+                        help='train, val and/or test, list of data phases to be processed',
+                        required=True)
+    parser.add_argument('--nanswers', default=3000,
+                        help='number of top answers to consider for classification.')
     args, unparsed = parser.parse_known_args()
     if len(unparsed) != 0:
         raise SystemExit('Unknown argument: {}'.format(unparsed))
@@ -155,8 +159,10 @@ if __name__ == '__main__':
             # Combine Q and A
             print('Combining question and answer...')
             question = json.load(
-                open('raw/v2_OpenEnded_mscoco_' + phase + '2014_questions.json'))
-            answers = json.load(open('raw/v2_mscoco_' + phase + '2014_annotations.json'))
+                open(
+                    'raw/v2_OpenEnded_mscoco_' + phase + '2014_questions.json'))
+            answers = json.load(
+                open('raw/v2_mscoco_' + phase + '2014_annotations.json'))
             combine_qa(question, answers['annotations'], phase)
 
             # Tokenize
@@ -164,8 +170,9 @@ if __name__ == '__main__':
             t = json.load(open('vqa_' + phase + '_combined.json'))
             tokenize_questions(t, phase)
         else:
-            print ('Tokenizing...')
-            t = json.load(open('raw/v2_OpenEnded_mscoco_' + phase + '2015_questions.json'))
+            print('Tokenizing...')
+            t = json.load(open(
+                'raw/v2_OpenEnded_mscoco_' + phase + '2015_questions.json'))
             t = t['questions']
             tokenize_questions(t, phase)
 
@@ -173,8 +180,12 @@ if __name__ == '__main__':
         print('Building dictionary...')
         t = json.load(open('vqa_' + phase + '_toked.json'))
         if phase == 'train':
-            process_questions(t)
+            process_questions(t, phase)
         if phase != 'test':
             process_answers(t, phase, n_answers=args.nanswers)
 
     print('Done')
+
+
+if __name__ == '__main__':
+    main()

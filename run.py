@@ -172,7 +172,7 @@ def train(args):
     # Continue training from saved model
     start_ep = 0
     if args.model_path and os.path.isfile(args.model_path):
-        print('Resuming from checkpoint %s' % (args.model_path))
+        print('Resuming from checkpoint %s' % args.model_path)
         ckpt = torch.load(args.model_path)
         start_ep = ckpt['epoch']
         model.load_state_dict(ckpt['state_dict'])
@@ -221,9 +221,9 @@ def train(args):
             # This is a 40 step average
             if step % 40 == 0 and step != 0:
                 print(
-                    '  Epoch %02d(%03d/%03d), ave loss: %.7f, ave accuracy: %.2f%%' %
-                    (ep + 1, step, n_batches, ave_loss / 40,
-                     ave_correct * 100 / (args.bsize * 40)))
+                    'Epoch %02d(%03d/%03d), ave loss: %.7f, ave accuracy: '
+                    '%.2f%%' % (ep + 1, step, n_batches, ave_loss / 40,
+                                ave_correct * 100 / (args.bsize * 40)))
 
                 ave_correct = 0
                 ave_loss = 0
@@ -241,7 +241,8 @@ def train(args):
                 save(model, optimizer, ep, epoch_loss, epoch_acc,
                      dir=args.save_dir, name=args.name + '_' + str(ep + 1))
 
-                # compute validation accuracy over a small subset of the validation set
+                # compute validation accuracy over a small subset of the
+                # validation set
                 test_correct = 0
                 model.train(False)
 
@@ -275,7 +276,7 @@ def test(args):
     """
     # Check that the model path is accurate
     if args.model_path and os.path.isfile(args.model_path):
-        print('Resuming from checkpoint %s' % (args.model_path))
+        print('Resuming from checkpoint %s' % args.model_path)
     else:
         raise SystemExit('Need to provide model path.')
 
@@ -354,15 +355,15 @@ def trainval(args):
     print('Loading data')
     dataset = VQA_Dataset_Test(args.data_dir, args.emb)
     loader = DataLoader(dataset, batch_size=args.bsize,
-                        shuffle=True, num_workers=5,
+                        shuffle=True, num_workers=4,
                         collate_fn=collate_fn)
     n_batches = len(dataset) // args.bsize
 
     # Print data and model parameters
-    print('Parameters:\n\tvocab size: %d\n\tembedding dim: %d\n\tfeature dim: %d\
-            \n\thidden dim: %d\n\toutput dim: %d' % (
-    dataset.q_words, args.emb, dataset.feat_dim,
-    args.hid, dataset.n_answers))
+    print('Parameters:\n\tvocab size: %d\n\tembedding dim: %d\n\tfeature dim: '
+          '%d \n\thidden dim: %d\n\toutput dim: %d' % (
+              dataset.q_words, args.emb, dataset.feat_dim,
+              args.hid, dataset.n_answers))
     print('Initializing model')
 
     model = Model(vocab_size=dataset.q_words,
@@ -386,7 +387,7 @@ def trainval(args):
     # Continue training from saved model
     start_ep = 0
     if args.model_path and os.path.isfile(args.model_path):
-        print('Resuming from checkpoint %s' % (args.model_path))
+        print('Resuming from checkpoint %s' % args.model_path)
         ckpt = torch.load(args.model_path)
         start_ep = ckpt['epoch']
         model.load_state_dict(ckpt['state_dict'])
@@ -431,12 +432,12 @@ def trainval(args):
             # This is a 40 step average
             if step % 40 == 0 and step != 0:
                 print(
-                    '  Epoch %02d(%03d/%03d), ave loss: %.7f, ave accuracy: %.2f%%' %
-                    (ep + 1, step, n_batches, ave_loss / 40,
-                     ave_correct * 100 / (args.bsize * 40)))
+                    'Epoch %02d(%03d/%03d), ave loss: %.7f, ave accuracy: '
+                    '%.2f%%' % (ep + 1, step, n_batches, ave_loss / 40,
+                                ave_correct * 100 / (args.bsize * 40)))
 
-                ave_correct = 0
-                ave_loss = 0
+                # ave_correct = 0
+                # ave_loss = 0
                 ave_correct = ave_loss = ave_sparsity = 0
 
             # compute gradient and do optim step
@@ -486,7 +487,8 @@ def main():
     parser.add_argument('--name', metavar='', type=str,
                         default='model', help='model name')
     parser.add_argument('--dropout', metavar='', type=float, default=0.5,
-                        help='probability of dropping out FC nodes during training')
+                        help='probability of dropping out FC nodes during '
+                             'training')
     parser.add_argument('--model_path', metavar='', type=str,
                         help='trained model path.')
     args, unparsed = parser.parse_known_args()

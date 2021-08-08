@@ -29,7 +29,8 @@ except:
 
 
 def collate_fn(batch):
-    # put question lengths in descending order so that we can use packed sequences later
+    # put question lengths in descending order so that we can use packed
+    # sequences later
     batch.sort(key=lambda x: x[-1], reverse=True)
     return dataloader.default_collate(batch)
 
@@ -40,9 +41,9 @@ class VQA_Dataset(Dataset):
 
         # Set parameters
         self.data_dir = data_dir  # directory where the data is stored
-        self.emb_dim = emb_dim    # question embedding dimension
-        self.train = train        # train (True) or eval (False) mode
-        self.seqlen = 14          # maximum question sequence length
+        self.emb_dim = emb_dim  # question embedding dimension
+        self.train = train  # train (True) or eval (False) mode
+        self.seqlen = 14  # maximum question sequence length
 
         # Load training question dictionary
         q_dict = pickle.load(
@@ -116,7 +117,7 @@ class VQA_Dataset(Dataset):
             try:
                 q[i] = self.q_wtoi[w]
             except:
-                q[i] = 0    # validation questions may contain unseen word
+                q[i] = 0  # validation questions may contain unseen word
 
         # soft label answers
         a = np.zeros(self.n_answers, dtype=np.float32)
@@ -175,7 +176,7 @@ class VQA_Dataset_Test(Dataset):
         self.data_dir = data_dir
         self.emb_dim = emb_dim
         self.train = train
-        self.seqlen = 14    # hard set based on paper
+        self.seqlen = 14  # hard set based on paper
 
         q_dict = pickle.load(
             open(os.path.join(data_dir, 'train_q_dict.p'), 'rb'))
@@ -190,9 +191,11 @@ class VQA_Dataset_Test(Dataset):
         self.n_answers = len(self.a_itow) + 1
 
         if train:
-            self.vqa = json.load(open(os.path.join(data_dir, 'vqa_train_final_3000.json'))) + \
-                json.load(
-                    open(os.path.join(data_dir, 'vqa_val_final_3000.json')))
+            self.vqa = json.load(
+                open(os.path.join(data_dir, 'vqa_train_final_3000.json'))) + \
+                       json.load(
+                           open(os.path.join(data_dir,
+                                             'vqa_val_final_3000.json')))
             self.i_feat = zarr.open(os.path.join(
                 data_dir, 'trainval.zarr'), mode='r')
             self.bbox = zarr.open(os.path.join(
@@ -248,7 +251,7 @@ class VQA_Dataset_Test(Dataset):
             try:
                 q[i] = self.q_wtoi[w]
             except:
-                q[i] = 0    # validation questions may contain unseen word
+                q[i] = 0  # validation questions may contain unseen word
 
         # soft label answers
         if self.train:

@@ -38,7 +38,7 @@ class Model(nn.Module):
                  n_kernels=8,
                  neighbourhood_size=16):
 
-        '''
+        """
         ## Variables:
         - vocab_size: dimensionality of input vocabulary
         - emb_dim: question embedding size
@@ -47,7 +47,7 @@ class Model(nn.Module):
         - dropout: dropout probability
         - n_kernels : number of Gaussian kernels for convolutions
         - bias: whether to add a bias to Gaussian kernels
-        '''
+        """
 
         super(Model, self).__init__()
 
@@ -87,15 +87,16 @@ class Model(nn.Module):
         self.out_2 = nn.utils.weight_norm(nn.Linear(out_dim, out_dim))
 
     def forward(self, question, image, K, qlen):
-        '''
+        """
         ## Inputs:
         - question (batch_size, max_qlen): input tokenised question
         - image (batch_size, K, feat_dim): input image features
         - K (int): number of image features/objects in the image
-        - qlen (batch_size): vector describing the length (in words) of each input question
+        - qlen (batch_size): vector describing the length (in words) of each
+        input question
         ## Returns:
         - logits (batch_size, out_dim)
-        '''
+        """
 
         K = int(K[0].cpu().data.numpy())
 
@@ -112,7 +113,8 @@ class Model(nn.Module):
 
         # Compute question encoding
         emb = self.wembed(question)
-        packed = pack_padded_sequence(emb, qlen, batch_first=True)  # questions have variable lengths
+        packed = pack_padded_sequence(emb, qlen, batch_first=True)
+        # questions have variable lengths
         _, hid = self.q_lstm(packed)
         qenc = hid[0].unsqueeze(1)
         qenc_repeat = qenc.repeat(1, K, 1)
@@ -154,13 +156,13 @@ class Model(nn.Module):
         return logits, adjacency_matrix
 
     def _create_neighbourhood_feat(self, image, top_ind):
-        '''
+        """
         ## Inputs:
         - image (batch_size, K, feat_dim)
         - top_ind (batch_size, K, neighbourhood_size)
         ## Returns:
         - neighbourhood_image (batch_size, K, neighbourhood_size, feat_dim)
-        '''
+        """
 
         batch_size = image.size(0)
         K = image.size(1)
@@ -172,13 +174,13 @@ class Model(nn.Module):
         return torch.gather(image, dim=2, index=idx)
 
     def _create_neighbourhood_pseudo(self, pseudo, top_ind):
-        '''
+        """
         ## Inputs:
         - pseudo_coord (batch_size, K, K, coord_dim)
         - top_ind (batch_size, K, neighbourhood_size)
         ## Returns:
         - neighbourhood_pseudo (batch_size, K, neighbourhood_size, coord_dim)
-        '''
+        """
         batch_size = pseudo.size(0)
         K = pseudo.size(1)
         coord_dim = pseudo.size(3)
@@ -194,21 +196,23 @@ class Model(nn.Module):
                               neighbourhood_size,
                               weight=True):
 
-        '''
+        """
 
         Creates a neighbourhood system for each graph node/image object
 
         ## Inputs:
         - features (batch_size, K, feat_dim): input image features
-        - pseudo_coord (batch_size, K, K, coord_dim): pseudo coordinates for graph convolutions
+        - pseudo_coord (batch_size, K, K, coord_dim): pseudo coordinates for
+        graph convolutions
         - adjacency_matrix (batch_size, K, K): learned adjacency matrix
         - neighbourhood_size (int)
-        - weight (bool): specify if the features should be weighted by the adjacency matrix values
+        - weight (bool): specify if the features should be weighted by the
+        adjacency matrix values
 
         ## Returns:
         - neighbourhood_image (batch_size, K, neighbourhood_size, feat_dim)
         - neighbourhood_pseudo (batch_size, K, neighbourhood_size, coord_dim)
-        '''
+        """
 
         # Number of graph nodes
         K = features.size(1)
@@ -231,8 +235,7 @@ class Model(nn.Module):
         return neighbourhood_image, neighbourhood_pseudo
 
     def _compute_pseudo(self, bb_centre):
-        '''
-
+        """
         Computes pseudo-coordinates from bounding box centre coordinates
 
         ## Inputs:
@@ -240,7 +243,7 @@ class Model(nn.Module):
         - polar (bool: polar or euclidean coordinates)
         ## Returns:
         - pseudo_coord (batch_size, K, K, coord_dim)
-        '''
+        """
 
         K = bb_centre.size(1)
 
@@ -248,7 +251,7 @@ class Model(nn.Module):
         pseudo_coord = bb_centre.view(-1, K, 1, 2) - \
             bb_centre.view(-1, 1, K, 2)
 
-        # Conver to polar coordinates
+        # Convert to polar coordinates
         rho = torch.sqrt(
             pseudo_coord[:, :, :, 0]**2 + pseudo_coord[:, :, :, 1]**2)
         theta = torch.atan2(
