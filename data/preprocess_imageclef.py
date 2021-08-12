@@ -1,6 +1,7 @@
 """
 read saved box and feature pt file, parse to VQA dataset format
 """
+import os
 import numpy as np
 import pandas as pd
 import zarr
@@ -14,6 +15,7 @@ def load_box_feat():
                   'num_boxes', 'boxes', 'features']
 
     filename = 'box_feat.pt'
+    imgpath = '/home/qiyuan/2021summer/imageclef/images/'
     tensors = torch.load(filename)
     # print(tensors['boxes'], tensors['feats'])
     boxes = zarr.open_group('imageclef_boxes.zarr', mode='w')
@@ -24,7 +26,7 @@ def load_box_feat():
                                                   tensors['feat'],
                                                   tensors['image_id'])):
         item = {}
-        img = Image.open(filename)
+        img = Image.open(os.path.join(imgpath, image_id))
         item['image_id'] = image_id
         item['boxes'] = box[0][:, :4].cpu().detach().numpy()
         item['features'] = feat.cpu().detach().numpy()
