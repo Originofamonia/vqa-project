@@ -36,9 +36,7 @@ def collate_fn(batch):
 
 
 class VQA_Dataset(Dataset):
-
     def __init__(self, data_dir, emb_dim=300, train=True):
-
         # Set parameters
         self.data_dir = data_dir  # directory where the data is stored
         self.emb_dim = emb_dim  # question embedding dimension

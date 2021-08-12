@@ -408,7 +408,6 @@ def trainval(args):
     # Training script
     print('Start training.')
     for ep in range(start_ep, start_ep + args.ep):
-        scheduler.step()
         ep_loss = 0.0
         ep_correct = 0.0
         ave_loss = 0.0
@@ -449,6 +448,7 @@ def trainval(args):
             loss.backward()
             optimizer.step()
 
+        scheduler.step()
         # save model and compute accuracy for epoch
         epoch_loss = ep_loss / n_batches
         epoch_acc = ep_correct * 100 / (n_batches * args.bsize)
