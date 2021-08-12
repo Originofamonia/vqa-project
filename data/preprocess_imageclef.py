@@ -18,7 +18,7 @@ def load_box_feat():
     features = zarr.open_group( 'imageclef_features.zarr', mode='w')
     image_size = {}
 
-    for i, box, feat in enumerate(zip(tensors['boxes'], tensors['feats'])):
+    for i, (box, feat) in enumerate(zip(tensors['boxes'], tensors['feats'])):
         bbox = box[0]
 
 
