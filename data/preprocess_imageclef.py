@@ -10,14 +10,14 @@ import torch
 from PIL import Image
 
 
-def load_box_feat():
-    fieldnames = ['image_id', 'image_w', 'image_h',
-                  'num_boxes', 'boxes', 'features']
+def parse_box_feat():
+    # fieldnames = ['image_id', 'image_w', 'image_h', 'num_boxes', 'boxes',
+    #               'features']
 
     filename = 'box_feat.pt'
     imgpath = '/home/qiyuan/2021summer/imageclef/images/'
     tensors = torch.load(filename)
-    # print(tensors['boxes'], tensors['feats'])
+
     boxes = zarr.open_group('imageclef_boxes.zarr', mode='w')
     features = zarr.open_group('imageclef_features.zarr', mode='w')
     image_size = {}
@@ -58,4 +58,4 @@ def load_box_feat():
 
 
 if __name__ == '__main__':
-    load_box_feat()
+    parse_box_feat()
