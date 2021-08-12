@@ -75,7 +75,6 @@ def features_to_zarr(phase):
                 }
 
     # convert dict to pandas dataframe
-
     # create image sizes csv
     print('Writing image sizes csv...')
     df = pd.DataFrame.from_dict(image_size)
