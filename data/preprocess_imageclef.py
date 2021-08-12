@@ -13,13 +13,16 @@ def load_box_feat():
 
     filename = 'box_feat.pt'
     tensors = torch.load(filename)
-    print(tensors['boxes'], tensors['feats'])
+    # print(tensors['boxes'], tensors['feats'])
     boxes = zarr.open_group('imageclef_boxes.zarr', mode='w')
-    features = zarr.open_group( 'imageclef_features.zarr', mode='w')
+    features = zarr.open_group('imageclef_features.zarr', mode='w')
     image_size = {}
 
-    for i, (box, feat) in enumerate(zip(tensors['boxes'], tensors['feats'])):
-        bbox = box[0]
+    for i, (box, feat, image_id) in enumerate(zip(tensors['box'],
+                                                  tensors['feat'],
+                                                  tensors['image_id'])):
+        bbox = box[0][:, :4].cpu().detach().numpy()
+        feat = feat.cpu().detach().numpy()
 
 
 if __name__ == '__main__':
