@@ -126,12 +126,12 @@ def train(args):
 
     # Load the VQA training set
     print('Loading data')
-    dataset = VQA_Dataset(args.data_dir, args.emb)
+    dataset = ImageclefDataset(args.data_dir, args.emb)
     loader = DataLoader(dataset, batch_size=args.bsize,
                         shuffle=True, num_workers=5, collate_fn=collate_fn)
 
     # Load the VQA validation set
-    dataset_test = VQA_Dataset(args.data_dir, args.emb, train=False)
+    dataset_test = ImageclefDataset(args.data_dir, args.emb, train=False)
     test_sampler = RandomSampler(dataset_test)
     loader_test = iter(DataLoader(dataset_test,
                                   batch_size=args.bsize,
