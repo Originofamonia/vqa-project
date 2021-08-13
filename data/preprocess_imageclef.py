@@ -69,10 +69,25 @@ def get_qa_pairs():
     text0 = 'VQAnswering_2020_Train_QA_pairs.txt'
     text1 = 'VQAnswering_2020_Val_QA_Pairs.txt'
     text2 = 'VQA-Med-2021-VQAnswering-Task1-New-ValidationSet.txt'
+
+    valid_qa_pairs0 = append_valid_qa_pairs(dataset_path, image_ids, text0)
+    valid_qa_pairs1 = append_valid_qa_pairs(dataset_path, image_ids, text1)
+    valid_qa_pairs2 = append_valid_qa_pairs(dataset_path, image_ids, text2)
+
+    valid_qa_pairs0.extend(valid_qa_pairs1)
+    valid_qa_pairs0.extend(valid_qa_pairs2)
+    with open('valid_qa_pairs.csv', 'w', newline='') as f:
+        writer = csv.writer(f)
+        writer.writerows(valid_qa_pairs0)
+
+
+def append_valid_qa_pairs(dataset_path, image_ids, text):
     valid_qa_pairs = []
-    with open(os.path.join(dataset_path, text0), 'r') as f:
+    with open(os.path.join(dataset_path, text), 'r') as f:
         for row in csv.reader(f, delimiter='|'):
-            print(row)
+            if row[0] + '.jpg' in image_ids:
+                valid_qa_pairs.append(row)
+    return valid_qa_pairs
 
 
 def process_text():
