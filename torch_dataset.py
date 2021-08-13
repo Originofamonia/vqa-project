@@ -137,7 +137,7 @@ class VQA_Dataset(Dataset):
         qid = self.vqa[idx]['question_id']
 
         # image sample
-        iid = self.vqa[idx]['image_id']
+        iid = self.vqa[idx]['image_id'] + '.jpg'
         img = self.i_feat[str(iid)]
         bboxes = np.asarray(self.bbox[str(iid)])
         imsize = self.sizes[str(iid)]
@@ -413,7 +413,7 @@ class VQA_Dataset_Test(Dataset):
         qid = self.vqa[idx]['question_id']
 
         # image sample
-        iid = self.vqa[idx]['image_id']
+        iid = self.vqa[idx]['image_id'] + '.jpg'
         img = self.i_feat[str(iid)]
         bboxes = np.asarray(self.bbox[str(iid)])
         imsize = self.sizes[str(iid)]
