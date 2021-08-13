@@ -188,14 +188,14 @@ def process_answers(q):
 
     for row in q:
         accepted_answers = 0
-        for w, c in row['answers']:
+        answers_scores = []
+        for w, c in row['answers'].items():
             if w in vocab:
                 accepted_answers += c
-
-        answers_scores = []
-        for w, c in row['answers']:
-            if w in vocab:
                 answers_scores.append((w, c / accepted_answers))
+        # for w, c in row['answers'].items():
+        #     if w in vocab:
+        #         answers_scores.append((w, c / accepted_answers))
 
         row['answers_w_scores'] = answers_scores
 
@@ -208,5 +208,5 @@ if __name__ == '__main__':
     # process_text()
     # tokenize_questions()
     t = json.load(open('vqa_imageclef_toked.json'))
-    process_questions(t)
+    # process_questions(t)
     process_answers(t)
