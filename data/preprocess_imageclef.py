@@ -14,6 +14,11 @@ from spacy.tokenizer import Tokenizer
 import spacy
 import string
 
+try:
+    import cPickle as pickle
+except:
+    import pickle
+
 
 nlp = spacy.load('en_core_web_sm')
 tokenizer = Tokenizer(nlp.vocab)
@@ -132,8 +137,45 @@ def tokenize_questions():
             json.dump(qa, open('vqa_imageclef_toked.json', 'w'))
 
 
+def process_questions():
+    q = json.load(open('vqa_imageclef_toked.json'))
+    # build question dictionary
+    def build_vocab(questions):
+        count_thr = 0
+        # count up the number of times a word is used
+        counts = {}
+        for row in questions:
+            for word in row['question_toked']:
+                counts[word] = counts.get(word, 0) + 1
+        cw = sorted([(count, w) for w, count in counts.items()], reverse=True)
+        print('top words and their counts:')
+        print('\n'.join(map(str, cw[:10])))
+
+        # print some stats
+        total_words = sum(counts.values())
+        print('total words:', total_words)
+        bad_words = [w for w, n in counts.items() if n <= count_thr]
+        vocab = [w for w, n in counts.items() if n > count_thr]
+        bad_count = sum(counts[w] for w in bad_words)
+        print('number of bad words: %d/%d = %.2f%%' %
+              (len(bad_words), len(counts),
+               len(bad_words) * 100.0 / len(counts)))
+        print('number of words in vocab would be %d' % (len(vocab),))
+        print('number of UNKs: %d/%d = %.2f%%' %
+              (bad_count, total_words, bad_count * 100.0 / total_words))
+
+        return vocab
+
+    vocab = build_vocab(q)
+    # a 1-indexed vocab translation table
+    itow = {i + 1: w for i, w in enumerate(vocab)}
+    wtoi = {w: i + 1 for i, w in enumerate(vocab)}  # inverse table
+    pickle.dump({'itow': itow, 'wtoi': wtoi}, open('imageclef_q_dict.p', 'wb'))
+
+
 if __name__ == '__main__':
     # parse_box_feat()
     # get_qa_pairs()  # run once
     # process_text()
-    tokenize_questions()
+    # tokenize_questions()
+    process_questions()
