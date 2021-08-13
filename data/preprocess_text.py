@@ -154,33 +154,33 @@ def main():
 
     for phase in phase_list:
 
-        print('processing ' + phase + ' data')
-        if phase != 'test':
-            # Combine Q and A
-            print('Combining question and answer...')
-            question = json.load(
-                open(
-                    'raw/v2_OpenEnded_mscoco_' + phase + '2014_questions.json'))
-            answers = json.load(
-                open('raw/v2_mscoco_' + phase + '2014_annotations.json'))
-            combine_qa(question, answers['annotations'], phase)
-
-            # Tokenize
-            print('Tokenizing...')
-            t = json.load(open('vqa_' + phase + '_combined.json'))
-            tokenize_questions(t, phase)
-        else:
-            print('Tokenizing...')
-            t = json.load(open(
-                'raw/v2_OpenEnded_mscoco_' + phase + '2015_questions.json'))
-            t = t['questions']
-            tokenize_questions(t, phase)
+        # print('processing ' + phase + ' data')
+        # if phase != 'test':
+        #     # Combine Q and A
+        #     print('Combining question and answer...')
+        #     question = json.load(
+        #         open(
+        #             'raw/v2_OpenEnded_mscoco_' + phase + '2014_questions.json'))
+        #     answers = json.load(
+        #         open('raw/v2_mscoco_' + phase + '2014_annotations.json'))
+        #     combine_qa(question, answers['annotations'], phase)
+        #
+        #     # Tokenize
+        #     print('Tokenizing...')
+        #     t = json.load(open('vqa_' + phase + '_combined.json'))
+        #     tokenize_questions(t, phase)
+        # else:
+        #     print('Tokenizing...')
+        #     t = json.load(open(
+        #         'raw/v2_OpenEnded_mscoco_' + phase + '2015_questions.json'))
+        #     t = t['questions']
+        #     tokenize_questions(t, phase)
 
         # Build dictionary for question and answers
         print('Building dictionary...')
         t = json.load(open('vqa_' + phase + '_toked.json'))
-        if phase == 'train':
-            process_questions(t, phase)
+        # if phase == 'train':
+        #     process_questions(t, phase)
         if phase != 'test':
             process_answers(t, phase, n_answers=args.nanswers)
 

@@ -137,8 +137,7 @@ def tokenize_questions():
             json.dump(qa, open('vqa_imageclef_toked.json', 'w'))
 
 
-def process_questions():
-    q = json.load(open('vqa_imageclef_toked.json'))
+def process_questions(q):
     # build question dictionary
     def build_vocab(questions):
         count_thr = 0
@@ -173,9 +172,42 @@ def process_questions():
     pickle.dump({'itow': itow, 'wtoi': wtoi}, open('imageclef_q_dict.p', 'wb'))
 
 
+def process_answers(q, n_answers=3000):
+    # find the n_answers most common answers
+    counts = {}
+    for row in q:
+        counts[row['answer']] = counts.get(row['answer'], 0) + 1
+
+    cw = sorted([(count, w) for w, count in counts.items()], reverse=True)
+
+    vocab = [w for c, w in cw[:n_answers]]
+
+    # a 0-indexed vocabulary translation table
+    itow = {i: w for i, w in enumerate(vocab)}
+    wtoi = {w: i for i, w in enumerate(vocab)}  # inverse table
+    pickle.dump({'itow': itow, 'wtoi': wtoi}, open('imageclef_a_dict.p', 'wb'))
+
+    for row in q:
+        accepted_answers = 0
+        for w, c in row['answers']:
+            if w in vocab:
+                accepted_answers += c
+
+        answers_scores = []
+        for w, c in row['answers']:
+            if w in vocab:
+                answers_scores.append((w, c / accepted_answers))
+
+        row['answers_w_scores'] = answers_scores
+
+    json.dump(q, open('vqa_imageclef_final_3000.json', 'w'))
+
+
 if __name__ == '__main__':
     # parse_box_feat()
     # get_qa_pairs()  # run once
     # process_text()
-    # tokenize_questions()
-    process_questions()
+    t = json.load(open('vqa_imageclef_toked.json'))
+    tokenize_questions()
+    process_questions(t)
+    process_answers(t)
