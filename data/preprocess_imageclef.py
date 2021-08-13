@@ -2,6 +2,7 @@
 read saved box and feature pt file, parse to VQA dataset format
 """
 import os
+import csv
 import numpy as np
 import pandas as pd
 import zarr
@@ -57,5 +58,33 @@ def parse_box_feat():
     image_sizes.to_csv('imageclef_image_size.csv')
 
 
+def get_qa_pairs():
+    """
+    Get filtered QA pairs and save to a new txt file.
+    """
+    filename = 'box_feat.pt'
+    tensors = torch.load(filename)
+    image_ids = tensors['image_id']
+    dataset_path = '/home/qiyuan/2021summer/imageclef'
+    text0 = 'VQAnswering_2020_Train_QA_pairs.txt'
+    text1 = 'VQAnswering_2020_Val_QA_Pairs.txt'
+    text2 = 'VQA-Med-2021-VQAnswering-Task1-New-ValidationSet.txt'
+    valid_qa_pairs = []
+    with open(os.path.join(dataset_path, text0), 'r') as f:
+        for row in csv.reader(f, delimiter='|'):
+            print(row)
+
+
+def process_text():
+    filename = 'box_feat.pt'
+    dataset_path = '/home/qiyuan/2021summer/imageclef'
+    text0 = 'VQAnswering_2020_Train_QA_pairs.txt'
+    text1 = 'VQAnswering_2020_Val_QA_Pairs.txt'
+    text2 = 'VQA-Med-2021-VQAnswering-Task1-New-ValidationSet.txt'
+    tensors = torch.load(filename)
+    image_ids = tensors['image_id']
+
+
 if __name__ == '__main__':
-    parse_box_feat()
+    # parse_box_feat()
+    get_qa_pairs()
