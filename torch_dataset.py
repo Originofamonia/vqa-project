@@ -271,7 +271,7 @@ class ImageclefDataset(Dataset):
 
         # image sample
         iid = self.vqa[idx]['image_id']
-        img = self.i_feat[str(iid)]
+        img = self.i_feat[str(iid) + '.jpg']
         bboxes = np.asarray(self.bbox[str(iid)])
         imsize = self.sizes[str(iid)]
 
