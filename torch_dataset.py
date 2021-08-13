@@ -127,7 +127,7 @@ class VQA_Dataset(Dataset):
 
         # number of votes for each answer
         n_votes = np.zeros(self.n_answers, dtype=np.float32)
-        for w, c in self.vqa[idx]['answers'].items():
+        for w, c in self.vqa[idx]['answers']:
             try:
                 n_votes[self.a_wtoi[w]] = c
             except:
@@ -137,7 +137,7 @@ class VQA_Dataset(Dataset):
         qid = self.vqa[idx]['question_id']
 
         # image sample
-        iid = self.vqa[idx]['image_id'] + '.jpg'
+        iid = self.vqa[idx]['image_id']
         img = self.i_feat[str(iid)]
         bboxes = np.asarray(self.bbox[str(iid)])
         imsize = self.sizes[str(iid)]
@@ -399,7 +399,7 @@ class VQA_Dataset_Test(Dataset):
         # votes
         if self.train:
             n_votes = np.zeros(self.n_answers, dtype=np.float32)
-            for w, c in self.vqa[idx]['answers'].items():
+            for w, c in self.vqa[idx]['answers']:
                 try:
                     n_votes[self.a_wtoi[w]] = c
                 except:
@@ -413,7 +413,7 @@ class VQA_Dataset_Test(Dataset):
         qid = self.vqa[idx]['question_id']
 
         # image sample
-        iid = self.vqa[idx]['image_id'] + '.jpg'
+        iid = self.vqa[idx]['image_id']
         img = self.i_feat[str(iid)]
         bboxes = np.asarray(self.bbox[str(iid)])
         imsize = self.sizes[str(iid)]
