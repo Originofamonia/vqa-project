@@ -3,6 +3,7 @@ read saved box and feature pt file, parse to VQA dataset format
 """
 import os
 import csv
+import json
 import numpy as np
 import pandas as pd
 import zarr
@@ -96,27 +97,20 @@ def process_text():
     data = []
     with open(filename, newline='') as csvfile:
         reader = csv.reader(csvfile)
-        for row in reader:
-            print(', '.join(row))
-    for i, q in enumerate(tqdm(questions['questions'])):
-        row = {}
-        # load questions info
-        row['question'] = q['question']
-        row['question_id'] = q['question_id']
-        row['image_id'] = str(q['image_id'])
+        for i, q in enumerate(tqdm(reader)):
+            row = {}
+            # load questions info
+            row['question'] = q[1]
+            row['question_id'] = i
+            row['image_id'] = q[0]
 
-        # load answers
-        assert q['question_id'] == annotations[i]['question_id']
-        row['answer'] = annotations[i]['multiple_choice_answer']
+            # load answers
+            row['answer'] = q[2]
+            row['answers'] = {q[2]: 10}
 
-        answers = []
-        for ans in annotations[i]['answers']:
-            answers.append(ans['answer'])
-        row['answers'] = collections.Counter(answers).most_common()
+            data.append(row)
 
-        data.append(row)
-
-    json.dump(data, open('vqa_' + phase + '_combined.json', 'w'))
+    json.dump(data, open('vqa_imageclef_combined.json', 'w'))
 
 
 if __name__ == '__main__':
