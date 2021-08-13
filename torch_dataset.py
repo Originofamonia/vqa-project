@@ -127,7 +127,7 @@ class VQA_Dataset(Dataset):
 
         # number of votes for each answer
         n_votes = np.zeros(self.n_answers, dtype=np.float32)
-        for w, c in self.vqa[idx]['answers']:
+        for w, c in self.vqa[idx]['answers'].items():
             try:
                 n_votes[self.a_wtoi[w]] = c
             except:
@@ -260,7 +260,7 @@ class ImageclefDataset(Dataset):
 
         # number of votes for each answer
         n_votes = np.zeros(self.n_answers, dtype=np.float32)
-        for w, c in self.vqa[idx]['answers']:
+        for w, c in self.vqa[idx]['answers'].items():
             try:
                 n_votes[self.a_wtoi[w]] = c
             except:
@@ -399,7 +399,7 @@ class VQA_Dataset_Test(Dataset):
         # votes
         if self.train:
             n_votes = np.zeros(self.n_answers, dtype=np.float32)
-            for w, c in self.vqa[idx]['answers']:
+            for w, c in self.vqa[idx]['answers'].items():
                 try:
                     n_votes[self.a_wtoi[w]] = c
                 except:
