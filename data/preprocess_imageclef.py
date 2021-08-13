@@ -172,15 +172,14 @@ def process_questions(q):
     pickle.dump({'itow': itow, 'wtoi': wtoi}, open('imageclef_q_dict.p', 'wb'))
 
 
-def process_answers(q, n_answers=3000):
-    # find the n_answers most common answers
+def process_answers(q):
     counts = {}
     for row in q:
         counts[row['answer']] = counts.get(row['answer'], 0) + 1
 
     cw = sorted([(count, w) for w, count in counts.items()], reverse=True)
 
-    vocab = [w for c, w in cw[:n_answers]]
+    vocab = [w for c, w in cw]
 
     # a 0-indexed vocabulary translation table
     itow = {i: w for i, w in enumerate(vocab)}
@@ -200,14 +199,14 @@ def process_answers(q, n_answers=3000):
 
         row['answers_w_scores'] = answers_scores
 
-    json.dump(q, open('vqa_imageclef_final_3000.json', 'w'))
+    json.dump(q, open('vqa_imageclef_final.json', 'w'))
 
 
 if __name__ == '__main__':
     # parse_box_feat()
     # get_qa_pairs()  # run once
     # process_text()
+    # tokenize_questions()
     t = json.load(open('vqa_imageclef_toked.json'))
-    tokenize_questions()
     process_questions(t)
     process_answers(t)
