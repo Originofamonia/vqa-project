@@ -217,10 +217,10 @@ def train(args):
             # Compute batch accuracy based on vqa evaluation
             correct = total_vqa_score(output, vote_batch)
             ep_correct += correct
-            ep_loss += loss.data[0]
+            ep_loss += loss.item()
             ave_correct += correct
-            ave_loss += loss.data[0]
-            losses.append(loss.cpu().data[0])
+            ave_loss += loss.item()
+            losses.append(loss.item())
 
             # This is a 40 step average
             if step % 40 == 0 and step != 0:
