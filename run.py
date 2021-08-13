@@ -380,6 +380,10 @@ def trainval(args):
     # Move it to GPU
     model = model.cuda()
     criterion = criterion.cuda()
+    # parallel models
+    if torch.cuda.device_count() > 1:
+        print('Let\'s use {} GPUs!'.format(torch.cuda.device_count()))
+        model = nn.DataParallel(model)
 
     if torch.cuda.device_count() > 1:
         print('Let\'s use {} GPUs!'.format(torch.cuda.device_count()))
