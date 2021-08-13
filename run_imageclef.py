@@ -250,8 +250,7 @@ def train(args):
                 test_correct = 0
                 model.train(False)
 
-                for i in range(10):
-                    test_batch = next(loader_test)
+                for i, test_batch in tqdm(enumerate(loader_test)):
                     q_batch, a_batch, vote_batch, i_batch, k_batch, qlen_batch = \
                         batch_to_cuda(test_batch, volatile=True)
                     output, _ = model(q_batch, i_batch, k_batch, qlen_batch)
