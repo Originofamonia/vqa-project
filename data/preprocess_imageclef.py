@@ -10,6 +10,14 @@ import zarr
 from tqdm import tqdm
 import torch
 from PIL import Image
+from spacy.tokenizer import Tokenizer
+import spacy
+import string
+
+
+nlp = spacy.load('en_core_web_sm')
+tokenizer = Tokenizer(nlp.vocab)
+exclude = set(string.punctuation)
 
 
 def parse_box_feat():
@@ -113,7 +121,19 @@ def process_text():
     json.dump(data, open('vqa_imageclef_combined.json', 'w'))
 
 
+def tokenize_questions():
+    qa = json.load(open('vqa_imageclef_combined.json'))
+    qas = len(qa)
+    for i, row in enumerate(tqdm(qa)):
+        row['question_toked'] = [t.text if '?' not in t.text else t.text[:-1]
+                                 for t in tokenizer(row['question'].lower())]
+        # get spacey tokens and remove question marks
+        if i == qas - 1:
+            json.dump(qa, open('vqa_imageclef_toked.json', 'w'))
+
+
 if __name__ == '__main__':
     # parse_box_feat()
     # get_qa_pairs()  # run once
-    process_text()
+    # process_text()
+    tokenize_questions()
