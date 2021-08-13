@@ -60,7 +60,7 @@ def parse_box_feat():
 
 def get_qa_pairs():
     """
-    Get filtered QA pairs and save to a new txt file.
+    Get filtered QA pairs and save to a new txt file. Only need once.
     """
     filename = 'box_feat.pt'
     tensors = torch.load(filename)
@@ -91,15 +91,35 @@ def append_valid_qa_pairs(dataset_path, image_ids, text):
 
 
 def process_text():
-    filename = 'box_feat.pt'
-    dataset_path = '/home/qiyuan/2021summer/imageclef'
-    text0 = 'VQAnswering_2020_Train_QA_pairs.txt'
-    text1 = 'VQAnswering_2020_Val_QA_Pairs.txt'
-    text2 = 'VQA-Med-2021-VQAnswering-Task1-New-ValidationSet.txt'
-    tensors = torch.load(filename)
-    image_ids = tensors['image_id']
+    filename = 'valid_qa_pairs.csv'
+    # Combine questions and answers in the same json file
+    data = []
+    with open(filename, newline='') as csvfile:
+        reader = csv.reader(csvfile)
+        for row in reader:
+            print(', '.join(row))
+    for i, q in enumerate(tqdm(questions['questions'])):
+        row = {}
+        # load questions info
+        row['question'] = q['question']
+        row['question_id'] = q['question_id']
+        row['image_id'] = str(q['image_id'])
+
+        # load answers
+        assert q['question_id'] == annotations[i]['question_id']
+        row['answer'] = annotations[i]['multiple_choice_answer']
+
+        answers = []
+        for ans in annotations[i]['answers']:
+            answers.append(ans['answer'])
+        row['answers'] = collections.Counter(answers).most_common()
+
+        data.append(row)
+
+    json.dump(data, open('vqa_' + phase + '_combined.json', 'w'))
 
 
 if __name__ == '__main__':
     # parse_box_feat()
-    get_qa_pairs()
+    # get_qa_pairs()  # run once
+    process_text()
