@@ -121,6 +121,9 @@ class Model(nn.Module):
 
         # Learn adjacency matrix
         image_qenc_cat = torch.cat((image, qenc_repeat), dim=-1)
+        print(image.size())
+        print(qenc.size())
+        print(image_qenc_cat.size())
         adjacency_matrix = self.adjacency_1(image_qenc_cat)
 
         # Graph convolution 1
