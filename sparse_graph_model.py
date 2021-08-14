@@ -106,7 +106,7 @@ class Model(nn.Module):
         bb_centre = bb[:, :, :2] + 0.5*bb_size
 
         # apply dropout to image features
-        image = self.dropout(image)
+        image = self.dropout(image)  # [64, 36, 2052]
 
         # Compute pseudo coordinates
         pseudo_coord = self._compute_pseudo(bb_centre)
@@ -116,14 +116,11 @@ class Model(nn.Module):
         packed = pack_padded_sequence(emb, qlen, batch_first=True)
         # questions have variable lengths
         _, hid = self.q_lstm(packed)
-        qenc = hid[0].unsqueeze(1)
+        qenc = hid[0].unsqueeze(1)  # [64, 1, 1024]
         qenc_repeat = qenc.repeat(1, K, 1)
 
         # Learn adjacency matrix
-        image_qenc_cat = torch.cat((image, qenc_repeat), dim=-1)
-        print(image.size())
-        print(qenc.size())
-        print(image_qenc_cat.size())
+        image_qenc_cat = torch.cat((image, qenc_repeat), dim=-1)  # [64, 36, 3076]
         adjacency_matrix = self.adjacency_1(image_qenc_cat)
 
         # Graph convolution 1

@@ -179,18 +179,19 @@ class GraphLearner(Module):
         """
 
         graph_nodes = graph_nodes.view(-1, self.in_dim)
-
+        print(graph_nodes.size())
         # layer 1
         h = self.edge_layer_1(graph_nodes)
         h = F.relu(h)
-
+        print(h.size())
         # layer 2
         h = self.edge_layer_2(h)
         h = F.relu(h)
-
+        print(h.size())
         # outer product
         h = h.view(-1, self.K, self.combined_dim)
+        print(h.size())
         adjacency_matrix = torch.matmul(h, h.transpose(1, 2))
-
+        print(adjacency_matrix.size())
         return adjacency_matrix
 
