@@ -202,7 +202,7 @@ def process_answers(q):
 
 
 if __name__ == '__main__':
-    # parse_box_feat()
+    parse_box_feat()
     # get_qa_pairs()  # run once
     # process_text()
     # tokenize_questions()
