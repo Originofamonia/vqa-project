@@ -28,7 +28,7 @@ def parse_box_feat():
     # fieldnames = ['image_id', 'image_w', 'image_h', 'num_boxes', 'boxes',
     #               'features']
 
-    filename = 'box_path_yolo.pt'
+    filename = 'feat_path_yolo.pt'
     imgpath = '/home/qiyuan/2021summer/imageclef/images/'
     tensors = torch.load(filename)
     # {'feat': selected_feats, 'image_id': filepaths}
