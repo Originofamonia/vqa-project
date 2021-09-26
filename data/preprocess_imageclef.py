@@ -42,9 +42,9 @@ def parse_box_feat():
         item = {}
         img = Image.open(os.path.join(imgpath, image_id))
         item['image_id'] = image_id
-        item['boxes'] = box[0][:, :4].cpu().detach().numpy()
-        item['feat'] = feat.cpu().detach().numpy()
-        item['num_boxes'] = box[0].size()[0]
+        item['boxes'] = feat[:, -4:].cpu().numpy()
+        item['feat'] = feat[:, :-4].cpu().numpy()
+        item['num_boxes'] = feat.size(0)
         item['image_w'], item['image_h'] = img.width, img.height
         # append to zarr files
         boxes.create_dataset(item['image_id'], data=item['boxes'])
