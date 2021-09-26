@@ -19,7 +19,6 @@ try:
 except:
     import pickle
 
-
 nlp = spacy.load('en_core_web_sm')
 tokenizer = Tokenizer(nlp.vocab)
 exclude = set(string.punctuation)
@@ -29,27 +28,27 @@ def parse_box_feat():
     # fieldnames = ['image_id', 'image_w', 'image_h', 'num_boxes', 'boxes',
     #               'features']
 
-    filename = 'box_feat.pt'
+    filename = 'box_path_yolo.pt'
     imgpath = '/home/qiyuan/2021summer/imageclef/images/'
     tensors = torch.load(filename)
+    # {'feat': selected_feats, 'image_id': filepaths}
 
     boxes = zarr.open_group('imageclef_boxes.zarr', mode='w')
     features = zarr.open_group('imageclef_features.zarr', mode='w')
     image_size = {}
 
-    for i, (box, feat, image_id) in enumerate(zip(tensors['box'],
-                                                  tensors['feat'],
-                                                  tensors['image_id'])):
+    for i, (feat, image_id) in enumerate(zip(tensors['feat'],
+                                             tensors['image_id'])):
         item = {}
         img = Image.open(os.path.join(imgpath, image_id))
         item['image_id'] = image_id
         item['boxes'] = box[0][:, :4].cpu().detach().numpy()
-        item['features'] = feat.cpu().detach().numpy()
+        item['feat'] = feat.cpu().detach().numpy()
         item['num_boxes'] = box[0].size()[0]
         item['image_w'], item['image_h'] = img.width, img.height
         # append to zarr files
         boxes.create_dataset(item['image_id'], data=item['boxes'])
-        features.create_dataset(item['image_id'], data=item['features'])
+        features.create_dataset(item['image_id'], data=item['feat'])
         # image_size dict
         image_size[item['image_id']] = {
             'image_h': item['image_h'],
