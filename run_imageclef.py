@@ -467,7 +467,7 @@ def trainval(args):
 def main():
     parser = argparse.ArgumentParser(
         description='Conditional Graph Convolutions for VQA')
-    parser.add_argument('--train', action='store_true',
+    parser.add_argument('--train', default=True, type=bool,
                         help='set this to training mode.')
     parser.add_argument('--trainval', action='store_true',
                         help='set this to train+val mode.')
