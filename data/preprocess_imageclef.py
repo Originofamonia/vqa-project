@@ -36,7 +36,7 @@ def parse_box_feat():
     boxes = zarr.open_group('imageclef_boxes.zarr', mode='w')
     features = zarr.open_group('imageclef_features.zarr', mode='w')
     image_size = {}
-
+    num_boxes = []
     for i, (feat, image_id) in enumerate(zip(tensors['feat'],
                                              tensors['image_id'])):
         item = {}
@@ -45,6 +45,7 @@ def parse_box_feat():
         item['boxes'] = feat[:, -4:].cpu().numpy()
         item['feat'] = feat[:, :-4].cpu().numpy()
         item['num_boxes'] = feat.size(0)
+        num_boxes.append(feat.size(0))
         item['image_w'], item['image_h'] = img.width, img.height
         # append to zarr files
         boxes.create_dataset(item['image_id'], data=item['boxes'])
