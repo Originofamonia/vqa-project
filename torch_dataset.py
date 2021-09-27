@@ -172,7 +172,7 @@ class ImageclefDataset(Dataset):
     def __init__(self, args, train=True):
         # Set parameters
         self.data_dir = args.data_dir  # directory where the data is stored
-        self.emb_dim = args.emb_dim  # question embedding dimension
+        self.emb_dim = args.emb  # question embedding dimension
         self.train = train  # train (True) or eval (False) mode
         self.seqlen = 15  # maximum question sequence length
 
