@@ -128,7 +128,7 @@ def train(args):
     print('Loading data')
     dataset = ImageclefDataset(args.data_dir, args.emb)
     loader = DataLoader(dataset, batch_size=args.bsize,
-                        shuffle=True, num_workers=5, collate_fn=collate_fn)
+                        shuffle=True, num_workers=4, collate_fn=collate_fn)
 
     # Load the VQA validation set
     dataset_test = ImageclefDataset(args.data_dir, args.emb, train=False)
@@ -480,7 +480,7 @@ def main():
     parser.add_argument('--ep', metavar='', type=int,
                         default=40, help='number of epochs.')
     parser.add_argument('--bsize', metavar='', type=int,
-                        default=64, help='batch size.')
+                        default=16, help='batch size.')
     parser.add_argument('--hid', metavar='', type=int,
                         default=1024, help='hidden dimension')
     parser.add_argument('--emb', metavar='', type=int, default=300,
@@ -493,7 +493,7 @@ def main():
     parser.add_argument('--save_dir', metavar='', type=str, default='./save')
     parser.add_argument('--name', metavar='', type=str,
                         default='model', help='model name')
-    parser.add_argument('--dropout', metavar='', type=float, default=0.5,
+    parser.add_argument('--dropout', metavar='', type=float, default=0.4,
                         help='probability of dropping out FC nodes during '
                              'training')
     parser.add_argument('--model_path', metavar='', type=str,
