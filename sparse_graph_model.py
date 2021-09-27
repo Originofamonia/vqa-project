@@ -69,7 +69,7 @@ class Model(nn.Module):
         # graph learner
         self.adjacency_1 = GraphLearner(in_feature_dim=feat_dim + hid_dim,
                                         combined_feature_dim=512,
-                                        K=36,
+                                        K=10,
                                         dropout=dropout)
 
         # dropout layers
