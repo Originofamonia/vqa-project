@@ -75,7 +75,7 @@ def get_qa_pairs():
     """
     Get filtered QA pairs and save to a new txt file. Only need once.
     """
-    filename = 'box_feat.pt'
+    filename = 'feat_path_yolo.pt'
     tensors = torch.load(filename)
     image_ids = tensors['image_id']
     dataset_path = '/home/qiyuan/2021summer/imageclef'
@@ -202,8 +202,8 @@ def process_answers(q):
 
 
 if __name__ == '__main__':
-    parse_box_feat()
-    # get_qa_pairs()  # run once
+    # parse_box_feat()
+    get_qa_pairs()  # run once
     # process_text()
     # tokenize_questions()
     t = json.load(open('vqa_imageclef_toked.json'))
