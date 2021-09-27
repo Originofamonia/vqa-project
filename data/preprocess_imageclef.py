@@ -51,7 +51,6 @@ def parse_box_feat():
             image_ids.append(image_id)
             item['boxes'] = sorted_feat[:, -6:-2].cpu().numpy()
             item['feat'] = sorted_feat[:, :-6].cpu().numpy()
-            num_boxes.append(sorted_feat.size(0))
             item['image_w'], item['image_h'] = img.width, img.height
             # append to zarr files
             boxes.create_dataset(item['image_id'], data=item['boxes'])
@@ -211,9 +210,9 @@ def process_answers(q):
 
 
 if __name__ == '__main__':
-    parse_box_feat()
-    # process_text()
-    # tokenize_questions()
-    # t = json.load(open('vqa_imageclef_toked.json'))
-    # process_questions(t)
-    # process_answers(t)
+    # parse_box_feat()  # run once
+    process_text()
+    tokenize_questions()
+    t = json.load(open('vqa_imageclef_toked.json'))
+    process_questions(t)
+    process_answers(t)
