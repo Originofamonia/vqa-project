@@ -279,10 +279,10 @@ class ImageclefDataset(Dataset):
             raise ValueError
 
         # number of image objects
-        k = 36
+        # k = 36
 
         # scale bounding boxes by image dimensions
-        for i in range(k):
+        for i in range(bboxes.shape[0]):
             bbox = bboxes[i]
             bbox[0] /= imsize[0]
             bbox[1] /= imsize[1]
@@ -296,7 +296,7 @@ class ImageclefDataset(Dataset):
         n_votes = np.asarray(n_votes).reshape(-1)
         qid = np.asarray(qid).reshape(-1)
         i = np.concatenate([img, bboxes], axis=1)
-        k = np.asarray(k).reshape(1)
+        k = np.asarray(bboxes.shape[0]).reshape(1)
 
         return q, a, n_votes, qid, i, k, qlen
 
