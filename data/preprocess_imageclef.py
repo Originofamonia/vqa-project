@@ -203,9 +203,9 @@ def process_answers(q):
 
 if __name__ == '__main__':
     # parse_box_feat()
-    get_qa_pairs()  # run once
-    # process_text()
-    # tokenize_questions()
+    # get_qa_pairs()  # run once
+    process_text()
+    tokenize_questions()
     t = json.load(open('vqa_imageclef_toked.json'))
-    # process_questions(t)
+    process_questions(t)
     process_answers(t)
