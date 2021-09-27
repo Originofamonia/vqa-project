@@ -37,25 +37,31 @@ def parse_box_feat():
     features = zarr.open_group('imageclef_features.zarr', mode='w')
     image_size = {}
     num_boxes = []
+    image_ids = []
     for i, (feat, image_id) in enumerate(zip(tensors['feat'],
                                              tensors['image_id'])):
-        item = {}
-        img = Image.open(os.path.join(imgpath, image_id))
-        item['image_id'] = image_id
-        item['boxes'] = feat[:, -4:].cpu().numpy()
-        item['feat'] = feat[:, :-4].cpu().numpy()
-        item['num_boxes'] = feat.size(0)
-        num_boxes.append(feat.size(0))
-        item['image_w'], item['image_h'] = img.width, img.height
-        # append to zarr files
-        boxes.create_dataset(item['image_id'], data=item['boxes'])
-        features.create_dataset(item['image_id'], data=item['feat'])
-        # image_size dict
-        image_size[item['image_id']] = {
-            'image_h': item['image_h'],
-            'image_w': item['image_w'],
-        }
-
+        if feat.size(0) > 9:  # k = 10
+            item = {}
+            sorted_feat, indices = torch.sort(feat, -2)
+            num_boxes.append(sorted_feat.size(0))
+            sorted_feat = sorted_feat[:10]  # select top 10 conf feat
+            item['num_boxes'] = sorted_feat.size(0)
+            img = Image.open(os.path.join(imgpath, image_id))
+            item['image_id'] = image_id
+            image_ids.append(image_id)
+            item['boxes'] = sorted_feat[:, -6:-2].cpu().numpy()
+            item['feat'] = sorted_feat[:, :-6].cpu().numpy()
+            num_boxes.append(sorted_feat.size(0))
+            item['image_w'], item['image_h'] = img.width, img.height
+            # append to zarr files
+            boxes.create_dataset(item['image_id'], data=item['boxes'])
+            features.create_dataset(item['image_id'], data=item['feat'])
+            # image_size dict
+            image_size[item['image_id']] = {
+                'image_h': item['image_h'],
+                'image_w': item['image_w'],
+            }
+    print(len(num_boxes))
     # convert dict to pandas dataframe
     # create image sizes csv
     print('Writing image sizes csv...')
@@ -71,14 +77,6 @@ def parse_box_feat():
     image_sizes = pd.DataFrame(dwh)
     image_sizes.to_csv('imageclef_image_size.csv')
 
-
-def get_qa_pairs():
-    """
-    Get filtered QA pairs and save to a new txt file. Only need once.
-    """
-    filename = 'feat_path_yolo.pt'
-    tensors = torch.load(filename)
-    image_ids = tensors['image_id']
     dataset_path = '/home/qiyuan/2021summer/imageclef'
     text0 = 'VQAnswering_2020_Train_QA_pairs.txt'
     text1 = 'VQAnswering_2020_Val_QA_Pairs.txt'
@@ -90,9 +88,19 @@ def get_qa_pairs():
 
     valid_qa_pairs0.extend(valid_qa_pairs1)
     valid_qa_pairs0.extend(valid_qa_pairs2)
-    with open('valid_qa_pairs.csv', 'w', newline='') as f:
+    with open('imageclef_qa_pairs.csv', 'w', newline='') as f:
         writer = csv.writer(f)
         writer.writerows(valid_qa_pairs0)
+
+
+def get_qa_pairs():
+    """
+    Get filtered QA pairs and save to a new txt file. Only need once.
+    merged to parse_box_feat func, obsolete.
+    """
+    filename = 'feat_path_yolo.pt'
+    tensors = torch.load(filename)
+    image_ids = tensors['image_id']
 
 
 def append_valid_qa_pairs(dataset_path, image_ids, text):
@@ -105,7 +113,7 @@ def append_valid_qa_pairs(dataset_path, image_ids, text):
 
 
 def process_text():
-    filename = 'valid_qa_pairs.csv'
+    filename = 'imageclef_qa_pairs.csv'
     # Combine questions and answers in the same json file
     data = []
     with open(filename, newline='') as csvfile:
@@ -204,7 +212,6 @@ def process_answers(q):
 
 if __name__ == '__main__':
     parse_box_feat()
-    # get_qa_pairs()  # run once
     # process_text()
     # tokenize_questions()
     # t = json.load(open('vqa_imageclef_toked.json'))
