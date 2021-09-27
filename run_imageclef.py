@@ -126,12 +126,12 @@ def train(args):
 
     # Load the VQA training set
     print('Loading data')
-    dataset = ImageclefDataset(args.data_dir, args.emb)
+    dataset = ImageclefDataset(args)
     loader = DataLoader(dataset, batch_size=args.bsize,
                         shuffle=True, num_workers=4, collate_fn=collate_fn)
 
     # Load the VQA validation set
-    dataset_test = ImageclefDataset(args.data_dir, args.emb, train=False)
+    dataset_test = ImageclefDataset(args, train=False)
     test_sampler = RandomSampler(dataset_test)
     loader_test = iter(DataLoader(dataset_test,
                                   batch_size=args.bsize,
@@ -158,7 +158,8 @@ def train(args):
                   out_dim=dataset.n_answers,
                   dropout=args.dropout,
                   neighbourhood_size=args.neighbourhood_size,
-                  pretrained_wemb=dataset.pretrained_wemb)
+                  pretrained_wemb=dataset.pretrained_wemb,
+                  k=args.k)
 
     criterion = nn.MultiLabelSoftMarginLoss()
 
@@ -376,7 +377,8 @@ def trainval(args):
                   out_dim=dataset.n_answers,
                   dropout=args.dropout,
                   neighbourhood_size=args.neighbourhood_size,
-                  pretrained_wemb=dataset.pretrained_wemb)
+                  pretrained_wemb=dataset.pretrained_wemb
+                  )
 
     criterion = nn.MultiLabelSoftMarginLoss()
 
@@ -480,14 +482,15 @@ def main():
     parser.add_argument('--ep', metavar='', type=int,
                         default=40, help='number of epochs.')
     parser.add_argument('--bsize', metavar='', type=int,
-                        default=16, help='batch size.')
+                        default=10, help='batch size.')
     parser.add_argument('--hid', metavar='', type=int,
                         default=1024, help='hidden dimension')
     parser.add_argument('--emb', metavar='', type=int, default=300,
                         help='question embedding dimension')
-    parser.add_argument('--neighbourhood_size', metavar='', type=int,
-                        default=16,
+    parser.add_argument('--neighbourhood_size', type=int, default=9,
                         help='number of graph neighbours to consider')
+    parser.add_argument('--k', type=int, default=10,
+                        help='number of boxes in each image')
     parser.add_argument('--data_dir', metavar='', type=str, default='./data',
                         help='path to data directory')
     parser.add_argument('--save_dir', metavar='', type=str, default='./save')

@@ -194,4 +194,3 @@ class GraphLearner(Module):
         adjacency_matrix = torch.matmul(h, h.transpose(1, 2))
 
         return adjacency_matrix
-

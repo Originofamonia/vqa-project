@@ -169,49 +169,49 @@ class VQA_Dataset(Dataset):
 
 
 class ImageclefDataset(Dataset):
-    def __init__(self, data_dir, emb_dim=300, train=True):
+    def __init__(self, args, train=True):
         # Set parameters
-        self.data_dir = data_dir  # directory where the data is stored
-        self.emb_dim = emb_dim  # question embedding dimension
+        self.data_dir = args.data_dir  # directory where the data is stored
+        self.emb_dim = args.emb_dim  # question embedding dimension
         self.train = train  # train (True) or eval (False) mode
-        self.seqlen = 14  # maximum question sequence length
+        self.seqlen = 15  # maximum question sequence length
 
         # Load training question dictionary
         q_dict = pickle.load(
-            open(os.path.join(data_dir, 'imageclef_q_dict.p'), 'rb'))
+            open(os.path.join(self.data_dir, 'imageclef_q_dict.p'), 'rb'))
         self.q_itow = q_dict['itow']
         self.q_wtoi = q_dict['wtoi']
         self.q_words = len(self.q_itow) + 1
 
         # Load training answer dictionary
         a_dict = pickle.load(
-            open(os.path.join(data_dir, 'imageclef_a_dict.p'), 'rb'))
+            open(os.path.join(self.data_dir, 'imageclef_a_dict.p'), 'rb'))
         self.a_itow = a_dict['itow']
         self.a_wtoi = a_dict['wtoi']
         self.n_answers = len(self.a_itow) + 1
 
         # Load image features and bounding boxes
         self.i_feat = zarr.open(os.path.join(
-            data_dir, 'imageclef_features.zarr'), mode='r')
+            self.data_dir, 'imageclef_features.zarr'), mode='r')
         self.bbox = zarr.open(os.path.join(
-            data_dir, 'imageclef_boxes.zarr'), mode='r')
+            self.data_dir, 'imageclef_boxes.zarr'), mode='r')
         self.sizes = pd.read_csv(os.path.join(
-            data_dir, 'imageclef_image_size.csv'))
+            self.data_dir, 'imageclef_image_size.csv'))
 
         # Load questions
         if train:
             self.vqa = json.load(
-                open(os.path.join(data_dir, 'vqa_imageclef_final.json')))
+                open(os.path.join(self.data_dir, 'vqa_imageclef_final.json')))
         else:
             self.vqa = json.load(
-                open(os.path.join(data_dir, 'vqa_imageclef_final.json')))
+                open(os.path.join(self.data_dir, 'vqa_imageclef_final.json')))
 
         self.n_questions = len(self.vqa)
 
         print('Loading done')
         self.feat_dim = self.i_feat[list(self.i_feat.keys())[
             0]].shape[1] + 4  # + bbox
-        self.init_pretrained_wemb(emb_dim)
+        self.init_pretrained_wemb(self.emb_dim)
 
     def init_pretrained_wemb(self, emb_dim):
         """
@@ -279,7 +279,7 @@ class ImageclefDataset(Dataset):
             raise ValueError
 
         # number of image objects
-        # k = 36
+        # k = 10
 
         # scale bounding boxes by image dimensions
         for i in range(bboxes.shape[0]):
