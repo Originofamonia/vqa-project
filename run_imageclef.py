@@ -190,6 +190,8 @@ def train(args):
     # Learning rate scheduler
     scheduler = MultiStepLR(optimizer, milestones=[30], gamma=0.5)
     scheduler.last_epoch = start_ep - 1
+    epoch_loss = 0
+    epoch_acc = 0
 
     # Train iterations
     print('Start training.')
@@ -243,13 +245,13 @@ def train(args):
                 epoch_loss = ep_loss / n_batches
                 epoch_acc = ep_correct * 100 / (n_batches * args.bsize)
 
-                save(model, optimizer, ep, epoch_loss, epoch_acc,
-                     dir=args.save_dir, name=args.name + '_' + str(ep + 1))
+                # save(model, optimizer, ep, epoch_loss, epoch_acc,
+                #      dir=args.save_dir, name=args.name + '_' + str(ep + 1))
 
                 # compute validation accuracy over a small subset of the
                 # validation set
                 test_correct = 0
-                model.train(False)
+                model.eval()
 
                 for i, test_batch in tqdm(enumerate(loader_test)):
                     q_batch, a_batch, vote_batch, i_batch, k_batch, qlen_batch = \
@@ -265,12 +267,12 @@ def train(args):
         epoch_loss = ep_loss / n_batches
         epoch_acc = ep_correct * 100 / (n_batches * args.bsize)
 
-        save(model, optimizer, ep, epoch_loss, epoch_acc,
-             dir=args.save_dir, name=args.name + '_' + str(ep + 1))
+    save(model, optimizer, args.ep, epoch_loss, epoch_acc,
+         dir=args.save_dir, name=args.name + '_' + str(args.ep + 1))
 
-        print(
-            'Epoch %02d done, average loss: %.3f, average accuracy: %.2f%%' % (
-                ep + 1, epoch_loss, epoch_acc))
+    print(
+        'Epoch %02d done, average loss: %.3f, average accuracy: %.2f%%' % (
+            ep + 1, epoch_loss, epoch_acc))
 
 
 def test(args):
