@@ -241,26 +241,28 @@ def train(args):
             optimizer.step()
 
             # save model and compute validation accuracy every 400 steps
-            if step % 400 == 0:
-                epoch_loss = ep_loss / n_batches
-                epoch_acc = ep_correct * 100 / (n_batches * args.bsize)
+            # if step % 400 == 0:
+            #     epoch_loss = ep_loss / n_batches
+            #     epoch_acc = ep_correct * 100 / (n_batches * args.bsize)
 
                 # save(model, optimizer, ep, epoch_loss, epoch_acc,
                 #      dir=args.save_dir, name=args.name + '_' + str(ep + 1))
 
                 # compute validation accuracy over a small subset of the
                 # validation set
+
         test_correct = 0
         model.eval()
 
         results = []
         for i, test_batch in tqdm(enumerate(loader_test)):
             q_batch, a_batch, vote_batch, i_batch, k_batch, qlen_batch = \
-                batch_to_cuda(test_batch, volatile=True)
+                batch_to_cuda(test_batch)
             output, _ = model(q_batch, i_batch, k_batch, qlen_batch)
             test_correct += total_vqa_score(output, vote_batch)
             qid_batch = test_batch[3]
             _, oix = output.data.max(1)
+            oix = oix.cpu().numpy()
             # record predictions
             for i, qid in enumerate(qid_batch):
                 results.append({
