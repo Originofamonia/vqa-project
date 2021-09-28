@@ -267,7 +267,7 @@ def train(args):
         # print(f'oix: {oix}')
         # record predictions
         for i, qid in enumerate(qid_batch):
-            qid = qid.cpu().numpy()
+            qid = int(qid.cpu().numpy())
             results.append(
                 f'{qid},{dataset_test.q_itow[qid]},{dataset_test.a_itow[oix[i]]}')
 
