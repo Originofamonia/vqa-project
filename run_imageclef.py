@@ -17,13 +17,14 @@ from __future__ import print_function
 from __future__ import absolute_import
 import os
 import json
+import csv
 import argparse
 from tqdm import tqdm
 
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
-from torch.utils.data.sampler import RandomSampler
+from torch.utils.data.sampler import RandomSampler, SequentialSampler
 from torch.optim.lr_scheduler import MultiStepLR
 
 from sparse_graph_model import Model
@@ -33,13 +34,13 @@ from utils import *
 
 def eval_model(args):
     """
-        Computes the VQA accuracy over the validation set
-        using a pre-trained model
+    Computes the VQA accuracy over the validation set
+    using a pre-trained model
     """
 
     # Check that the model path is accurate
     if args.model_path and os.path.isfile(args.model_path):
-        print('Resuming from checkpoint %s' % (args.model_path))
+        print('Resuming from checkpoint %s' % args.model_path)
     else:
         raise SystemExit('Need to provide model path.')
 
@@ -80,7 +81,7 @@ def eval_model(args):
     # Restore pre-trained model
     ckpt = torch.load(args.model_path)
     model.load_state_dict(ckpt['state_dict'])
-    model.train(False)
+    model.eval()
 
     # Compute accuracy
     result = []
@@ -88,7 +89,7 @@ def eval_model(args):
     for step, next_batch in tqdm(enumerate(loader)):
         # move batch to cuda
         q_batch, _, vote_batch, i_batch, k_batch, qlen_batch = \
-            batch_to_cuda(next_batch, volatile=True)
+            batch_to_cuda(next_batch)
 
         # get predictions
         output, _ = model(q_batch, i_batch, k_batch, qlen_batch)
@@ -127,12 +128,13 @@ def train(args):
     # Load the VQA training set
     print('Loading data')
     dataset = ImageclefDataset(args)
-    loader = DataLoader(dataset, batch_size=args.bsize,
+    train_sampler = RandomSampler(dataset)
+    loader = DataLoader(dataset, batch_size=args.bsize, sampler=train_sampler,
                         shuffle=True, num_workers=4, collate_fn=collate_fn)
 
     # Load the VQA validation set
     dataset_test = ImageclefDataset(args, train=False)
-    test_sampler = RandomSampler(dataset_test)
+    test_sampler = SequentialSampler(dataset_test)
     loader_test = iter(DataLoader(dataset_test,
                                   batch_size=args.bsize,
                                   sampler=test_sampler,
@@ -260,23 +262,24 @@ def train(args):
         q_batch, a_batch, vote_batch, i_batch, k_batch, qlen_batch = \
             batch_to_cuda(test_batch)
         output, _ = model(q_batch, i_batch, k_batch, qlen_batch)
-        print(output.size())
+        # print(output.size())
         test_correct += total_vqa_score(output, vote_batch)
         qid_batch = test_batch[3]
         _, oix = output.data.max(1)
         oix = oix.cpu().numpy()
-        print(f'oix: {oix}')
+        # print(f'oix: {oix}')
         # record predictions
         for i, qid in enumerate(qid_batch):
-            print(f'qid: {qid}')
-            results.append({
-                'question_id': int(qid.cpu().numpy()),
-                'answer': dataset_test.a_itow[oix[i]]
-            })
+            qid = qid.cpu().numpy()
+            results.append(f'{qid},{dataset_test.q_itow[qid]},{dataset_test.a_itow[oix[i]]}')
 
     # json.dumps(results, open('infer_imageclef.json', 'w'))
-    with open('infer_imageclef.json', 'w') as fout:
-        json.dump(results, fout)
+    with open('infer_imageclef.csv', 'wb') as csvfile:
+        writer = csv.writer(csvfile, delimiter=',')
+        writer.writerow('question_id,question,answer')
+        for line in results:
+            writer.writerow(line)
+
     acc = test_correct / (10 * args.bsize) * 100
     print("Validation accuracy: {:.2f} %".format(acc))
 
