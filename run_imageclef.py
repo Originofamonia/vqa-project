@@ -204,12 +204,12 @@ def train(args):
         ave_correct = 0.0
         losses = []
 
-        for step, next_batch in tqdm(enumerate(loader)):
+        for step, batch in tqdm(enumerate(loader)):
 
             model.train()
             # Move batch to cuda
             q_batch, a_batch, vote_batch, i_batch, k_batch, qlen_batch = \
-                batch_to_cuda(next_batch)
+                batch_to_cuda(batch)
 
             # forward pass
             output, adjacency_matrix = model(
@@ -253,12 +253,22 @@ def train(args):
                 test_correct = 0
                 model.eval()
 
+                results = []
                 for i, test_batch in tqdm(enumerate(loader_test)):
                     q_batch, a_batch, vote_batch, i_batch, k_batch, qlen_batch = \
                         batch_to_cuda(test_batch, volatile=True)
                     output, _ = model(q_batch, i_batch, k_batch, qlen_batch)
                     test_correct += total_vqa_score(output, vote_batch)
+                    qid_batch = test_batch[3]
+                    _, oix = output.data.max(1)
+                    # record predictions
+                    for i, qid in enumerate(qid_batch):
+                        results.append({
+                            'question_id': int(qid.numpy()),
+                            'answer': dataset_test.a_itow[oix[i]]
+                        })
 
+                json.dump(results, open('infer_imageclef.json', 'w'))
                 model.train(True)
                 acc = test_correct / (10 * args.bsize) * 100
                 print("Validation accuracy: {:.2f} %".format(acc))
@@ -483,8 +493,7 @@ def main():
                         default=1e-4, help='initial learning rate')
     parser.add_argument('--ep', metavar='', type=int,
                         default=40, help='number of epochs.')
-    parser.add_argument('--bsize', metavar='', type=int,
-                        default=10, help='batch size.')
+    parser.add_argument('--bsize', type=int, default=8, help='batch size.')
     parser.add_argument('--hid', metavar='', type=int,
                         default=1024, help='hidden dimension')
     parser.add_argument('--emb', metavar='', type=int, default=300,
