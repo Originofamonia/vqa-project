@@ -250,28 +250,28 @@ def train(args):
 
                 # compute validation accuracy over a small subset of the
                 # validation set
-                test_correct = 0
-                model.eval()
+        test_correct = 0
+        model.eval()
 
-                results = []
-                for i, test_batch in tqdm(enumerate(loader_test)):
-                    q_batch, a_batch, vote_batch, i_batch, k_batch, qlen_batch = \
-                        batch_to_cuda(test_batch, volatile=True)
-                    output, _ = model(q_batch, i_batch, k_batch, qlen_batch)
-                    test_correct += total_vqa_score(output, vote_batch)
-                    qid_batch = test_batch[3]
-                    _, oix = output.data.max(1)
-                    # record predictions
-                    for i, qid in enumerate(qid_batch):
-                        results.append({
-                            'question_id': int(qid.numpy()),
-                            'answer': dataset_test.a_itow[oix[i]]
-                        })
+        results = []
+        for i, test_batch in tqdm(enumerate(loader_test)):
+            q_batch, a_batch, vote_batch, i_batch, k_batch, qlen_batch = \
+                batch_to_cuda(test_batch, volatile=True)
+            output, _ = model(q_batch, i_batch, k_batch, qlen_batch)
+            test_correct += total_vqa_score(output, vote_batch)
+            qid_batch = test_batch[3]
+            _, oix = output.data.max(1)
+            # record predictions
+            for i, qid in enumerate(qid_batch):
+                results.append({
+                    'question_id': int(qid.numpy()),
+                    'answer': dataset_test.a_itow[oix[i]]
+                })
 
-                json.dump(results, open('infer_imageclef.json', 'w'))
-                model.train(True)
-                acc = test_correct / (10 * args.bsize) * 100
-                print("Validation accuracy: {:.2f} %".format(acc))
+        json.dump(results, open('infer_imageclef.json', 'w'))
+        model.train(True)
+        acc = test_correct / (10 * args.bsize) * 100
+        print("Validation accuracy: {:.2f} %".format(acc))
 
         # save model and compute accuracy for epoch
         epoch_loss = ep_loss / n_batches
