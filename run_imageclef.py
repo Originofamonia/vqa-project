@@ -272,7 +272,7 @@ def train(args):
                 f"{qid},{dataset_test.vqa[qid]['question']},{dataset_test.a_itow[oix[i]]}")
 
     # json.dumps(results, open('infer_imageclef.json', 'w'))
-    with open('infer_imageclef.csv', 'wb') as csvfile:
+    with open('infer_imageclef.csv', 'w') as csvfile:
         writer = csv.writer(csvfile, delimiter=',')
         writer.writerow('question_id,question,answer')
         for line in results:
