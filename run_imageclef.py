@@ -130,7 +130,7 @@ def train(args):
     dataset = ImageclefDataset(args)
     train_sampler = RandomSampler(dataset)
     loader = DataLoader(dataset, batch_size=args.bsize, sampler=train_sampler,
-                        shuffle=True, num_workers=4, collate_fn=collate_fn)
+                        num_workers=4, collate_fn=collate_fn)
 
     # Load the VQA validation set
     dataset_test = ImageclefDataset(args, train=False)
