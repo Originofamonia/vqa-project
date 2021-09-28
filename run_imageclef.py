@@ -190,8 +190,8 @@ def train(args):
     # Learning rate scheduler
     scheduler = MultiStepLR(optimizer, milestones=[30], gamma=0.5)
     scheduler.last_epoch = start_ep - 1
-    epoch_loss = 0
-    epoch_acc = 0
+    # epoch_loss = 0
+    # epoch_acc = 0
 
     # Train iterations
     print('Start training.')
@@ -251,38 +251,38 @@ def train(args):
                 # compute validation accuracy over a small subset of the
                 # validation set
 
-        test_correct = 0
-        model.eval()
+    print('Infer')
+    test_correct = 0
+    model.eval()
 
-        results = []
-        for i, test_batch in tqdm(enumerate(loader_test)):
-            q_batch, a_batch, vote_batch, i_batch, k_batch, qlen_batch = \
-                batch_to_cuda(test_batch)
-            output, _ = model(q_batch, i_batch, k_batch, qlen_batch)
-            print(output.size())
-            test_correct += total_vqa_score(output, vote_batch)
-            qid_batch = test_batch[3]
-            _, oix = output.data.max(1)
-            oix = oix.cpu().numpy()
-            print(f'oix: {oix}')
-            # record predictions
-            for i, qid in enumerate(qid_batch):
-                print(f'qid: {qid}')
-                results.append({
-                    'question_id': int(qid.cpu().numpy()),
-                    'answer': dataset_test.a_itow[oix[i]]
-                })
+    results = []
+    for i, test_batch in tqdm(enumerate(loader_test)):
+        q_batch, a_batch, vote_batch, i_batch, k_batch, qlen_batch = \
+            batch_to_cuda(test_batch)
+        output, _ = model(q_batch, i_batch, k_batch, qlen_batch)
+        print(output.size())
+        test_correct += total_vqa_score(output, vote_batch)
+        qid_batch = test_batch[3]
+        _, oix = output.data.max(1)
+        oix = oix.cpu().numpy()
+        print(f'oix: {oix}')
+        # record predictions
+        for i, qid in enumerate(qid_batch):
+            print(f'qid: {qid}')
+            results.append({
+                'question_id': int(qid.cpu().numpy()),
+                'answer': dataset_test.a_itow[oix[i]]
+            })
 
-        # json.dumps(results, open('infer_imageclef.json', 'w'))
-        with open('infer_imageclef.json', 'w') as fout:
-            json.dump(results, fout)
-        model.train(True)
-        acc = test_correct / (10 * args.bsize) * 100
-        print("Validation accuracy: {:.2f} %".format(acc))
+    # json.dumps(results, open('infer_imageclef.json', 'w'))
+    with open('infer_imageclef.json', 'w') as fout:
+        json.dump(results, fout)
+    acc = test_correct / (10 * args.bsize) * 100
+    print("Validation accuracy: {:.2f} %".format(acc))
 
-        # save model and compute accuracy for epoch
-        epoch_loss = ep_loss / n_batches
-        epoch_acc = ep_correct * 100 / (n_batches * args.bsize)
+    # save model and compute accuracy for epoch
+    epoch_loss = ep_loss / n_batches
+    epoch_acc = ep_correct * 100 / (n_batches * args.bsize)
 
     save(model, optimizer, args.ep, epoch_loss, epoch_acc,
          dir=args.save_dir, name=args.name + '_' + str(args.ep + 1))
