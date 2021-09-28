@@ -203,9 +203,8 @@ def train(args):
         ave_loss = 0.0
         ave_correct = 0.0
         losses = []
-
-        for step, batch in tqdm(enumerate(loader)):
-
+        pbar = tqdm(enumerate(loader))
+        for step, batch in pbar:
             model.train()
             # Move batch to cuda
             q_batch, a_batch, vote_batch, i_batch, k_batch, qlen_batch = \
@@ -241,10 +240,11 @@ def train(args):
             optimizer.step()
 
             # save model and compute validation accuracy every 400 steps
-            # if step % 400 == 0:
-            #     epoch_loss = ep_loss / n_batches
-            #     epoch_acc = ep_correct * 100 / (n_batches * args.bsize)
-
+            if step % 400 == 0:
+                epoch_loss = ep_loss / n_batches
+                epoch_acc = ep_correct * 100 / (n_batches * args.bsize)
+                desc = f'epoch_loss: {epoch_loss}; epoch_acc: {epoch_acc}'
+                pbar.set_description(desc)
                 # save(model, optimizer, ep, epoch_loss, epoch_acc,
                 #      dir=args.save_dir, name=args.name + '_' + str(ep + 1))
 
@@ -266,7 +266,7 @@ def train(args):
             # record predictions
             for i, qid in enumerate(qid_batch):
                 results.append({
-                    'question_id': int(qid.numpy()),
+                    'question_id': int(qid.cpu().numpy()),
                     'answer': dataset_test.a_itow[oix[i]]
                 })
 
