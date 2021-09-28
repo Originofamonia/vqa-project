@@ -135,12 +135,9 @@ def train(args):
     # Load the VQA validation set
     dataset_test = ImageclefDataset(args, train=False)
     test_sampler = SequentialSampler(dataset_test)
-    loader_test = iter(DataLoader(dataset_test,
-                                  batch_size=args.bsize,
-                                  sampler=test_sampler,
-                                  shuffle=False,
-                                  num_workers=4,
-                                  collate_fn=collate_fn))
+    loader_test = DataLoader(dataset_test, batch_size=args.bsize,
+                             sampler=test_sampler, shuffle=False,
+                             num_workers=4, collate_fn=collate_fn)
 
     n_batches = len(dataset) // args.bsize
 
@@ -271,7 +268,8 @@ def train(args):
         # record predictions
         for i, qid in enumerate(qid_batch):
             qid = qid.cpu().numpy()
-            results.append(f'{qid},{dataset_test.q_itow[qid]},{dataset_test.a_itow[oix[i]]}')
+            results.append(
+                f'{qid},{dataset_test.q_itow[qid]},{dataset_test.a_itow[oix[i]]}')
 
     # json.dumps(results, open('infer_imageclef.json', 'w'))
     with open('infer_imageclef.csv', 'wb') as csvfile:
