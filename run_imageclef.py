@@ -259,12 +259,15 @@ def train(args):
             q_batch, a_batch, vote_batch, i_batch, k_batch, qlen_batch = \
                 batch_to_cuda(test_batch)
             output, _ = model(q_batch, i_batch, k_batch, qlen_batch)
+            print(output.size())
             test_correct += total_vqa_score(output, vote_batch)
             qid_batch = test_batch[3]
             _, oix = output.data.max(1)
             oix = oix.cpu().numpy()
+            print(f'oix: {oix}')
             # record predictions
             for i, qid in enumerate(qid_batch):
+                print(f'qid: {qid}')
                 results.append({
                     'question_id': int(qid.cpu().numpy()),
                     'answer': dataset_test.a_itow[oix[i]]
