@@ -269,11 +269,14 @@ def train(args):
         for i, qid in enumerate(qid_batch):
             qid = int(qid.cpu().numpy())
             results.append(
-                f"{dataset_test.vqa[qid]['image_id']},{dataset_test.vqa[qid]['question']},{dataset_test.a_itow[oix[i]]}")
+                f"{dataset_test.vqa[qid]['image_id']},"
+                f"{dataset_test.vqa[qid]['question']},"
+                f"{dataset_test.a_itow[oix[i]]},"
+                f"{dataset_test.vqa[qid]['answer']}")
 
     # json.dumps(results, open('infer_imageclef.json', 'w'))
     with open('infer_imageclef.csv', 'w') as f:
-        f.write('image_id,question,answer\n')
+        f.write('image_id,question,prediction,answer\n')
         for line in results:
             f.write(line)
             f.write('\n')
