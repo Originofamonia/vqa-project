@@ -243,7 +243,7 @@ def train(args):
             if step % 400 == 0:
                 epoch_loss = ep_loss / n_batches
                 epoch_acc = ep_correct * 100 / (n_batches * args.bsize)
-                desc = f'epoch_loss: {epoch_loss}; epoch_acc: {epoch_acc}'
+                desc = f'epoch_loss: {epoch_loss:.3f}; epoch_acc: {epoch_acc:.3f}'
                 pbar.set_description(desc)
                 # save(model, optimizer, ep, epoch_loss, epoch_acc,
                 #      dir=args.save_dir, name=args.name + '_' + str(ep + 1))
@@ -273,7 +273,9 @@ def train(args):
                     'answer': dataset_test.a_itow[oix[i]]
                 })
 
-        json.dump(results, open('infer_imageclef.json', 'w'))
+        # json.dumps(results, open('infer_imageclef.json', 'w'))
+        with open('infer_imageclef.json', 'w') as fout:
+            json.dump(results, fout)
         model.train(True)
         acc = test_correct / (10 * args.bsize) * 100
         print("Validation accuracy: {:.2f} %".format(acc))
@@ -287,7 +289,7 @@ def train(args):
 
     print(
         'Epoch %02d done, average loss: %.3f, average accuracy: %.2f%%' % (
-            ep + 1, epoch_loss, epoch_acc))
+            args.ep + 1, epoch_loss, epoch_acc))
 
 
 def test(args):
