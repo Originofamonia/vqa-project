@@ -251,6 +251,7 @@ class Model(nn.Module):
         # Compute cartesian coordinates (batch_size, K, K, 2)
         a = bb_centre.view(-1, K, 1, 2)
         b = bb_centre.view(-1, 1, K, 2)
+        c = a[0] - b[0]
         pseudo_coord = bb_centre.view(-1, K, 1, 2) - \
             bb_centre.view(-1, 1, K, 2)
 
