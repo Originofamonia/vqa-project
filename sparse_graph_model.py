@@ -65,7 +65,7 @@ class Model(nn.Module):
         self.wembed.weight.data.copy_(torch.from_numpy(pretrained_wemb))
 
         # question encoding
-        self.q_lstm = nn.GRU(input_size=emb_dim, hidden_size=hid_dim)
+        self.q_gru = nn.GRU(input_size=emb_dim, hidden_size=hid_dim)
 
         # graph learner
         self.adjacency_1 = GraphLearner(in_feature_dim=feat_dim + hid_dim,
@@ -116,11 +116,11 @@ class Model(nn.Module):
         emb = self.wembed(question)
         packed = pack_padded_sequence(emb, qlen, batch_first=True)
         # questions have variable lengths
-        _, hid = self.q_lstm(packed)
+        _, hid = self.q_gru(packed)
         qenc = hid[0].unsqueeze(1)  # [64, 1, 1024]
         qenc_repeat = qenc.repeat(1, K, 1)
 
-        # Learn adjacency matrix
+        # Learn adjacency matrix, A = E*E^T
         image_qenc_cat = torch.cat((image, qenc_repeat), dim=-1)  # [64, 36, 3076]
         adjacency_matrix = self.adjacency_1(image_qenc_cat)
 
@@ -158,6 +158,7 @@ class Model(nn.Module):
 
     def _create_neighbourhood_feat(self, image, top_ind):
         """
+        select topm features and pseudo-coord
         ## Inputs:
         - image (batch_size, K, feat_dim)
         - top_ind (batch_size, K, neighbourhood_size)
@@ -223,9 +224,10 @@ class Model(nn.Module):
             adjacency_matrix, k=neighbourhood_size, dim=-1, sorted=False)
         top_k = torch.stack([F.softmax(top_k[:, k]) for k in range(K)]).transpose(0, 1)  # (batch_size, K, neighbourhood_size)
 
-        # extract top k features and pseudo coordinates
+        # select top m features and pseudo coordinates
         neighbourhood_image = \
             self._create_neighbourhood_feat(features, top_ind)
+        print(neighbourhood_image.size())
         neighbourhood_pseudo = \
             self._create_neighbourhood_pseudo(pseudo_coord, top_ind)
 
@@ -249,9 +251,6 @@ class Model(nn.Module):
         K = bb_centre.size(1)
 
         # Compute cartesian coordinates (batch_size, K, K, 2)
-        a = bb_centre.view(-1, K, 1, 2)
-        b = bb_centre.view(-1, 1, K, 2)
-        c = a[0] - b[0]
         pseudo_coord = bb_centre.view(-1, K, 1, 2) - \
             bb_centre.view(-1, 1, K, 2)
 

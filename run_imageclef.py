@@ -510,7 +510,7 @@ def main():
     parser.add_argument('--emb', metavar='', type=int, default=300,
                         help='question embedding dimension')
     parser.add_argument('--neighbourhood_size', type=int, default=9,
-                        help='number of graph neighbours to consider')
+                        help='topm number of graph neighbours to consider')
     parser.add_argument('--k', type=int, default=10,
                         help='number of boxes in each image')
     parser.add_argument('--data_dir', metavar='', type=str, default='./data',
