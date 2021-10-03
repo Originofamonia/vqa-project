@@ -158,7 +158,7 @@ class Model(nn.Module):
 
     def _create_neighbourhood_feat(self, image, top_ind):
         """
-        select topm features and pseudo-coord
+        select topm features
         ## Inputs:
         - image (batch_size, K, feat_dim)
         - top_ind (batch_size, K, neighbourhood_size)
@@ -177,6 +177,7 @@ class Model(nn.Module):
 
     def _create_neighbourhood_pseudo(self, pseudo, top_ind):
         """
+        select topm pseudo_coord
         ## Inputs:
         - pseudo_coord (batch_size, K, K, coord_dim)
         - top_ind (batch_size, K, neighbourhood_size)
@@ -224,15 +225,14 @@ class Model(nn.Module):
             adjacency_matrix, k=neighbourhood_size, dim=-1, sorted=False)
         top_k = torch.stack([F.softmax(top_k[:, k]) for k in range(K)]).transpose(0, 1)  # (batch_size, K, neighbourhood_size)
 
-        # select top m features and pseudo coordinates
+        # select top m features and their pseudo coordinates
         neighbourhood_image = \
             self._create_neighbourhood_feat(features, top_ind)
-        print(neighbourhood_image.size())
         neighbourhood_pseudo = \
             self._create_neighbourhood_pseudo(pseudo_coord, top_ind)
 
         # weight neighbourhood features with graph edge weights
-        if weight:
+        if weight:  # alpha_i,j
             neighbourhood_image = top_k.unsqueeze(-1)*neighbourhood_image
 
         return neighbourhood_image, neighbourhood_pseudo
