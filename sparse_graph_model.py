@@ -103,7 +103,7 @@ class Model(nn.Module):
 
         # extract bounding boxes and compute centres
         bb = image[:, :, -4:].contiguous()
-        bb_size = (bb[:, :, 2:]-bb[:, :, :2])
+        bb_size = (bb[:, :, 2:]-bb[:, :, :2])  # delta_x, delta_y
         bb_centre = bb[:, :, :2] + 0.5*bb_size
 
         # apply dropout to image features
@@ -238,7 +238,7 @@ class Model(nn.Module):
     def _compute_pseudo(self, bb_centre):
         """
         Computes pseudo-coordinates from bounding box centre coordinates
-
+        u(i,j)
         ## Inputs:
         - bb_centre (batch_size, K, coord_dim)
         - polar (bool: polar or euclidean coordinates)
@@ -249,6 +249,8 @@ class Model(nn.Module):
         K = bb_centre.size(1)
 
         # Compute cartesian coordinates (batch_size, K, K, 2)
+        a = bb_centre.view(-1, K, 1, 2)
+        b = bb_centre.view(-1, 1, K, 2)
         pseudo_coord = bb_centre.view(-1, K, 1, 2) - \
             bb_centre.view(-1, 1, K, 2)
 
