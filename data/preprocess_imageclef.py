@@ -81,11 +81,11 @@ def parse_box_feat():
     text1 = 'VQAnswering_2020_Val_QA_Pairs.txt'
     text2 = 'VQA-Med-2021-VQAnswering-Task1-New-ValidationSet.txt'
 
-    qa_pairs0 = all_qa_pairs(dataset_path, text0)
-    qa_pairs1 = all_qa_pairs(dataset_path, text1)
-    qa_pairs2 = all_qa_pairs(dataset_path, text2)
-    qa_pairs0.extend(qa_pairs1)
-    qa_pairs0.extend(qa_pairs2)
+    # qa_pairs0 = all_qa_pairs(dataset_path, text0)
+    # qa_pairs1 = all_qa_pairs(dataset_path, text1)
+    # qa_pairs2 = all_qa_pairs(dataset_path, text2)
+    # qa_pairs0.extend(qa_pairs1)
+    # qa_pairs0.extend(qa_pairs2)
 
     valid_qa_pairs0 = append_valid_qa_pairs(dataset_path, image_ids, text0)
     valid_qa_pairs1 = append_valid_qa_pairs(dataset_path, image_ids, text1)
@@ -223,10 +223,26 @@ def process_answers(q):
     json.dump(q, open('vqa_imageclef_final.json', 'w'))
 
 
+def count_labels():
+    dataset_path = '/home/qiyuan/2021summer/imageclef'
+    text0 = 'VQAnswering_2020_Train_QA_pairs.txt'
+    text1 = 'VQAnswering_2020_Val_QA_Pairs.txt'
+    text2 = 'VQA-Med-2021-VQAnswering-Task1-New-ValidationSet.txt'
+
+    qa_pairs0 = all_qa_pairs(dataset_path, text0)
+    qa_pairs1 = all_qa_pairs(dataset_path, text1)
+    qa_pairs2 = all_qa_pairs(dataset_path, text2)
+    qa_pairs0.extend(qa_pairs1)
+    qa_pairs0.extend(qa_pairs2)
+
+    print(qa_pairs0)
+
+
 if __name__ == '__main__':
-    parse_box_feat()  # run once
-    process_text()
-    tokenize_questions()
-    t = json.load(open('vqa_imageclef_toked.json'))
-    process_questions(t)
-    process_answers(t)
+    # parse_box_feat()  # run once
+    # process_text()
+    # tokenize_questions()
+    # t = json.load(open('vqa_imageclef_toked.json'))
+    # process_questions(t)
+    # process_answers(t)
+    count_labels()
