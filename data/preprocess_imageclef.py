@@ -241,7 +241,10 @@ def count_labels():
     #     writer.writerows(qa_pairs0)
 
     df = pd.read_csv('imageclef_all_qa_pairs.csv')
-    print(df.columns.values)
+    values, counts = np.unique(df['answer'].values, return_counts=True)
+    reverse_indices = counts.argsort()[::-1]
+    sorted_values = values[reverse_indices]
+    print(sorted_values)
 
 
 if __name__ == '__main__':
