@@ -23,8 +23,8 @@ import torch.nn.functional as F
 
 class NeighbourhoodGraphConvolution(Module):
     """
-    Implementation of: https://arxiv.org/pdf/1611.08402.pdf where we consider
-    a fixed sized neighbourhood of nodes for each feature
+    Implementation of: https://arxiv.org/pdf/1611.08402.pdf (MoNet) where we
+    consider a fixed sized neighbourhood of nodes for each feature
     """
 
     def __init__(self,
@@ -34,14 +34,14 @@ class NeighbourhoodGraphConvolution(Module):
                  coordinate_dim,
                  bias=False):
         super(NeighbourhoodGraphConvolution, self).__init__()
-        '''
+        """
         ## Variables:
         - in_feat_dim: dimensionality of input features
         - out_feat_dim: dimensionality of output features
         - n_kernels: number of Gaussian kernels to use
         - coordinate_dim : dimensionality of the pseudo coordinates
         - bias: whether to add a bias to convolutional kernels
-        '''
+        """
 
         # Set parameters
         self.n_kernels = n_kernels

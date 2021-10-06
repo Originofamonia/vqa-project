@@ -200,9 +200,8 @@ class Model(nn.Module):
                               weight=True):
 
         """
-
-        Creates a neighbourhood system for each graph node/image object
-
+        Create/select neighborhood features and pseudo coords for each
+        node/visual feature
         ## Inputs:
         - features (batch_size, K, feat_dim): input image features
         - pseudo_coord (batch_size, K, K, coord_dim): pseudo coordinates for
@@ -233,7 +232,7 @@ class Model(nn.Module):
 
         # weight neighbourhood features with graph edge weights
         if weight:  # alpha_i,j
-            neighbourhood_image = top_k.unsqueeze(-1)*neighbourhood_image
+            neighbourhood_image = top_k.unsqueeze(-1) * neighbourhood_image
 
         return neighbourhood_image, neighbourhood_pseudo
 
