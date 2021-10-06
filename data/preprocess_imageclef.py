@@ -244,7 +244,9 @@ def count_labels():
     values, counts = np.unique(df['answer'].values, return_counts=True)
     reverse_indices = counts.argsort()[::-1]
     sorted_values = values[reverse_indices]
-    print(sorted_values)
+    sorted_counts = counts[reverse_indices]
+    new_qa_pairs = np.vstack((sorted_values, sorted_counts)).T
+    print(new_qa_pairs)
 
 
 if __name__ == '__main__':
