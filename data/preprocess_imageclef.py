@@ -235,7 +235,9 @@ def count_labels():
     qa_pairs0.extend(qa_pairs1)
     qa_pairs0.extend(qa_pairs2)
 
-    print(qa_pairs0)
+    with open('imageclef_all_qa_pairs.csv', 'w', newline='') as f:
+        writer = csv.writer(f)
+        writer.writerows(qa_pairs0)
 
 
 if __name__ == '__main__':
