@@ -224,21 +224,23 @@ def process_answers(q):
 
 
 def count_labels():
-    dataset_path = '/home/qiyuan/2021summer/imageclef'
-    text0 = 'VQAnswering_2020_Train_QA_pairs.txt'
-    text1 = 'VQAnswering_2020_Val_QA_Pairs.txt'
-    text2 = 'VQA-Med-2021-VQAnswering-Task1-New-ValidationSet.txt'
+    # dataset_path = '/home/qiyuan/2021summer/imageclef'
+    # text0 = 'VQAnswering_2020_Train_QA_pairs.txt'
+    # text1 = 'VQAnswering_2020_Val_QA_Pairs.txt'
+    # text2 = 'VQA-Med-2021-VQAnswering-Task1-New-ValidationSet.txt'
+    #
+    # qa_pairs0 = all_qa_pairs(dataset_path, text0)
+    # qa_pairs1 = all_qa_pairs(dataset_path, text1)
+    # qa_pairs2 = all_qa_pairs(dataset_path, text2)
+    # qa_pairs0.extend(qa_pairs1)
+    # qa_pairs0.extend(qa_pairs2)
+    #
+    # with open('imageclef_all_qa_pairs.csv', 'w', newline='') as f:
+    #     writer = csv.writer(f)
+    #     writer.writerows(qa_pairs0)
 
-    qa_pairs0 = all_qa_pairs(dataset_path, text0)
-    qa_pairs1 = all_qa_pairs(dataset_path, text1)
-    qa_pairs2 = all_qa_pairs(dataset_path, text2)
-    qa_pairs0.extend(qa_pairs1)
-    qa_pairs0.extend(qa_pairs2)
-
-    with open('imageclef_all_qa_pairs.csv', 'w', newline='') as f:
-        writer = csv.writer(f)
-        writer.writerows(qa_pairs0)
-
+    df = pd.read_csv('imageclef_all_qa_pairs.csv')
+    print(df)
 
 if __name__ == '__main__':
     # parse_box_feat()  # run once
