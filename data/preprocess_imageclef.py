@@ -237,6 +237,7 @@ def count_labels():
 
     with open('imageclef_all_qa_pairs.csv', 'w', newline='') as f:
         writer = csv.writer(f)
+        writer.writerow(['image_id', 'question', 'answer'])
         writer.writerows(qa_pairs0)
 
     # df = pd.read_csv('imageclef_all_qa_pairs.csv')
