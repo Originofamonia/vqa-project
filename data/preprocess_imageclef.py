@@ -240,7 +240,7 @@ def count_labels():
     #     writer.writerow(['image_id', 'question', 'answer'])
     #     writer.writerows(qa_pairs0)
 
-    df = pd.read_csv('imageclef_all_qa_pairs.csv')
+    df = pd.read_csv('imageclef_qa_pairs.csv')
     values, counts = np.unique(df['question'].values, return_counts=True)
     reverse_indices = counts.argsort()[::-1]
     sorted_values = values[reverse_indices]
@@ -250,10 +250,10 @@ def count_labels():
 
 
 if __name__ == '__main__':
-    # parse_box_feat()  # run once
+    parse_box_feat()  # run once
     # process_text()
     # tokenize_questions()
     # t = json.load(open('vqa_imageclef_toked.json'))
     # process_questions(t)
     # process_answers(t)
-    count_labels()
+    # count_labels()
