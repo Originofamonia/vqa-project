@@ -57,7 +57,7 @@ def parse_box_feat():
 
             item = {}
             # sorted_feat, indices = torch.sort(det_feat, -2) # no need sort, done by NMS
-            merged_feat = torch.cat((det_feat, gaze_feat, gaze_det_feat), dim=0)
+            merged_feat = torch.cat((det_feat[:, :-6], gaze_feat[:, :-6], gaze_det_feat[:, :-4]), dim=0)
             merged_box = torch.cat((det_feat[:, -6:-2], gaze_feat[:, -6:-2], gaze_det_feat[:, -4:]), dim=0)
             # sorted_feat = sorted_feat[:n_obj]  # select top 10 conf feat
             item['num_boxes'] = len(merged_box)
