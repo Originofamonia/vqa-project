@@ -524,6 +524,7 @@ def main():
     parser.add_argument('--model_path', metavar='', type=str,
                         help='trained model path.')
     args, unparsed = parser.parse_known_args()
+    print(args)
     if len(unparsed) != 0:
         raise SystemExit('Unknown argument: {}'.format(unparsed))
     if args.train:
