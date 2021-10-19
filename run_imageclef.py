@@ -113,7 +113,7 @@ from utils import *
 #     print('Validation done')
 
 
-def train(args):
+def train(args, f):
     """
         Train a VQA model using the training set
     """
@@ -157,6 +157,7 @@ def train(args):
                   out_dim=dataset.n_answers,
                   dropout=args.dropout,
                   neighbourhood_size=args.neighbourhood_size,
+                  n_kernels=args.n_kernels,
                   pretrained_wemb=dataset.pretrained_wemb,
                   k=args.k)
 
@@ -274,15 +275,15 @@ def train(args):
                 f"{dataset_test.a_itow[oix[i]]},"
                 f"{dataset_test.vqa[qid]['answer']}")
 
-    # json.dumps(results, open('infer_imageclef.json', 'w'))
-    with open('infer_imageclef.csv', 'w') as f:
-        f.write('image_id,question,prediction,answer\n')
-        for line in results:
-            f.write(line)
-            f.write('\n')
+    # with open('infer_imageclef.csv', 'w') as f:
+    #     f.write('image_id,question,prediction,answer\n')
+    #     for line in results:
+    #         f.write(line)
+    #         f.write('\n')
 
     acc = test_correct / (10 * args.bsize) * 100
-    print("Validation accuracy: {:.2f} %".format(acc))
+    print(f"neighbors: {args.neighbourhood_size}, kernels: {args.n_kernels}, Validation acc: {acc:.2f} %\n")
+    f.write(f"neighbors: {args.neighbourhood_size}, kernels: {args.n_kernels}, Validation acc: {acc:.2f} %\n")
 
     # save model and compute accuracy for epoch
     epoch_loss = ep_loss / n_batches
@@ -490,6 +491,30 @@ def train(args):
 
 
 def main():
+    args, parser, unparsed = input_args()
+    neighbors_list = [8, 12, 16, 20, 24, 28, 32]
+    kernels_list = [2, 4, 8, 16, 32]
+    with open(f'grid_search_nodes_{args.k}.txt', 'w') as f:
+        for neighbors in neighbors_list:
+            for kernels in kernels_list:
+                args.n_kernels = kernels
+                args.neighbourhood_size = neighbors
+                print(args)
+                if len(unparsed) != 0:
+                    raise SystemExit('Unknown argument: {}'.format(unparsed))
+                if args.train:
+                    train(args, f)
+                # if args.trainval:
+                #     trainval(args)
+                # if args.eval:
+                #     eval_model(args)
+                # if args.test:
+                #     test(args)
+                if not args.train and not args.eval and not args.trainval and not args.test:
+                    parser.print_help()
+
+
+def input_args():
     parser = argparse.ArgumentParser(
         description='Conditional Graph Convolutions for VQA')
     parser.add_argument('--train', default=True, type=bool,
@@ -500,6 +525,9 @@ def main():
     #                     help='set this to evaluation mode.')
     # parser.add_argument('--test', action='store_true',
     #                     help='set this to test mode.')
+    # args.n_kernels
+    parser.add_argument('--n_kernels', type=int, default=8,
+                        help='number of epochs.')
     parser.add_argument('--lr', metavar='', type=float,
                         default=1e-3, help='initial learning rate')  # was 1e-4
     parser.add_argument('--ep', metavar='', type=int,
@@ -524,19 +552,7 @@ def main():
     parser.add_argument('--model_path', metavar='', type=str,
                         help='trained model path.')
     args, unparsed = parser.parse_known_args()
-    print(args)
-    if len(unparsed) != 0:
-        raise SystemExit('Unknown argument: {}'.format(unparsed))
-    if args.train:
-        train(args)
-    # if args.trainval:
-    #     trainval(args)
-    # if args.eval:
-    #     eval_model(args)
-    # if args.test:
-    #     test(args)
-    if not args.train and not args.eval and not args.trainval and not args.test:
-        parser.print_help()
+    return args, parser, unparsed
 
 
 if __name__ == '__main__':
