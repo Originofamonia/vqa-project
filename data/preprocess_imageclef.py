@@ -23,7 +23,7 @@ exclude = set(string.punctuation)
 def parse_box_feat():
     # fieldnames = ['image_id', 'image_w', 'image_h', 'num_boxes', 'boxes',
     #               'features']
-    n_obj = 10  # n_obj per image
+    n_obj = 15  # n_obj per image
     detect_file = 'detect_feat_path.pt'
     gaze_file = 'gaze_feat_path.pt'
     gaze_on_detect_file = 'gaze_on_detect_feat_path.pt'
@@ -36,7 +36,9 @@ def parse_box_feat():
     boxes = zarr.open_group('imageclef_boxes.zarr', mode='w')
     features = zarr.open_group('imageclef_features.zarr', mode='w')
     image_size = {}
-    num_boxes = []
+    num_det_boxes = []
+    num_gaze_boxes = []
+    num_gaze_det_boxes = []
     image_ids = []
     for i, (det_feat, image_id) in enumerate(zip(detect_tensors['feat'],
                                              detect_tensors['image_id'])):
@@ -51,6 +53,9 @@ def parse_box_feat():
                 continue
             if gaze_det_feat.size(0) < n_obj:
                 continue
+            num_det_boxes.append(det_feat.size(0))
+            num_gaze_boxes.append(gaze_feat.size(0))
+            num_gaze_det_boxes.append(gaze_det_feat.size(0))
             det_feat = det_feat[:n_obj]
             gaze_feat = gaze_feat[:n_obj]
             gaze_det_feat = gaze_det_feat[:n_obj]
@@ -75,7 +80,9 @@ def parse_box_feat():
                 'image_h': item['image_h'],
                 'image_w': item['image_w'],
             }
-    print(len(num_boxes))
+    print(f'len(num_det_boxes): {len(num_det_boxes)}')
+    print(f'len(num_gaze_boxes): {len(num_gaze_boxes)}')
+    print(f'len(num_gaze_det_boxes): {len(num_gaze_det_boxes)}')
     # convert dict to pandas dataframe
     # create image sizes csv
     print('Writing image sizes csv...')

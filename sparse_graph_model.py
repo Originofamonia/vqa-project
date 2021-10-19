@@ -208,7 +208,7 @@ class Model(nn.Module):
         - pseudo_coord (batch_size, K, K, coord_dim): pseudo coordinates for
         graph convolutions
         - adjacency_matrix (batch_size, K, K): learned adjacency matrix
-        - neighbourhood_size (int)
+        - neighbourhood_size (int): topm neighbors
         - weight (bool): specify if the features should be weighted by the
         adjacency matrix values
 
