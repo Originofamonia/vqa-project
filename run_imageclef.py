@@ -509,7 +509,7 @@ def main():
                         default=1024, help='hidden dimension')
     parser.add_argument('--emb', metavar='', type=int, default=300,
                         help='question embedding dimension')
-    parser.add_argument('--neighbourhood_size', type=int, default=29,
+    parser.add_argument('--neighbourhood_size', type=int, default=19,
                         help='topm number of graph neighbours to consider')
     parser.add_argument('--k', type=int, default=60,
                         help='number of boxes per image')
