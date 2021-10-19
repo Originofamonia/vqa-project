@@ -47,16 +47,25 @@ def parse_box_feat():
             gaze_det_idx = gaze_on_detect_tensors['image_id'].index(image_id)
             gaze_det_feat = gaze_on_detect_tensors['feat'][gaze_det_idx]
 
+            if gaze_feat.size(0) < n_obj:
+                continue
+            if gaze_det_feat.size(0) < n_obj:
+                continue
+            det_feat = det_feat[:n_obj]
+            gaze_feat = gaze_feat[:n_obj]
+            gaze_det_feat = gaze_det_feat[:n_obj]
+
             item = {}
-            sorted_feat, indices = torch.sort(det_feat, -2) # no need sort, done by NMS
-            num_boxes.append(sorted_feat.size(0))
-            sorted_feat = sorted_feat[:10]  # select top 10 conf feat
-            item['num_boxes'] = sorted_feat.size(0)
+            # sorted_feat, indices = torch.sort(det_feat, -2) # no need sort, done by NMS
+            merged_feat = torch.cat((det_feat, gaze_feat, gaze_det_feat), dim=0)
+            merged_box = torch.cat((det_feat[:, -6:-2], gaze_feat[:, -6:-2], gaze_det_feat[:, -4:]), dim=0)
+            # sorted_feat = sorted_feat[:n_obj]  # select top 10 conf feat
+            item['num_boxes'] = len(merged_box)
             img = Image.open(os.path.join(imgpath, image_id))
             item['image_id'] = image_id
             image_ids.append(image_id)
-            item['boxes'] = sorted_feat[:, -6:-2].cpu().numpy()
-            item['feat'] = sorted_feat[:, :-6].cpu().numpy()
+            item['boxes'] = merged_box.cpu().numpy()
+            item['feat'] = merged_feat.cpu().numpy()
             item['image_w'], item['image_h'] = img.width, img.height
             # append to zarr files
             boxes.create_dataset(item['image_id'], data=item['boxes'])
@@ -106,8 +115,8 @@ def parse_box_feat():
 
 def get_qa_pairs():
     """
-    Get filtered QA pairs and save to a new txt file. Only need once.
     merged to parse_box_feat func, obsolete.
+    Get filtered QA pairs and save to a new txt file. Only need once.
     """
     filename = 'feat_path_yolo.pt'
     tensors = torch.load(filename)
@@ -257,9 +266,9 @@ def count_labels():
 
 if __name__ == '__main__':
     parse_box_feat()  # run once
-    # process_text()
-    # tokenize_questions()
-    # t = json.load(open('vqa_imageclef_toked.json'))
-    # process_questions(t)
-    # process_answers(t)
+    process_text()
+    tokenize_questions()
+    t = json.load(open('vqa_imageclef_toked.json'))
+    process_questions(t)
+    process_answers(t)
     # count_labels()
