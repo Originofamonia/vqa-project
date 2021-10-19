@@ -37,7 +37,7 @@ class Model(nn.Module):
                  dropout,
                  n_kernels=8,
                  neighbourhood_size=9,
-                 k=10):
+                 k=30):
 
         """
         ## Variables:
@@ -48,6 +48,7 @@ class Model(nn.Module):
         - dropout: dropout probability
         - n_kernels : number of Gaussian kernels for convolutions
         - bias: whether to add a bias to Gaussian kernels
+        - k: input num of nodes per image
         """
 
         super(Model, self).__init__()
@@ -70,7 +71,7 @@ class Model(nn.Module):
         # graph learner
         self.adjacency_1 = GraphLearner(in_feature_dim=feat_dim + hid_dim,
                                         combined_feature_dim=512,
-                                        K=k,
+                                        k=k,
                                         dropout=dropout)
 
         # dropout layers

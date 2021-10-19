@@ -145,19 +145,20 @@ class NeighbourhoodGraphConvolution(Module):
 
 
 class GraphLearner(Module):
-    def __init__(self, in_feature_dim, combined_feature_dim, K, dropout=0.0):
+    def __init__(self, in_feature_dim, combined_feature_dim, k, dropout=0.0):
         """
+        eq(1): A=EE^T, build adj matrix
         ## Variables:
         - in_feature_dim: dimensionality of input features
         - combined_feature_dim: dimensionality of the joint hidden embedding
-        - K: number of graph nodes/objects on the image
+        - k: number of graph nodes/objects on the image
         """
         super(GraphLearner, self).__init__()
 
         # Parameters
         self.in_dim = in_feature_dim
         self.combined_dim = combined_feature_dim
-        self.K = K
+        self.K = k
 
         # Embedding layers
         self.edge_layer_1 = nn.Linear(in_feature_dim, 
