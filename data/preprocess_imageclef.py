@@ -13,11 +13,7 @@ from PIL import Image
 from spacy.tokenizer import Tokenizer
 import spacy
 import string
-
-try:
-    import cPickle as pickle
-except:
-    import pickle
+import pickle
 
 nlp = spacy.load('en_core_web_sm')
 tokenizer = Tokenizer(nlp.vocab)
@@ -27,10 +23,14 @@ exclude = set(string.punctuation)
 def parse_box_feat():
     # fieldnames = ['image_id', 'image_w', 'image_h', 'num_boxes', 'boxes',
     #               'features']
-
-    filename = 'feat_path_yolo.pt'
+    n_obj = 10  # n_obj per image
+    detect_file = 'detect_feat_path.pt'
+    gaze_file = 'gaze_feat_path.pt'
+    gaze_on_detect_file = 'gaze_on_detect_feat_path.pt'
     imgpath = '/home/qiyuan/2021summer/imageclef/images/'
-    tensors = torch.load(filename)
+    detect_tensors = torch.load(detect_file)
+    gaze_tensors = torch.load(gaze_file)
+    gaze_on_detect_tensors = torch.load(gaze_on_detect_file)
     # {'feat': selected_feats, 'image_id': filepaths}
 
     boxes = zarr.open_group('imageclef_boxes.zarr', mode='w')
@@ -38,11 +38,17 @@ def parse_box_feat():
     image_size = {}
     num_boxes = []
     image_ids = []
-    for i, (feat, image_id) in enumerate(zip(tensors['feat'],
-                                             tensors['image_id'])):
-        if feat.size(0) > 9:  # k = 10
+    for i, (det_feat, image_id) in enumerate(zip(detect_tensors['feat'],
+                                             detect_tensors['image_id'])):
+        if det_feat.size(0) >= n_obj and image_id in gaze_tensors['image_id'] \
+                and image_id in gaze_on_detect_tensors['image_id']:
+            gaze_idx = gaze_tensors['image_id'].index(image_id)
+            gaze_feat = gaze_tensors['feat'][gaze_idx]
+            gaze_det_idx = gaze_on_detect_tensors['image_id'].index(image_id)
+            gaze_feat = gaze_on_detect_tensors['feat'][gaze_det_idx]
+
             item = {}
-            sorted_feat, indices = torch.sort(feat, -2)
+            sorted_feat, indices = torch.sort(det_feat, -2) # no need sort, done by NMS
             num_boxes.append(sorted_feat.size(0))
             sorted_feat = sorted_feat[:10]  # select top 10 conf feat
             item['num_boxes'] = sorted_feat.size(0)
