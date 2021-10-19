@@ -45,7 +45,7 @@ def parse_box_feat():
             gaze_idx = gaze_tensors['image_id'].index(image_id)
             gaze_feat = gaze_tensors['feat'][gaze_idx]
             gaze_det_idx = gaze_on_detect_tensors['image_id'].index(image_id)
-            gaze_feat = gaze_on_detect_tensors['feat'][gaze_det_idx]
+            gaze_det_feat = gaze_on_detect_tensors['feat'][gaze_det_idx]
 
             item = {}
             sorted_feat, indices = torch.sort(det_feat, -2) # no need sort, done by NMS
