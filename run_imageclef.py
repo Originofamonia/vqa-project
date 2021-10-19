@@ -501,7 +501,7 @@ def main():
     # parser.add_argument('--test', action='store_true',
     #                     help='set this to test mode.')
     parser.add_argument('--lr', metavar='', type=float,
-                        default=1e-4, help='initial learning rate')
+                        default=1e-3, help='initial learning rate')  # was 1e-4
     parser.add_argument('--ep', metavar='', type=int,
                         default=40, help='number of epochs.')
     parser.add_argument('--bsize', type=int, default=8, help='batch size.')
@@ -511,8 +511,8 @@ def main():
                         help='question embedding dimension')
     parser.add_argument('--neighbourhood_size', type=int, default=9,
                         help='topm number of graph neighbours to consider')
-    parser.add_argument('--k', type=int, default=10,
-                        help='number of boxes in each image')
+    parser.add_argument('--k', type=int, default=30,
+                        help='number of boxes per image')
     parser.add_argument('--data_dir', metavar='', type=str, default='./data',
                         help='path to data directory')
     parser.add_argument('--save_dir', metavar='', type=str, default='./save')
