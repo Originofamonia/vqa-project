@@ -220,7 +220,7 @@ def train(args, f):
 
 
 def save_plot_nodes(args, f):
-
+    pass
 
 def main():
     args, parser, unparsed = input_args()
