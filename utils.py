@@ -39,7 +39,7 @@ def save(model, optimizer, ep, epoch_loss, epoch_acc, dir, name):
         'state_dict': model.state_dict(),
         'optimizer': optimizer.state_dict()
     }
-    torch.save(tbs, os.path.join(dir, name + '.pth.tar'))
+    torch.save(tbs, os.path.join(dir, name + '.pt'))
 
 
 def total_vqa_score(output_batch, n_votes_batch):
