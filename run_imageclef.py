@@ -493,7 +493,7 @@ def train(args, f):
 def main():
     args, parser, unparsed = input_args()
     neighbors_list = [12, 16, 20, 24, 28, 32, 36]
-    kernels_list = [4, 8, 16, 32, 48, 64]
+    kernels_list = [2, 4, 8, 16, 32]
     with open(f'grid_search_nodes_{args.k}.txt', 'w') as f:
         for neighbors in neighbors_list:
             for kernels in kernels_list:
