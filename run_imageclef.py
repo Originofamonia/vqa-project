@@ -492,8 +492,8 @@ def train(args, f):
 
 def main():
     args, parser, unparsed = input_args()
-    neighbors_list = [8, 12, 16, 20, 24, 28, 32]
-    kernels_list = [2, 4, 8, 16, 32]
+    neighbors_list = [12, 16, 20, 24, 28, 32, 36]
+    kernels_list = [4, 8, 16, 32, 48, 64]
     with open(f'grid_search_nodes_{args.k}.txt', 'w') as f:
         for neighbors in neighbors_list:
             for kernels in kernels_list:
@@ -539,7 +539,7 @@ def input_args():
                         help='question embedding dimension')
     parser.add_argument('--neighbourhood_size', type=int, default=19,
                         help='topm number of graph neighbours to consider')
-    parser.add_argument('--k', type=int, default=51,
+    parser.add_argument('--k', type=int, default=48,
                         help='number of boxes per image')
     parser.add_argument('--data_dir', metavar='', type=str, default='./data',
                         help='path to data directory')
