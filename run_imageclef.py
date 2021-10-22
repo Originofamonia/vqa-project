@@ -259,10 +259,10 @@ def save_plot_nodes():
 
 def main():
     args, parser, unparsed = input_args()
-    # neighbors_list = [12, 16, 20, 24, 28, 32, 36]
-    # kernels_list = [2, 4, 8, 16, 32]  # can't be larger than n_obj
-    neighbors_list = [32]  # for 51 nodes best
-    kernels_list = [32]
+    neighbors_list = [16, 20, 24, 28, 32, 36]
+    kernels_list = [8, 16, 32]  # can't be larger than n_obj
+    # neighbors_list = [32]  # for 51 nodes best
+    # kernels_list = [32]
     with open(f'grid_search_nodes_{args.n_obj}.txt', 'w') as f:
         for neighbors in neighbors_list:
             for kernels in kernels_list:
