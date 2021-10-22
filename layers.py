@@ -145,7 +145,7 @@ class NeighbourhoodGraphConvolution(Module):
 
 
 class GraphLearner(Module):
-    def __init__(self, in_feature_dim, combined_feature_dim, k, dropout=0.0):
+    def __init__(self, in_feature_dim, combined_feature_dim, n_obj, dropout=0.0):
         """
         eq(1): A=EE^T, build adj matrix
         ## Variables:
@@ -158,7 +158,7 @@ class GraphLearner(Module):
         # Parameters
         self.in_dim = in_feature_dim
         self.combined_dim = combined_feature_dim
-        self.K = k
+        self.n_obj = n_obj
 
         # Embedding layers
         self.edge_layer_1 = nn.Linear(in_feature_dim, 
@@ -190,7 +190,7 @@ class GraphLearner(Module):
         h = F.relu(h)
 
         # outer product
-        h = h.view(-1, self.K, self.combined_dim)
+        h = h.view(-1, self.n_obj, self.combined_dim)
 
         adjacency_matrix = torch.matmul(h, h.transpose(1, 2))
 

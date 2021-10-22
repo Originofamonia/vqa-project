@@ -297,7 +297,7 @@ class ImageclefDataset(Dataset):
         qid = np.asarray(qid).reshape(-1)
         i = np.concatenate([img, bboxes], axis=1)
         k = np.asarray(bboxes.shape[0]).reshape(1)
-
+        # add return iid
         return q, a, n_votes, qid, i, k, qlen, iid
 
 

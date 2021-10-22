@@ -37,7 +37,7 @@ class Model(nn.Module):
                  dropout,
                  n_kernels=8,
                  neighbourhood_size=9,
-                 k=30):
+                 n_obj=30):
 
         """
         ## Variables:
@@ -71,7 +71,7 @@ class Model(nn.Module):
         # graph learner
         self.adjacency_1 = GraphLearner(in_feature_dim=feat_dim + hid_dim,
                                         combined_feature_dim=512,
-                                        k=k,
+                                        n_obj=n_obj,
                                         dropout=dropout)
 
         # dropout layers

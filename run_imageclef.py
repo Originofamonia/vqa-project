@@ -81,7 +81,7 @@ def train(args, f):
                   neighbourhood_size=args.neighbourhood_size,
                   n_kernels=args.n_kernels,
                   pretrained_wemb=dataset.pretrained_wemb,
-                  k=args.k)
+                  n_obj=args.n_obj)
 
     criterion = nn.MultiLabelSoftMarginLoss()
 
@@ -131,7 +131,7 @@ def train(args, f):
             # Move batch to cuda
             q_batch, a_batch, vote_batch, i_batch, k_batch, qlen_batch = \
                 batch_to_cuda(batch)
-            a = batch[-1]
+            # a = batch[-1]  # tuple of image_ids
             # forward pass
             logits, adjacency_matrix = model(
                 q_batch, i_batch, k_batch, qlen_batch)
@@ -220,7 +220,18 @@ def train(args, f):
             args.ep + 1, epoch_loss, epoch_acc))
 
 
-def save_plot_nodes(args, f):
+def save_plot_nodes():
+    """
+    1. get all boxes
+    2. get winner box
+    3. winner box neighbors
+    """
+    neighbors_list = [32]  # for 51 nodes best
+    kernels_list = [32]
+    args, parser, unparsed = input_args()
+    args.n_kernels = kernels_list[0]
+    args.neighbourhood_size = neighbors_list[0]
+
     model_file = 'save/model_51_33.75.pth.tar'
     dataset_test = ImageclefDataset(args, train=False)
     test_sampler = SequentialSampler(dataset_test)
@@ -236,16 +247,22 @@ def save_plot_nodes(args, f):
                   neighbourhood_size=args.neighbourhood_size,
                   n_kernels=args.n_kernels,
                   pretrained_wemb=dataset_test.pretrained_wemb,
-                  k=args.k)
+                  n_obj=args.n_obj)
     model.load_state_dict(torch.load(model_file))
 
+    for i, test_batch in tqdm(enumerate(loader_test)):
+        q_batch, a_batch, vote_batch, i_batch, k_batch, qlen_batch = \
+            batch_to_cuda(test_batch)
+        image_ids = test_batch[-1]
+        logits, _ = model(q_batch, i_batch, k_batch, qlen_batch)
 
 
 def main():
     args, parser, unparsed = input_args()
     neighbors_list = [12, 16, 20, 24, 28, 32, 36]
     kernels_list = [2, 4, 8, 16, 32]  # can't be larger than n_obj
-    with open(f'grid_search_nodes_{args.k}.txt', 'w') as f:
+
+    with open(f'grid_search_nodes_{args.n_obj}.txt', 'w') as f:
         for neighbors in neighbors_list:
             for kernels in kernels_list:
                 args.n_kernels = kernels
@@ -285,7 +302,7 @@ def input_args():
                         help='question embedding dimension')
     parser.add_argument('--neighbourhood_size', type=int, default=19,
                         help='topm number of graph neighbours to consider')
-    parser.add_argument('--k', type=int, default=51,
+    parser.add_argument('--n_obj', type=int, default=51,
                         help='number of boxes per image')
     parser.add_argument('--data_dir', metavar='', type=str, default='./data',
                         help='path to data directory')
@@ -302,4 +319,5 @@ def input_args():
 
 
 if __name__ == '__main__':
-    main()
+    # main()
+    save_plot_nodes()
