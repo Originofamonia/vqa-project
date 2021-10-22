@@ -133,13 +133,13 @@ def train(args, f):
                 batch_to_cuda(batch)
 
             # forward pass
-            output, adjacency_matrix = model(
+            logits, adjacency_matrix = model(
                 q_batch, i_batch, k_batch, qlen_batch)
 
-            loss = criterion(output, a_batch)
+            loss = criterion(logits, a_batch)
 
             # Compute batch accuracy based on vqa evaluation
-            correct = total_vqa_score(output, vote_batch)
+            correct = total_vqa_score(logits, vote_batch)
             ep_correct += correct
             ep_loss += loss.item()
             ave_correct += correct
@@ -181,11 +181,11 @@ def train(args, f):
     for i, test_batch in tqdm(enumerate(loader_test)):
         q_batch, a_batch, vote_batch, i_batch, k_batch, qlen_batch = \
             batch_to_cuda(test_batch)
-        output, _ = model(q_batch, i_batch, k_batch, qlen_batch)
+        logits, _ = model(q_batch, i_batch, k_batch, qlen_batch)
         # print(output.size())
-        test_correct += total_vqa_score(output, vote_batch)
+        test_correct += total_vqa_score(logits, vote_batch)
         qid_batch = test_batch[3]
-        _, oix = output.data.max(1)
+        _, oix = logits.data.max(1)
         oix = oix.cpu().numpy()
         # print(f'oix: {oix}')
         # record predictions
@@ -220,7 +220,25 @@ def train(args, f):
 
 
 def save_plot_nodes(args, f):
-    pass
+    model_file = 'save/model_51_33.75.pth.tar'
+    dataset_test = ImageclefDataset(args, train=False)
+    test_sampler = SequentialSampler(dataset_test)
+    loader_test = DataLoader(dataset_test, batch_size=args.bsize,
+                             sampler=test_sampler, shuffle=False,
+                             num_workers=4, collate_fn=collate_fn)
+    model = Model(vocab_size=dataset_test.q_words,
+                  emb_dim=args.emb,
+                  feat_dim=dataset_test.feat_dim,
+                  hid_dim=args.hid,
+                  out_dim=dataset_test.n_answers,
+                  dropout=args.dropout,
+                  neighbourhood_size=args.neighbourhood_size,
+                  n_kernels=args.n_kernels,
+                  pretrained_wemb=dataset_test.pretrained_wemb,
+                  k=args.k)
+    model.load_state_dict(torch.load(model_file))
+
+    
 
 def main():
     args, parser, unparsed = input_args()
