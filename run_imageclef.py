@@ -274,6 +274,7 @@ def input_args():
     parser.add_argument('--data_dir', metavar='', type=str, default='data',
                         help='path to data directory')
     parser.add_argument('--save_dir', metavar='', type=str, default='save')
+    parser.add_argument('--plot_dir', metavar='', type=str, default='figures')
     parser.add_argument('--name', metavar='', type=str,
                         default='gcn', help='model name')
     parser.add_argument('--dropout', metavar='', type=float, default=0.4,

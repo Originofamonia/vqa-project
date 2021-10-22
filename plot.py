@@ -74,7 +74,8 @@ def save_plot_nodes():
                 ax.add_patch(
                     Rectangle((entry[0], entry[1]), entry[2], entry[3], fill=False,
                               color='r', lw=2))
-            plt.savefig(os.path.join(args.save_dir, f'{iid}_boxes.jpg'))
+            box_file = f"{iid.strip('.jpg')}_boxes.jpg"
+            plt.savefig(os.path.join(args.plot_dir, box_file))
 
 
 if __name__ == '__main__':
