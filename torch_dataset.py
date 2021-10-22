@@ -21,11 +21,7 @@ import zarr
 import pandas as pd
 from torch.utils.data import Dataset
 from torch.utils.data import dataloader
-
-try:
-    import cPickle as pickle
-except:
-    import pickle as pickle
+import pickle
 
 
 def collate_fn(batch):

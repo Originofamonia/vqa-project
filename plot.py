@@ -55,6 +55,7 @@ def save_plot_nodes():
                   n_obj=args.n_obj)
     model.load_state_dict(torch.load(model_file))
     model = model.cuda()
+    model.eval()
 
     for i, test_batch in tqdm(enumerate(loader_test)):
         q_batch, a_batch, vote_batch, i_batch, k_batch, qlen_batch = \

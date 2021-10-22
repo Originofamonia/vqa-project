@@ -102,7 +102,7 @@ class Model(nn.Module):
 
         K = int(K[0].cpu().data.numpy())
 
-        # extract bounding boxes and compute centres
+        # extract bounding boxes and compute centres; bbox is xyxy
         bb = image[:, :, -4:].contiguous()
         bb_size = (bb[:, :, 2:]-bb[:, :, :2])  # delta_x, delta_y
         bb_centre = bb[:, :, :2] + 0.5*bb_size
