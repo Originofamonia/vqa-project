@@ -20,6 +20,7 @@ import json
 import csv
 import argparse
 from tqdm import tqdm
+import matplotlib.pyplot as plt
 
 import torch
 import torch.nn as nn
@@ -220,47 +221,6 @@ def train(args, f):
             args.ep, epoch_loss, epoch_acc))
 
 
-def save_plot_nodes():
-    """
-    1. get all boxes
-    2. get winner box
-    3. winner box neighbors
-    """
-    neighbors_list = [32]  # for 51 nodes best
-    kernels_list = [32]
-    args, parser, unparsed = input_args()
-    args.n_kernels = kernels_list[0]
-    args.neighbourhood_size = neighbors_list[0]
-
-    model_file = 'save/gcn_51_30.000.pt'
-    dataset_test = ImageclefDataset(args, train=False)
-    test_sampler = SequentialSampler(dataset_test)
-    loader_test = DataLoader(dataset_test, batch_size=args.bsize,
-                             sampler=test_sampler, shuffle=False,
-                             num_workers=4, collate_fn=collate_fn)
-    model = Model(vocab_size=dataset_test.q_words,
-                  emb_dim=args.emb,
-                  feat_dim=dataset_test.feat_dim,
-                  hid_dim=args.hid,
-                  out_dim=dataset_test.n_answers,
-                  dropout=args.dropout,
-                  neighbourhood_size=args.neighbourhood_size,
-                  n_kernels=args.n_kernels,
-                  pretrained_wemb=dataset_test.pretrained_wemb,
-                  n_obj=args.n_obj)
-    model.load_state_dict(torch.load(model_file))
-    model = model.cuda()
-
-    for i, test_batch in tqdm(enumerate(loader_test)):
-        q_batch, a_batch, vote_batch, i_batch, k_batch, qlen_batch = \
-            batch_to_cuda(test_batch)
-        image_ids = test_batch[-1]
-        logits, _ = model(q_batch, i_batch, k_batch, qlen_batch)
-        for j, iid in enumerate(image_ids):
-            box = i_batch[j][:, -4:]
-            print(box.size())
-
-
 
 def main():
     args, parser, unparsed = input_args()
@@ -326,5 +286,5 @@ def input_args():
 
 
 if __name__ == '__main__':
-    # main()
-    save_plot_nodes()
+    main()
+    # save_plot_nodes()
