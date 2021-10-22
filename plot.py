@@ -63,7 +63,7 @@ def save_plot_nodes():
         logits, _ = model(q_batch, i_batch, k_batch, qlen_batch)
         for j, iid in enumerate(image_ids):
             boxes = i_batch[j][:, -4:]  # between [0, 1]
-            boxes = xyxy2xywh(boxes)
+            # boxes = xyxy2xywh(boxes)
             boxes = boxes.detach().cpu().numpy()
             img = cv2.imread(os.path.join(image_path, iid))
             height, width, channels = img.shape
