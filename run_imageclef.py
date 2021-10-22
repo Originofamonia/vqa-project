@@ -238,7 +238,7 @@ def save_plot_nodes(args, f):
                   k=args.k)
     model.load_state_dict(torch.load(model_file))
 
-    
+
 
 def main():
     args, parser, unparsed = input_args()
@@ -284,7 +284,7 @@ def input_args():
                         help='question embedding dimension')
     parser.add_argument('--neighbourhood_size', type=int, default=19,
                         help='topm number of graph neighbours to consider')
-    parser.add_argument('--k', type=int, default=48,
+    parser.add_argument('--k', type=int, default=51,
                         help='number of boxes per image')
     parser.add_argument('--data_dir', metavar='', type=str, default='./data',
                         help='path to data directory')
