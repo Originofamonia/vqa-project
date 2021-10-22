@@ -131,7 +131,7 @@ def train(args, f):
             # Move batch to cuda
             q_batch, a_batch, vote_batch, i_batch, k_batch, qlen_batch = \
                 batch_to_cuda(batch)
-
+            a = batch[-1]
             # forward pass
             logits, adjacency_matrix = model(
                 q_batch, i_batch, k_batch, qlen_batch)
@@ -181,6 +181,7 @@ def train(args, f):
     for i, test_batch in tqdm(enumerate(loader_test)):
         q_batch, a_batch, vote_batch, i_batch, k_batch, qlen_batch = \
             batch_to_cuda(test_batch)
+        # test_batch[-1] is image_id
         logits, _ = model(q_batch, i_batch, k_batch, qlen_batch)
         # print(output.size())
         test_correct += total_vqa_score(logits, vote_batch)
