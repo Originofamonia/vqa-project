@@ -306,9 +306,9 @@ def input_args():
                         help='topm number of graph neighbours to consider')
     parser.add_argument('--n_obj', type=int, default=51,
                         help='number of boxes per image')
-    parser.add_argument('--data_dir', metavar='', type=str, default='./data',
+    parser.add_argument('--data_dir', metavar='', type=str, default='data',
                         help='path to data directory')
-    parser.add_argument('--save_dir', metavar='', type=str, default='./save')
+    parser.add_argument('--save_dir', metavar='', type=str, default='save')
     parser.add_argument('--name', metavar='', type=str,
                         default='gcn', help='model name')
     parser.add_argument('--dropout', metavar='', type=float, default=0.4,

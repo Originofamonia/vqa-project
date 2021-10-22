@@ -115,7 +115,7 @@ class Model(nn.Module):
 
         # Compute question encoding
         emb = self.wembed(question)
-        packed = pack_padded_sequence(emb, qlen, batch_first=True)
+        packed = pack_padded_sequence(emb, qlen, batch_first=True, enforce_sorted=False)
         # questions have variable lengths
         _, hid = self.q_gru(packed)
         qenc = hid[0].unsqueeze(1)  # [64, 1, 1024]
