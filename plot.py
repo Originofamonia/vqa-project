@@ -68,8 +68,8 @@ def save_plot_nodes():
             boxes = boxes.detach().cpu().numpy()
             img = cv2.imread(os.path.join(image_path, iid))
             height, width, channels = img.shape
-            x1, x2 = boxes[:, 0] * width, boxes[:, 2] * width
-            y1, y2 = boxes[:, 1] * height, boxes[:, 3] * height
+            x1, x2 = boxes[:, 0] * height, boxes[:, 2] * height
+            y1, y2 = boxes[:, 1] * width, boxes[:, 3] * width
             fig = plt.figure(figsize=(10, 10))
             ax = fig.add_subplot(1, 1, 1)
             ax.imshow(img, cmap=plt.cm.Greys_r)
