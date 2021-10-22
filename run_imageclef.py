@@ -217,7 +217,7 @@ def train(args, f):
 
     print(
         'Epoch %02d done, average loss: %.3f, average accuracy: %.2f%%' % (
-            args.ep + 1, epoch_loss, epoch_acc))
+            args.ep, epoch_loss, epoch_acc))
 
 
 def save_plot_nodes():
@@ -232,7 +232,7 @@ def save_plot_nodes():
     args.n_kernels = kernels_list[0]
     args.neighbourhood_size = neighbors_list[0]
 
-    model_file = 'save/model_51_33.75.pth.tar'
+    model_file = 'save/gcn_51_30.000.pt'
     dataset_test = ImageclefDataset(args, train=False)
     test_sampler = SequentialSampler(dataset_test)
     loader_test = DataLoader(dataset_test, batch_size=args.bsize,
@@ -321,5 +321,5 @@ def input_args():
 
 
 if __name__ == '__main__':
-    main()
-    # save_plot_nodes()
+    # main()
+    save_plot_nodes()
