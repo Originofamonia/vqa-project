@@ -255,6 +255,10 @@ def save_plot_nodes():
             batch_to_cuda(test_batch)
         image_ids = test_batch[-1]
         logits, _ = model(q_batch, i_batch, k_batch, qlen_batch)
+        for j, iid in enumerate(image_ids):
+            box = i_batch[j][:, -4:]
+            print(box.size())
+
 
 
 def main():
