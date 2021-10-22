@@ -41,9 +41,9 @@ def train(args, f):
     """
 
     # set random seed
-    torch.manual_seed(1000)
+    torch.manual_seed(args.seed)
     if torch.cuda.is_available():
-        torch.cuda.manual_seed(1000)
+        torch.cuda.manual_seed(args.seed)
     else:
         raise SystemExit('No CUDA available, script requires cuda')
 
@@ -205,15 +205,15 @@ def train(args, f):
     #         f.write('\n')
 
     acc = test_correct / (10 * args.bsize) * 100
-    print(f"neighbors: {args.neighbourhood_size}, kernels: {args.n_kernels}, Validation acc: {acc:.2f} %\n")
-    f.write(f"neighbors: {args.neighbourhood_size}, kernels: {args.n_kernels}, Validation acc: {acc:.2f} %\n")
+    print(f"neighbors: {args.neighbourhood_size}, kernels: {args.n_kernels}, Validation acc: {acc:.3f} %\n")
+    f.write(f"neighbors: {args.neighbourhood_size}, kernels: {args.n_kernels}, Validation acc: {acc:.3f} %\n")
 
     # save model and compute accuracy for epoch
     epoch_loss = ep_loss / n_batches
     epoch_acc = ep_correct * 100 / (n_batches * args.bsize)
 
-    save(model, optimizer, args.ep, epoch_loss, epoch_acc,
-         dir=args.save_dir, name=args.name + '_' + str(args.ep + 1))
+    save(args, model, path=args.save_dir,
+         name=f"{args.name}_{args.n_obj}_{acc:.3f}.pt")
 
     print(
         'Epoch %02d done, average loss: %.3f, average accuracy: %.2f%%' % (
@@ -259,9 +259,10 @@ def save_plot_nodes():
 
 def main():
     args, parser, unparsed = input_args()
-    neighbors_list = [12, 16, 20, 24, 28, 32, 36]
-    kernels_list = [2, 4, 8, 16, 32]  # can't be larger than n_obj
-
+    # neighbors_list = [12, 16, 20, 24, 28, 32, 36]
+    # kernels_list = [2, 4, 8, 16, 32]  # can't be larger than n_obj
+    neighbors_list = [32]  # for 51 nodes best
+    kernels_list = [32]
     with open(f'grid_search_nodes_{args.n_obj}.txt', 'w') as f:
         for neighbors in neighbors_list:
             for kernels in kernels_list:
@@ -296,6 +297,7 @@ def input_args():
     parser.add_argument('--ep', metavar='', type=int,
                         default=40, help='number of epochs.')
     parser.add_argument('--bsize', type=int, default=8, help='batch size.')
+    parser.add_argument('--seed', type=int, default=1000, help='seed')
     parser.add_argument('--hid', metavar='', type=int,
                         default=1024, help='hidden dimension')
     parser.add_argument('--emb', metavar='', type=int, default=300,
@@ -308,7 +310,7 @@ def input_args():
                         help='path to data directory')
     parser.add_argument('--save_dir', metavar='', type=str, default='./save')
     parser.add_argument('--name', metavar='', type=str,
-                        default='model', help='model name')
+                        default='gcn', help='model name')
     parser.add_argument('--dropout', metavar='', type=float, default=0.4,
                         help='probability of dropping out FC nodes during '
                              'training')
@@ -319,5 +321,5 @@ def input_args():
 
 
 if __name__ == '__main__':
-    # main()
-    save_plot_nodes()
+    main()
+    # save_plot_nodes()

@@ -239,7 +239,7 @@ def train(args):
                 epoch_acc = ep_correct * 100 / (n_batches * args.bsize)
 
                 save(model, optimizer, ep, epoch_loss, epoch_acc,
-                     dir=args.save_dir, name=args.name + '_' + str(ep + 1))
+                     path=args.save_dir, name=args.name + '_' + str(ep + 1))
 
                 # compute validation accuracy over a small subset of the
                 # validation set
@@ -262,7 +262,7 @@ def train(args):
         epoch_acc = ep_correct * 100 / (n_batches * args.bsize)
 
         save(model, optimizer, ep, epoch_loss, epoch_acc,
-             dir=args.save_dir, name=args.name + '_' + str(ep + 1))
+             path=args.save_dir, name=args.name + '_' + str(ep + 1))
 
         print(
             'Epoch %02d done, average loss: %.3f, average accuracy: %.2f%%' % (
@@ -454,7 +454,7 @@ def trainval(args):
         epoch_acc = ep_correct * 100 / (n_batches * args.bsize)
 
         save(model, optimizer, ep, epoch_loss, epoch_acc,
-             dir=args.save_dir, name=args.name + '_' + str(ep + 1))
+             path=args.save_dir, name=args.name + '_' + str(ep + 1))
 
         print(
             'Epoch %02d done, average loss: %.3f, average accuracy: %.2f%%' % (

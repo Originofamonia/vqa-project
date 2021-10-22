@@ -29,17 +29,17 @@ def batch_to_cuda(batch):
     return q, a, n_votes, i, k, qlen
 
 
-def save(model, optimizer, ep, epoch_loss, epoch_acc, dir, name):
+def save(args, model, path, name):
     # saves model and optimizer state
 
-    tbs = {
-        'epoch': ep + 1,
-        'loss': epoch_loss,
-        'accuracy': epoch_acc,
-        'state_dict': model.state_dict(),
-        'optimizer': optimizer.state_dict()
-    }
-    torch.save(tbs, os.path.join(dir, name + '.pt'))
+    # tbs = {
+    #     'epoch': ep + 1,
+    #     'loss': epoch_loss,
+    #     'accuracy': epoch_acc,
+    #     'state_dict': model.state_dict(),
+    #     'optimizer': optimizer.state_dict()
+    # }
+    torch.save(model.state_dict(), os.path.join(path, name))
 
 
 def total_vqa_score(output_batch, n_votes_batch):
