@@ -62,20 +62,24 @@ def save_plot_nodes():
         image_ids = test_batch[-1]
         logits, _ = model(q_batch, i_batch, k_batch, qlen_batch)
         for j, iid in enumerate(image_ids):
-            boxes = i_batch[j][:, -4:]
+            boxes = i_batch[j][:, -4:]  # between [0, 1]
             boxes = xyxy2xywh(boxes)
             boxes = boxes.detach().cpu().numpy()
             img = cv2.imread(os.path.join(image_path, iid))
+            height, width, channels = img.shape
+            x1, x2 = boxes[:, 0]*width, boxes[:, 2]*width
+            y1, y2 = boxes[:, 1] * height, boxes[:, 3] * height
             fig = plt.figure(figsize=(10, 10))
             ax = fig.add_subplot(1, 1, 1)
             ax.imshow(img, cmap=plt.cm.Greys_r)
 
-            for entry in boxes:
+            for entry in zip(x1, y1, x2, y2):
                 ax.add_patch(
                     Rectangle((entry[0], entry[1]), entry[2], entry[3], fill=False,
                               color='r', lw=2))
             box_file = f"{iid.strip('.jpg')}_boxes.jpg"
             plt.savefig(os.path.join(args.plot_dir, box_file))
+            plt.close()
 
 
 if __name__ == '__main__':
