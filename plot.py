@@ -201,7 +201,7 @@ def save_plot_nodes():
     loader_test = DataLoader(dataset_test, batch_size=args.bsize,
                              sampler=test_sampler, shuffle=False,
                              num_workers=4, collate_fn=collate_fn)
-    yolo_dataset = get_yolo_dataset()
+
     model = Model(vocab_size=dataset_test.q_words,
                   emb_dim=args.emb,
                   feat_dim=dataset_test.feat_dim,
@@ -223,14 +223,12 @@ def save_plot_nodes():
         logits, _ = model(q_batch, i_batch, k_batch, qlen_batch)
         for j, iid in enumerate(image_ids):
             boxes = np.asarray(dataset_test.bbox[str(iid)])
-            # boxes = i_batch[j][:, -4:]  # between [0, 1]
-            # boxes = xyxy2xywh(boxes)
-            # boxes = boxes.detach().cpu().numpy()
-            img = yolo_dataset.getitem(iid)
-
+            img_h, img_w = np.asarray(dataset_test.sizes[str(iid)])
+            img = cv2.imread(os.path.join(image_path, iid))
+            resized_img = cv2.resize(img, (img_h, img_w))
 
             f = os.path.join(args.plot_dir, f"{iid.strip('.jpg')}_boxes.jpg")
-            plot_image(img, boxes, None, None, f, None)
+            plot_image(resized_img, boxes, None, None, f, None)
 
 
 # def load_image(iid, image_path):
