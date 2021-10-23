@@ -216,13 +216,14 @@ def save_plot_nodes():
         image_ids = test_batch[-1]
         logits, _ = model(q_batch, i_batch, k_batch, qlen_batch)
         for j, iid in enumerate(image_ids):
-            boxes = i_batch[j][:, -4:]  # between [0, 1]
+            boxes = np.asarray(dataset_test.bbox[str(iid)])
+            # boxes = i_batch[j][:, -4:]  # between [0, 1]
             # boxes = xyxy2xywh(boxes)
-            boxes = boxes.detach().cpu().numpy()
+            # boxes = boxes.detach().cpu().numpy()
             img = cv2.imread(os.path.join(image_path, iid))
-            height, width, channels = img.shape
-            boxes[:, 0], boxes[:, 2] = boxes[:, 0] * width, boxes[:, 2] * width
-            boxes[:, 1], boxes[:, 3] = boxes[:, 1] * height, boxes[:, 3] * height
+            # height, width, channels = img.shape
+            # boxes[:, 0], boxes[:, 2] = boxes[:, 0] * width, boxes[:, 2] * width
+            # boxes[:, 1], boxes[:, 3] = boxes[:, 1] * height, boxes[:, 3] * height
 
             f = os.path.join(args.plot_dir, f"{iid.strip('.jpg')}_boxes.jpg")
             plot_image(img, boxes, None, None, f, None)
