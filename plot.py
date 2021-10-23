@@ -227,7 +227,7 @@ def save_plot_nodes():
             img = load_image(iid, image_path)
             batch_shapes = np.ceil(
                 np.array(shapes) * img_size / stride + pad).astype(
-                np.int) * stride
+                int) * stride
             shape = batch_shapes[0]
             img, ratio, pad = letterbox(img, shape, auto=False,
                                         scaleup=False)
@@ -278,10 +278,10 @@ def letterbox(img, new_shape=(640, 640), color=(114, 114, 114), auto=True,
 
     if shape[::-1] != new_unpad:  # resize
         img = cv2.resize(img, new_unpad, interpolation=cv2.INTER_LINEAR)
-    top, bottom = int(round(dh - 0.1)), int(round(dh + 0.1))
-    left, right = int(round(dw - 0.1)), int(round(dw + 0.1))
-    img = cv2.copyMakeBorder(img, top, bottom, left, right, cv2.BORDER_CONSTANT,
-                             value=color)  # add border
+    # top, bottom = int(round(dh - 0.1)), int(round(dh + 0.1))
+    # left, right = int(round(dw - 0.1)), int(round(dw + 0.1))
+    # img = cv2.copyMakeBorder(img, top, bottom, left, right, cv2.BORDER_CONSTANT,
+    #                          value=color)  # add border
     return img, ratio, (dw, dh)
 
 
