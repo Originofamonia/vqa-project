@@ -47,11 +47,11 @@ def parse_box_feat():
 
             gaze_idx = gaze_tensors['image_id'].index(image_id)
             gaze_feat = gaze_tensors['feat'][gaze_idx]
-            gaze_img_size = gaze_tensors['img_sizes'][gaze_idx]
+            # gaze_img_size = gaze_tensors['img_sizes'][gaze_idx]
 
             gaze_det_idx = gaze_on_detect_tensors['image_id'].index(image_id)
             gaze_det_feat = gaze_on_detect_tensors['feat'][gaze_det_idx]
-            gaze_det_img_size = gaze_on_detect_tensors['img_sizes'][gaze_idx]
+            # gaze_det_img_size = gaze_on_detect_tensors['img_sizes'][gaze_idx]
 
             if gaze_feat.size(0) < n_obj:
                 continue
@@ -76,14 +76,16 @@ def parse_box_feat():
             item['boxes'] = merged_box.cpu().numpy()
             item['feat'] = merged_feat.cpu().numpy()
             item['image_w'], item['image_h'] = img.width, img.height
-            # item['yolo_hw'] =
+
             # append to zarr files
             boxes.create_dataset(item['image_id'], data=item['boxes'])
             features.create_dataset(item['image_id'], data=item['feat'])
             # image_size dict
             image_size[item['image_id']] = {
-                'image_h': item['image_h'],
-                'image_w': item['image_w'],
+                # 'image_h': item['image_h'],  # was
+                # 'image_w': item['image_w'],
+                'image_h': img_sizes[0],
+                'image_w': img_sizes[1],
             }
     print(f'len(num_det_boxes): {len(num_det_boxes)}')
     print(f'len(num_gaze_boxes): {len(num_gaze_boxes)}')
