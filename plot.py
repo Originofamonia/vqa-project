@@ -188,7 +188,7 @@ def save_plot_nodes():
             print(boxes)
             img_h, img_w = np.asarray(dataset_test.sizes[str(iid)])
             img = cv2.imread(os.path.join(image_path, iid))
-            resized_img = cv2.resize(img, (img_h, img_w))
+            resized_img = cv2.resize(img, (img_w, img_h))
 
             f = os.path.join(args.plot_dir, f"{iid.strip('.jpg')}_boxes.jpg")
             plot_image(resized_img, boxes, None, None, f, None)
