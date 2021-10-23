@@ -140,44 +140,6 @@ def plot_image(image, boxes, findings, paths=None, fname='images.jpg',
     return mosaic
 
 
-def plot_bbox(img_folder_path, bbox_filename):
-    """
-    https://github.com/thtang/CheXNet-with-localization/issues/9
-    """
-    actual_bbox = open(bbox_filename)
-    img_folder_path = os.path.split(img_folder_path)[-1]
-    # print(img_folder_path)
-    count = 0
-    temp_count = 0
-    final_bbox_list = []
-    for img in actual_bbox:
-        if img.find(img_folder_path) != -1:
-            print('file exist:', count)
-            print('given image', img)
-            temp_count = count
-            print("this is temp count", temp_count)
-        if count > temp_count:
-
-            if img.find('/') == -1:
-                final_bbox_list.append(img)
-            else:
-                break
-        count += 1
-
-    i = final_bbox_list[1]
-    temp_i = list(i.split(" "))
-    temp_i.pop(0)
-
-    p = np.array(temp_i)
-    k = p.astype(float)
-
-    x1 = int(k[0])
-    y1 = int(k[1])
-    x2 = int(k[2])
-    y2 = int(k[3])
-    return x1, y1, x2, y2
-
-
 def save_plot_nodes():
     """
     1. get all boxes
