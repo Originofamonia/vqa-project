@@ -192,6 +192,7 @@ def save_plot_nodes():
     img_size = 640
     stride = 32
     shapes = [[1, 1]]
+    pad = 0.0
 
     model_file = os.path.join(args.save_dir, 'gcn_51_30.000.pt')
     dataset_test = ImageclefDataset(args, train=False)
