@@ -224,7 +224,7 @@ def save_plot_nodes():
             boxes[:, 0], boxes[:, 2] = boxes[:, 0] * width, boxes[:, 2] * width
             boxes[:, 1], boxes[:, 3] = boxes[:, 1] * height, boxes[:, 3] * height
 
-            f = f"{iid.strip('.jpg')}_boxes.jpg"
+            f = os.path.join(args.save_dir, f"{iid.strip('.jpg')}_boxes.jpg")
             plot_image(img, boxes, None, None, f, None)
 
 
