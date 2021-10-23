@@ -107,9 +107,9 @@ def plot_image(image, boxes, findings, paths=None, fname='images.jpg',
     #           classes]  # labels if no conf column
     conf = None  # check for confidence presence (label vs pred)
 
-    if boxes.shape[0]:
-        # absolute coords need scale if image scales
-        boxes *= scale_factor
+    # if boxes.shape[0]:
+    #     # absolute coords need scale if image scales
+    #     boxes *= scale_factor
     # boxes[[0, 2]] += block_x
     # boxes[[1, 3]] += block_y
     for j, box in enumerate(boxes):
@@ -188,7 +188,7 @@ def save_plot_nodes():
             print(boxes)
             img_h, img_w = np.asarray(dataset_test.sizes[str(iid)])
             img = cv2.imread(os.path.join(image_path, iid))
-            resized_img = cv2.resize(img, (img_w, img_h))
+            resized_img = cv2.resize(img, (img_h, img_w))
 
             f = os.path.join(args.plot_dir, f"{iid.strip('.jpg')}_boxes.jpg")
             plot_image(resized_img, boxes, None, None, f, None)
