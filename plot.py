@@ -185,7 +185,7 @@ def save_plot_nodes():
         logits, _ = model(q_batch, i_batch, k_batch, qlen_batch)
         for j, iid in enumerate(image_ids):
             boxes = np.asarray(dataset_test.bbox[str(iid)])
-            print(boxes)
+            # print(boxes)
             img_h, img_w = np.asarray(dataset_test.sizes[str(iid)])
             img = cv2.imread(os.path.join(image_path, iid))
             resized_img = cv2.resize(img, (img_h, img_w))
