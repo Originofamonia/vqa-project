@@ -190,10 +190,10 @@ def save_plot_nodes():
     args, parser, unparsed = input_args()
     args.n_kernels = kernels_list[0]
     args.neighbourhood_size = neighbors_list[0]
-    img_size = 640
-    stride = 32
-    shapes = [[1, 1]]
-    pad = 0.0
+    # img_size = 640
+    # stride = 32
+    # shapes = [[1, 1]]
+    # pad = 0.0
 
     model_file = os.path.join(args.save_dir, 'gcn_51_30.000.pt')
     dataset_test = ImageclefDataset(args, train=False)
@@ -227,12 +227,7 @@ def save_plot_nodes():
             # boxes = xyxy2xywh(boxes)
             # boxes = boxes.detach().cpu().numpy()
             img = yolo_dataset.getitem(iid)
-            batch_shapes = np.ceil(
-                np.array(shapes) * img_size / stride + pad).astype(
-                int) * stride
-            shape = batch_shapes[0]
-            img, ratio, pad = letterbox(img, shape, auto=False,
-                                        scaleup=False)
+
 
             f = os.path.join(args.plot_dir, f"{iid.strip('.jpg')}_boxes.jpg")
             plot_image(img, boxes, None, None, f, None)

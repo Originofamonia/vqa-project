@@ -40,14 +40,18 @@ def parse_box_feat():
     num_gaze_boxes = []
     num_gaze_det_boxes = []
     image_ids = []
-    for i, (det_feat, image_id) in enumerate(zip(detect_tensors['feat'],
-                                             detect_tensors['image_id'])):
+    for i, (det_feat, image_id, img_sizes) in enumerate(zip(detect_tensors['feat'],
+                                             detect_tensors['image_id'], detect_tensors['img_sizes'])):
         if det_feat.size(0) >= n_obj and image_id in gaze_tensors['image_id'] \
                 and image_id in gaze_on_detect_tensors['image_id']:
+
             gaze_idx = gaze_tensors['image_id'].index(image_id)
             gaze_feat = gaze_tensors['feat'][gaze_idx]
+            gaze_img_size = gaze_tensors['img_sizes'][gaze_idx]
+
             gaze_det_idx = gaze_on_detect_tensors['image_id'].index(image_id)
             gaze_det_feat = gaze_on_detect_tensors['feat'][gaze_det_idx]
+            gaze_det_img_size = gaze_on_detect_tensors['img_sizes'][gaze_idx]
 
             if gaze_feat.size(0) < n_obj:
                 continue
@@ -72,6 +76,7 @@ def parse_box_feat():
             item['boxes'] = merged_box.cpu().numpy()
             item['feat'] = merged_feat.cpu().numpy()
             item['image_w'], item['image_h'] = img.width, img.height
+            # item['yolo_hw'] =
             # append to zarr files
             boxes.create_dataset(item['image_id'], data=item['boxes'])
             features.create_dataset(item['image_id'], data=item['feat'])
