@@ -24,6 +24,7 @@ from run_imageclef import input_args
 from sparse_graph_model import Model
 from torch_dataset import ImageclefDataset, collate_fn
 from utils import batch_to_cuda, xyxy2xywh
+from yolo_datasets import get_yolo_dataset
 
 
 def color_list():
@@ -200,6 +201,7 @@ def save_plot_nodes():
     loader_test = DataLoader(dataset_test, batch_size=args.bsize,
                              sampler=test_sampler, shuffle=False,
                              num_workers=4, collate_fn=collate_fn)
+    yolo_dataset = get_yolo_dataset()
     model = Model(vocab_size=dataset_test.q_words,
                   emb_dim=args.emb,
                   feat_dim=dataset_test.feat_dim,
@@ -224,7 +226,7 @@ def save_plot_nodes():
             # boxes = i_batch[j][:, -4:]  # between [0, 1]
             # boxes = xyxy2xywh(boxes)
             # boxes = boxes.detach().cpu().numpy()
-            img = load_image(iid, image_path)
+            img = yolo_dataset.getitem(iid)
             batch_shapes = np.ceil(
                 np.array(shapes) * img_size / stride + pad).astype(
                 int) * stride
@@ -236,53 +238,53 @@ def save_plot_nodes():
             plot_image(img, boxes, None, None, f, None)
 
 
-def load_image(iid, image_path):
-    img = cv2.imread(os.path.join(image_path, iid))
-    assert img is not None, 'Image Not Found ' + os.path.join(image_path, iid)
-    h0, w0 = img.shape[:2]  # orig hw
-    r = 640 / max(h0, w0)  # resize image to img_size
-    if r != 1:  # always resize down, only resize up if training with augmentation
-        interp = cv2.INTER_AREA if r < 1 else cv2.INTER_LINEAR
-        img = cv2.resize(img, (int(w0 * r), int(h0 * r)),
-                         interpolation=interp)
-    return img
-
-
-def letterbox(img, new_shape=(640, 640), color=(114, 114, 114), auto=True,
-              scaleFill=False, scaleup=True):
-    # Resize image to a 32-pixel-multiple rectangle https://github.com/ultralytics/yolov3/issues/232
-    shape = img.shape[:2]  # current shape [height, width]
-    if isinstance(new_shape, int):
-        new_shape = (new_shape, new_shape)
-
-    # Scale ratio (new / old)
-    r = min(new_shape[0] / shape[0], new_shape[1] / shape[1])
-    if not scaleup:  # only scale down, do not scale up (for better test mAP)
-        r = min(r, 1.0)
-
-    # Compute padding
-    ratio = r, r  # width, height ratios
-    new_unpad = int(round(shape[1] * r)), int(round(shape[0] * r))
-    dw, dh = new_shape[1] - new_unpad[0], new_shape[0] - new_unpad[
-        1]  # wh padding
-    if auto:  # minimum rectangle
-        dw, dh = np.mod(dw, 32), np.mod(dh, 32)  # wh padding
-    elif scaleFill:  # stretch
-        dw, dh = 0.0, 0.0
-        new_unpad = (new_shape[1], new_shape[0])
-        ratio = new_shape[1] / shape[1], new_shape[0] / shape[
-            0]  # width, height ratios
-
-    dw /= 2  # divide padding into 2 sides
-    dh /= 2
-
-    if shape[::-1] != new_unpad:  # resize
-        img = cv2.resize(img, new_unpad, interpolation=cv2.INTER_LINEAR)
-    # top, bottom = int(round(dh - 0.1)), int(round(dh + 0.1))
-    # left, right = int(round(dw - 0.1)), int(round(dw + 0.1))
-    # img = cv2.copyMakeBorder(img, top, bottom, left, right, cv2.BORDER_CONSTANT,
-    #                          value=color)  # add border
-    return img, ratio, (dw, dh)
+# def load_image(iid, image_path):
+#     img = cv2.imread(os.path.join(image_path, iid))
+#     assert img is not None, 'Image Not Found ' + os.path.join(image_path, iid)
+#     h0, w0 = img.shape[:2]  # orig hw
+#     r = 640 / max(h0, w0)  # resize image to img_size
+#     if r != 1:  # always resize down, only resize up if training with augmentation
+#         interp = cv2.INTER_AREA if r < 1 else cv2.INTER_LINEAR
+#         img = cv2.resize(img, (int(w0 * r), int(h0 * r)),
+#                          interpolation=interp)
+#     return img
+#
+#
+# def letterbox(img, new_shape=(640, 640), color=(114, 114, 114), auto=True,
+#               scaleFill=False, scaleup=True):
+#     # Resize image to a 32-pixel-multiple rectangle https://github.com/ultralytics/yolov3/issues/232
+#     shape = img.shape[:2]  # current shape [height, width]
+#     if isinstance(new_shape, int):
+#         new_shape = (new_shape, new_shape)
+#
+#     # Scale ratio (new / old)
+#     r = min(new_shape[0] / shape[0], new_shape[1] / shape[1])
+#     if not scaleup:  # only scale down, do not scale up (for better test mAP)
+#         r = min(r, 1.0)
+#
+#     # Compute padding
+#     ratio = r, r  # width, height ratios
+#     new_unpad = int(round(shape[1] * r)), int(round(shape[0] * r))
+#     dw, dh = new_shape[1] - new_unpad[0], new_shape[0] - new_unpad[
+#         1]  # wh padding
+#     if auto:  # minimum rectangle
+#         dw, dh = np.mod(dw, 32), np.mod(dh, 32)  # wh padding
+#     elif scaleFill:  # stretch
+#         dw, dh = 0.0, 0.0
+#         new_unpad = (new_shape[1], new_shape[0])
+#         ratio = new_shape[1] / shape[1], new_shape[0] / shape[
+#             0]  # width, height ratios
+#
+#     dw /= 2  # divide padding into 2 sides
+#     dh /= 2
+#
+#     if shape[::-1] != new_unpad:  # resize
+#         img = cv2.resize(img, new_unpad, interpolation=cv2.INTER_LINEAR)
+#     # top, bottom = int(round(dh - 0.1)), int(round(dh + 0.1))
+#     # left, right = int(round(dw - 0.1)), int(round(dw + 0.1))
+#     # img = cv2.copyMakeBorder(img, top, bottom, left, right, cv2.BORDER_CONSTANT,
+#     #                          value=color)  # add border
+#     return img, ratio, (dw, dh)
 
 
 if __name__ == '__main__':
