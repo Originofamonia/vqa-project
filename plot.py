@@ -155,12 +155,25 @@ def save_plot_nodes():
     model.load_state_dict(torch.load(model_file))
     model = model.cuda()
     model.eval()
+    results = []
 
     for i, test_batch in tqdm(enumerate(loader_test)):
         q_batch, a_batch, vote_batch, i_batch, k_batch, qlen_batch = \
             batch_to_cuda(test_batch)
         image_ids = test_batch[-1]
         logits, adj_mat, h_max_indices = model(q_batch, i_batch, k_batch, qlen_batch)
+
+        qid_batch = test_batch[3]
+        _, oix = logits.data.max(1)
+        oix = oix.cpu().numpy()
+        # record predictions
+        for i, qid in enumerate(qid_batch):
+            qid = int(qid.cpu().numpy())
+            results.append(
+                f"{dataset_test.vqa[qid]['image_id']},"
+                f"{dataset_test.vqa[qid]['question']},"
+                f"{dataset_test.a_itow[oix[i]]},"
+                f"{dataset_test.vqa[qid]['answer']}")
 
         for j, iid in enumerate(image_ids):
             boxes = np.asarray(dataset_test.bbox[str(iid)])
@@ -176,6 +189,12 @@ def save_plot_nodes():
             h_max_boxes = boxes[h_max_idx[count_sort_ind][:5]]
             f2 = os.path.join(args.plot_dir, f"{iid.strip('.jpg')}_h_max.jpg")
             plot_connect_lines(mosaic, h_max_boxes, f2, color=None, line_thickness=None)
+
+    with open('infer_imageclef.csv', 'w') as f:
+        f.write('image_id,question,prediction,answer\n')
+        for line in results:
+            f.write(line)
+            f.write('\n')
 
 
 if __name__ == '__main__':
