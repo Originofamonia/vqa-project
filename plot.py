@@ -159,8 +159,9 @@ def save_plot_nodes():
             f1 = os.path.join(args.plot_dir, f"{iid.strip('.jpg')}_boxes.jpg")
             mosaic = plot_image(resized_img, boxes, None, None, f1, None)
 
-            h_max_idx, counts = np.unique(h_max_indices[j].detach().cpu().numpy(), return_counts=True)
-            h_max_boxes = boxes[h_max_idx]
+            h_max_idx, count = np.unique(h_max_indices[j].detach().cpu().numpy(), return_counts=True)
+            count_sort_ind = np.argsort(-count)
+            h_max_boxes = boxes[h_max_idx[count_sort_ind][:10]]
             f2 = os.path.join(args.plot_dir, f"{iid.strip('.jpg')}_h_max.jpg")
             plot_line_between_boxes(mosaic, h_max_boxes, f2, color=None, label=None, line_thickness=None)
 
