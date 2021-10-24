@@ -82,16 +82,19 @@ def plot_connect_lines2(img, rows, cols, boxes, fname, color=None, line_thicknes
     """
     plot by edge weight
     """
+    rows = rows[:10]
+    cols = cols[:10]
     tl = line_thickness or round(
         0.002 * (img.shape[0] + img.shape[1]) / 2) + 1  # line/font thickness
     color = color or [random.randint(0, 255) for _ in range(3)]
-    for i, box_i in enumerate(h_max_boxes):
-        for j, box_j in enumerate(h_max_boxes[i:]):
-            center_i = (
-                int((box_i[0] + box_i[2]) / 2), int((box_i[1] + box_i[3]) / 2))
-            center_j = (
-            int((box_j[0] + box_j[2]) / 2), int((box_j[1] + box_j[3]) / 2))
-            cv2.line(img, center_i, center_j, color=color, thickness=tl)
+    for i, (r, c) in enumerate(zip(rows, cols)):
+        box_i = boxes[r]
+        box_j = boxes[c]
+        center_i = (
+            int((box_i[0] + box_i[2]) / 2), int((box_i[1] + box_i[3]) / 2))
+        center_j = (
+        int((box_j[0] + box_j[2]) / 2), int((box_j[1] + box_j[3]) / 2))
+        cv2.line(img, center_i, center_j, color=color, thickness=tl)
 
     if fname:
         cv2.imwrite(fname, cv2.cvtColor(img, cv2.COLOR_BGR2RGB))  # cv2 save
@@ -234,7 +237,7 @@ def save_plot_nodes():
             edges_sorted, edges_ind = torch.sort(edges, descending=True)
             rows = edges_ind // topm.size(1)
             cols = edges_ind % topm.size(-1)
-
+            real_ind = topm_ind[j][rows, cols]
             f2 = os.path.join(args.plot_dir, f"{iid.strip('.jpg')}_h_max.jpg")
             # plot_connect_lines(mosaic, h_max_boxes, f2, color=None, line_thickness=None)
             plot_connect_lines2(img, rows, cols, boxes, f2, color=None,
