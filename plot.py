@@ -16,6 +16,7 @@ import glob
 import cv2
 from tqdm import tqdm
 import torch
+import torch.nn.functional as F
 from torch.utils.data import DataLoader
 from torch.utils.data.sampler import SequentialSampler
 
@@ -175,8 +176,12 @@ def save_plot_nodes():
                 f"{dataset_test.a_itow[oix[i]]},"
                 f"{dataset_test.vqa[qid]['answer']}")
 
-        top_k, top_ind = torch.topk(
+        top_m, top_ind = torch.topk(
             adj_mat, k=args.neighbourhood_size, dim=-1, sorted=True)
+        print(top_m[0])
+        top_m = torch.stack(
+            [F.softmax(top_m[:, k]) for k in range(top_m.size(1))]).transpose(0,
+                                                                  1)  # (batch_size, K, neighbourhood_size)
 
         for j, iid in enumerate(image_ids):
             adj_m = adj_mat[j]
