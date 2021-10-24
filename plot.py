@@ -47,6 +47,7 @@ def plot_one_box(x, img, color=None, label=None, line_thickness=None):
         0.002 * (img.shape[0] + img.shape[1]) / 2) + 1  # line/font thickness
     color = color if color is not None else [random.randint(0, 255) for _ in range(3)]
     c1, c2 = (int(x[0]), int(x[1])), (int(x[2]), int(x[3]))
+    # thickness must be integer
     cv2.rectangle(img, c1, c2, color, thickness=tl, lineType=cv2.LINE_AA)
     center = (int((x[0] + x[2]) / 2), int((x[1] + x[3]) / 2))
     cv2.circle(img, center, radius=0, color=color, thickness=tl*2)
@@ -115,7 +116,7 @@ def plot_boxes(image, boxes, findings, paths=None, fname='images.jpg',
     for j, box in enumerate(boxes):
         c = lower_red + j * color_step
         plot_one_box(box, mosaic, label=None, color=c,
-                     line_thickness=tl / (j+1))
+                     line_thickness=tl)
 
     if fname:
         r = min(1280. / max(h, w) / ns, 1.0)  # ratio to limit image size
