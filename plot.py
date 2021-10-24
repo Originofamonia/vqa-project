@@ -208,7 +208,7 @@ def save_plot_nodes():
             # h_max_idx, count = np.unique(h_max_indices[j].detach().cpu().numpy(), return_counts=True)
             # count_sort_ind = np.argsort(-count)
             # h_max_boxes = boxes[h_max_idx[count_sort_ind][:10]]
-            edges = topm[j].reshape(-1)
+            edges = topm[j].flatten()
             topm_sorted, topm_ind = torch.sort(topm[j])
 
             f2 = os.path.join(args.plot_dir, f"{iid.strip('.jpg')}_h_max.jpg")
