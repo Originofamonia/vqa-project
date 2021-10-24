@@ -177,7 +177,7 @@ def save_plot_nodes():
                 f"{dataset_test.vqa[qid]['answer']}")
 
         topn, topn_ind = torch.max(adj_mat, dim=-1)  # select top n nodes
-        topn, topn_ind = torch.topk(topn, k=2, dim=-1, sorted=True)
+        topn, topn_ind = torch.topk(topn, k=topn.size(1), dim=-1, sorted=True)
         print(topn[0])
 
         topm, topm_ind = torch.topk(  # select topm neighbors
