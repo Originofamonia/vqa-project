@@ -188,15 +188,15 @@ def save_plot_nodes():
 
         topm, topm_ind = torch.topk(  # select topm neighbors node_j
             adj_mat, k=args.neighbourhood_size, dim=-1, sorted=True)
-        topm = torch.stack(
+        topm = torch.stack(  # all edges
             [F.softmax(topm[:, k], dim=-1) for k in range(topm.size(1))]).transpose(0,
                                                                   1)  # (batch_size, K, neighbourhood_size)
         topm_degree = torch.count_nonzero(topm, dim=-1)
-        topm_deg_sorted, topm_deg_ind = torch.sort(topm_degree, dim=-1)
+        topm_deg_sorted, topm_deg_ind = torch.sort(topm_degree, dim=-1)  # to sort boxes by degree
 
         for j, iid in enumerate(image_ids):
             boxes = np.asarray(dataset_test.bbox[str(iid)])
-            boxes = boxes[topm_degree[j]]
+            boxes = boxes[topm_deg_ind[j]]
             img_h, img_w = np.asarray(dataset_test.sizes[str(iid)])
             img = cv2.imread(os.path.join(image_path, iid))
             resized_img = cv2.resize(img, (img_h, img_w))
@@ -207,6 +207,7 @@ def save_plot_nodes():
             # h_max_idx, count = np.unique(h_max_indices[j].detach().cpu().numpy(), return_counts=True)
             # count_sort_ind = np.argsort(-count)
             # h_max_boxes = boxes[h_max_idx[count_sort_ind][:10]]
+            topm_sorted, topm_ind = torch.sort(topm[j])
 
             f2 = os.path.join(args.plot_dir, f"{iid.strip('.jpg')}_h_max.jpg")
             plot_connect_lines(mosaic, h_max_boxes, f2, color=None, line_thickness=None)
