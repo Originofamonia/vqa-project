@@ -192,7 +192,7 @@ def save_plot_nodes():
             [F.softmax(topm[:, k], dim=-1) for k in range(topm.size(1))]).transpose(0,
                                                                   1)  # (batch_size, K, neighbourhood_size)
         topm_degree = torch.count_nonzero(topm, dim=-1)
-        topm_deg_sorted = torch.sort(topm_degree, dim=-1)
+        topm_deg_sorted, topm_deg_ind = torch.sort(topm_degree, dim=-1)
 
         for j, iid in enumerate(image_ids):
             boxes = np.asarray(dataset_test.bbox[str(iid)])
