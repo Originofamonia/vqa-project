@@ -82,8 +82,8 @@ def plot_connect_lines2(img, boxes, rows, cols, fname, color=None, line_thicknes
     """
     plot by edge weight
     """
-    rows = rows[:10]
-    cols = cols[:10]
+    rows = rows[:100]
+    cols = cols[:100]
     tl = line_thickness or round(
         0.002 * (img.shape[0] + img.shape[1]) / 2) + 1  # line/font thickness
     color = color or [random.randint(0, 255) for _ in range(3)]
@@ -242,7 +242,7 @@ def save_plot_nodes():
             real_cols = real_ind % adj_mat.size(-1)
             f2 = os.path.join(args.plot_dir, f"{iid.strip('.jpg')}_h_max.jpg")
             # plot_connect_lines(mosaic, h_max_boxes, f2, color=None, line_thickness=None)
-            plot_connect_lines2(img, boxes, real_rows, real_cols, f2, color=None,
+            plot_connect_lines2(mosaic, boxes, real_rows, real_cols, f2, color=None,
                         line_thickness=None)
     with open('infer_imageclef.csv', 'w') as f:
         f.write('image_id,question,prediction,answer\n')
