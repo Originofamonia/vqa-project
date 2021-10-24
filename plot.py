@@ -109,7 +109,7 @@ def plot_boxes(image, boxes, findings, paths=None, fname='images.jpg',
         image = cv2.resize(image, (w, h))
 
     mosaic = image
-    lower_red = np.array([0, 0, 50])  # BGR
+    lower_red = np.array([0, 50, 0])  # BGR
     upper_red = np.array([255, 255, 255])
     color_step = (upper_red - lower_red) / len(boxes)
     for j, box in enumerate(boxes):
