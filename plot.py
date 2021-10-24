@@ -176,14 +176,16 @@ def save_plot_nodes():
                 f"{dataset_test.a_itow[oix[i]]},"
                 f"{dataset_test.vqa[qid]['answer']}")
 
+        topn, topn_ind = torch.max(adj_mat, dim=-1)  # select top n nodes
+        print(topn[0])
+
         topm, topm_ind = torch.topk(  # select topm neighbors
             adj_mat, k=args.neighbourhood_size, dim=-1, sorted=False)
         topm = torch.stack(
             [F.softmax(topm[:, k], dim=-1) for k in range(topm.size(1))]).transpose(0,
                                                                   1)  # (batch_size, K, neighbourhood_size)
         print(topm[0][0])
-        topn, topn_ind = torch.max(adj_mat, dim=-1)  # select top n nodes
-        print(topn)
+
         for j, iid in enumerate(image_ids):
             adj_m = adj_mat[j]
             boxes = np.asarray(dataset_test.bbox[str(iid)])
