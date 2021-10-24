@@ -78,7 +78,7 @@ def plot_connect_lines(img, h_max_boxes, fname, color=None, line_thickness=None)
     return img
 
 
-def plot_connect_lines2(img, rows, cols, boxes, fname, color=None, line_thickness=None):
+def plot_connect_lines2(img, boxes, rows, cols, fname, color=None, line_thickness=None):
     """
     plot by edge weight
     """
@@ -237,10 +237,12 @@ def save_plot_nodes():
             edges_sorted, edges_ind = torch.sort(edges, descending=True)
             rows = edges_ind // topm.size(1)
             cols = edges_ind % topm.size(-1)
-            real_ind = topm_ind[j][rows, cols]
+            real_ind = topm_ind[j][rows, cols]  # fetch real indices
+            real_rows = real_ind // adj_mat.size(1)
+            real_cols = real_ind % adj_mat.size(-1)
             f2 = os.path.join(args.plot_dir, f"{iid.strip('.jpg')}_h_max.jpg")
             # plot_connect_lines(mosaic, h_max_boxes, f2, color=None, line_thickness=None)
-            plot_connect_lines2(img, rows, cols, boxes, f2, color=None,
+            plot_connect_lines2(img, boxes, real_rows, real_cols, f2, color=None,
                         line_thickness=None)
     with open('infer_imageclef.csv', 'w') as f:
         f.write('image_id,question,prediction,answer\n')
