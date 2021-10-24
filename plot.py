@@ -181,7 +181,7 @@ def save_plot_nodes():
         top_m = torch.stack(
             [F.softmax(top_m[:, k], dim=-1) for k in range(top_m.size(1))]).transpose(0,
                                                                   1)  # (batch_size, K, neighbourhood_size)
-        print(top_m[0])
+        print(top_m[0][0])
         for j, iid in enumerate(image_ids):
             adj_m = adj_mat[j]
             boxes = np.asarray(dataset_test.bbox[str(iid)])
