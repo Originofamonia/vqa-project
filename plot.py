@@ -173,7 +173,7 @@ def save_plot_nodes():
 
             h_max_idx, count = np.unique(h_max_indices[j].detach().cpu().numpy(), return_counts=True)
             count_sort_ind = np.argsort(-count)
-            h_max_boxes = boxes[h_max_idx[count_sort_ind][:10]]
+            h_max_boxes = boxes[h_max_idx[count_sort_ind][:5]]
             f2 = os.path.join(args.plot_dir, f"{iid.strip('.jpg')}_h_max.jpg")
             plot_connect_lines(mosaic, h_max_boxes, f2, color=None, line_thickness=None)
 
