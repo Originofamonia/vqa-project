@@ -232,7 +232,7 @@ def save_plot_nodes():
             # h_max_boxes = boxes[h_max_idx[count_sort_ind][:10]]
             edges = topm[j].flatten()
             edges_sorted, edges_ind = torch.sort(edges, descending=True)
-            rows = edges_ind / topm.size(1)
+            rows = edges_ind // topm.size(1)
             cols = edges_ind % topm.size(-1)
 
             f2 = os.path.join(args.plot_dir, f"{iid.strip('.jpg')}_h_max.jpg")
