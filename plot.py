@@ -48,7 +48,7 @@ def plot_one_box(x, img, color=None, label=None, line_thickness=None):
     c1, c2 = (int(x[0]), int(x[1])), (int(x[2]), int(x[3]))
     cv2.rectangle(img, c1, c2, color, thickness=tl, lineType=cv2.LINE_AA)
     center = (int((x[0] + x[2]) / 2), int((x[1] + x[3]) / 2))
-    cv2.circle(img, center, radius=0, color=color, thickness=tl)
+    cv2.circle(img, center, radius=0, color=color, thickness=tl*2)
     if label:
         tf = max(tl - 1, 1)  # font thickness
         t_size = cv2.getTextSize(label, 0, fontScale=tl / 3, thickness=tf)[0]
@@ -56,6 +56,10 @@ def plot_one_box(x, img, color=None, label=None, line_thickness=None):
         cv2.rectangle(img, c1, c2, color, -1, cv2.LINE_AA)  # filled
         cv2.putText(img, label, (c1[0], c1[1] - 2), 0, tl / 3, [225, 255, 255],
                     thickness=tf, lineType=cv2.LINE_AA)
+
+
+def plot_line_between_boxes(img, winner, neighbors, color=None, label=None, line_thickness=None):
+    pass
 
 
 def plot_image(image, boxes, findings, paths=None, fname='images.jpg',
@@ -111,7 +115,7 @@ def plot_image(image, boxes, findings, paths=None, fname='images.jpg',
 
     # if boxes.shape[0]:
     #     # absolute coords need scale if image scales
-    #     boxes *= scale_factor
+    #     boxes *= scale_factor  remove this, otherwise box & img don't align
     # boxes[[0, 2]] += block_x
     # boxes[[1, 3]] += block_y
     for j, box in enumerate(boxes):
@@ -154,10 +158,6 @@ def save_plot_nodes():
     args, parser, unparsed = input_args()
     args.n_kernels = kernels_list[0]
     args.neighbourhood_size = neighbors_list[0]
-    # img_size = 640
-    # stride = 32
-    # shapes = [[1, 1]]
-    # pad = 0.0
 
     model_file = os.path.join(args.save_dir, 'gcn_51_30.000.pt')
     dataset_test = ImageclefDataset(args, train=False)
@@ -184,10 +184,9 @@ def save_plot_nodes():
         q_batch, a_batch, vote_batch, i_batch, k_batch, qlen_batch = \
             batch_to_cuda(test_batch)
         image_ids = test_batch[-1]
-        logits, _ = model(q_batch, i_batch, k_batch, qlen_batch)
+        logits, adj_mat = model(q_batch, i_batch, k_batch, qlen_batch)
         for j, iid in enumerate(image_ids):
             boxes = np.asarray(dataset_test.bbox[str(iid)])
-            # print(boxes)
             img_h, img_w = np.asarray(dataset_test.sizes[str(iid)])
             img = cv2.imread(os.path.join(image_path, iid))
             resized_img = cv2.resize(img, (img_h, img_w))
