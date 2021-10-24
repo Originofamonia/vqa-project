@@ -110,11 +110,13 @@ def plot_boxes(image, boxes, findings, paths=None, fname='images.jpg',
         image = cv2.resize(image, (w, h))
 
     mosaic = image
-    lower_red = np.array([50, 0, 0])  # RGB
-    upper_red = np.array([255, 255, 255])
-    color_step = (upper_red - lower_red) / len(boxes)
+    lower_red = np.array([0, 0, 255])  # RGB
+    hsv_red = cv2.cvtColor(lower_red, cv2.COLOR_BGR2HSV)
+    white = np.array([255, 255, 255])
+    hsv_white = cv2.cvtColor(white, cv2.COLOR_BGR2HSV)
+    color_step = (hsv_white - hsv_red) / len(boxes)
     for j, box in enumerate(boxes):
-        c = lower_red + j * color_step
+        c = hsv_red + j * color_step
         plot_one_box(box, mosaic, label=None, color=c,
                      line_thickness=tl)
 
