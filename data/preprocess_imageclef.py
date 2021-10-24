@@ -23,7 +23,7 @@ exclude = set(string.punctuation)
 def parse_box_feat():
     # fieldnames = ['image_id', 'image_w', 'image_h', 'num_boxes', 'boxes',
     #               'features']
-    n_obj = 17  # n_obj per image
+    n_obj = 20  # n_obj per image
     detect_file = 'detect_feat_path.pt'
     gaze_file = 'gaze_feat_path.pt'
     gaze_on_detect_file = 'gaze_on_detect_feat_path.pt'
