@@ -115,7 +115,7 @@ def plot_boxes(image, boxes, findings, paths=None, fname='images.jpg',
     for j, box in enumerate(boxes):
         c = lower_red + j * color_step
         plot_one_box(box, mosaic, label=None, color=c,
-                     line_thickness=tl)
+                     line_thickness=tl / (j+1))
 
     if fname:
         r = min(1280. / max(h, w) / ns, 1.0)  # ratio to limit image size
