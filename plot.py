@@ -175,6 +175,9 @@ def save_plot_nodes():
                 f"{dataset_test.a_itow[oix[i]]},"
                 f"{dataset_test.vqa[qid]['answer']}")
 
+        top_k, top_ind = torch.topk(
+            adj_mat, k=args.neighbourhood_size, dim=-1, sorted=True)
+
         for j, iid in enumerate(image_ids):
             adj_m = adj_mat[j]
             boxes = np.asarray(dataset_test.bbox[str(iid)])
