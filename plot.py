@@ -176,20 +176,22 @@ def save_plot_nodes():
                 f"{dataset_test.a_itow[oix[i]]},"
                 f"{dataset_test.vqa[qid]['answer']}")
 
-        topn, topn_ind = torch.max(adj_mat, dim=-1)  # select top n nodes
+        topn, topn_ind = torch.max(adj_mat, dim=-1)  # select top n node_i
         topn, topn_ind = torch.topk(topn, k=topn.size(1), dim=-1, sorted=True)
-        print(topn[0])
+        topn_ind = topn_ind.detach().cpu().numpy()
 
-        topm, topm_ind = torch.topk(  # select topm neighbors
-            adj_mat, k=args.neighbourhood_size, dim=-1, sorted=False)
+        topm, topm_ind = torch.topk(  # select topm neighbors node_j
+            adj_mat, k=args.neighbourhood_size, dim=-1, sorted=True)
         topm = torch.stack(
             [F.softmax(topm[:, k], dim=-1) for k in range(topm.size(1))]).transpose(0,
                                                                   1)  # (batch_size, K, neighbourhood_size)
-        print(topm[0][0])
+        # print(topm[0][0])
 
         for j, iid in enumerate(image_ids):
-            adj_m = adj_mat[j]
             boxes = np.asarray(dataset_test.bbox[str(iid)])
+            print(boxes)
+            boxes = boxes[topn_ind[j]]
+            print(boxes)
             img_h, img_w = np.asarray(dataset_test.sizes[str(iid)])
             img = cv2.imread(os.path.join(image_path, iid))
             resized_img = cv2.resize(img, (img_h, img_w))
