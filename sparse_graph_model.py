@@ -146,7 +146,7 @@ class Model(nn.Module):
             hidden_graph_1, neighbourhood_pseudo)
         hidden_graph_2 = F.relu(hidden_graph_2)
 
-        hidden_graph_2, _ = torch.max(hidden_graph_2, dim=1)
+        hidden_graph_2, h_max_indices = torch.max(hidden_graph_2, dim=1)
         h = F.relu(qenc).squeeze(1)*hidden_graph_2
 
         # Output classifier
@@ -155,7 +155,7 @@ class Model(nn.Module):
         hidden_1 = self.dropout(hidden_1)
         logits = self.out_2(hidden_1)
 
-        return logits, adjacency_matrix
+        return logits, adjacency_matrix, h_max_indices
 
     def _create_neighbourhood_feat(self, image, top_ind):
         """

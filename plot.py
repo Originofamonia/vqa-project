@@ -58,7 +58,7 @@ def plot_one_box(x, img, color=None, label=None, line_thickness=None):
                     thickness=tf, lineType=cv2.LINE_AA)
 
 
-def plot_line_between_boxes(img, winner, neighbors, color=None, label=None, line_thickness=None):
+def plot_line_between_boxes(img, h_max_idx, f, color=None, label=None, line_thickness=None):
     pass
 
 
@@ -68,15 +68,13 @@ def plot_image(image, boxes, findings, paths=None, fname='images.jpg',
     image: [h, w, ch] ndarray
     boxes: [n, 4] ndarray, xyxy
     """
-    # Plot image grid with labels
-
     # if isinstance(image, torch.Tensor):
     #     image = image.cpu().float().numpy()
     # for k, v in targets.items():
     #     if isinstance(v, torch.Tensor):
     #         targets[k] = v.cpu().numpy()
 
-    # un-normalise
+    # un-normalize
     if np.max(image) <= 1:
         image *= 255
 
@@ -93,56 +91,21 @@ def plot_image(image, boxes, findings, paths=None, fname='images.jpg',
         h = math.ceil(scale_factor * h)
         w = math.ceil(scale_factor * w)
 
-    # mosaic = np.full((int(ns * h), int(ns * w), 3), 255, dtype=np.uint8)  # init
-    # for i, img in enumerate(image):
-    #     if i == max_subplots:  # if last batch has fewer images than we expect
-    #         break
-
-    # block_x = int(w * (i // ns))
-    # block_y = int(h * (i % ns))
-
     if scale_factor < 1:
         image = cv2.resize(image, (w, h))
 
     mosaic = image
-    # if len(targets) > 0:
-    # image_targets = targets[targets[:, 0] == i]
-    # boxes = targets['boxes']
-    # classes = targets['labels']  # - 1
-    # labels = [names[class_id] for class_id in
-    #           classes]  # labels if no conf column
-    conf = None  # check for confidence presence (label vs pred)
 
-    # if boxes.shape[0]:
-    #     # absolute coords need scale if image scales
-    #     boxes *= scale_factor  remove this, otherwise box & img don't align
-    # boxes[[0, 2]] += block_x
-    # boxes[[1, 3]] += block_y
     for j, box in enumerate(boxes):
-        # cls = names.index(findings[j])
-        # color = colors[cls % len(colors)]
-        # cls = names[cls] if names else cls
-        # if len(findings) > 0:
-            # label = '%s' % cls
         plot_one_box(box, mosaic, label=None, color=None,
                      line_thickness=tl)
-
-    # Draw image filename labels
-    # if paths:
-    #     label = Path(paths[i]).name[:40]  # trim to 40 char
-    #     t_size = cv2.getTextSize(label, 0, fontScale=tl / 3, thickness=tf)[0]
-    #     cv2.putText(mosaic, label, (block_x + 5, block_y + t_size[1] + 5), 0, tl / 3, [220, 220, 220], thickness=tf,
-    #                 lineType=cv2.LINE_AA)
-
-    # Image border
-    # cv2.rectangle(mosaic, (block_x, block_y), (block_x + w, block_y + h), (255, 255, 255), thickness=3)
 
     if fname:
         r = min(1280. / max(h, w) / ns, 1.0)  # ratio to limit image size
         mosaic = cv2.resize(mosaic, (int(ns * w * r), int(ns * h * r)),
                             interpolation=cv2.INTER_AREA).astype(np.uint8)
         cv2.imwrite(fname, cv2.cvtColor(mosaic, cv2.COLOR_BGR2RGB))  # cv2 save
-        # Image.fromarray(mosaic).save(fname)  # PIL save
+
     return mosaic
 
 
@@ -184,7 +147,7 @@ def save_plot_nodes():
         q_batch, a_batch, vote_batch, i_batch, k_batch, qlen_batch = \
             batch_to_cuda(test_batch)
         image_ids = test_batch[-1]
-        logits, adj_mat = model(q_batch, i_batch, k_batch, qlen_batch)
+        logits, adj_mat, h_max_indices = model(q_batch, i_batch, k_batch, qlen_batch)
         print(logits.size())
         print(adj_mat.size())
         for j, iid in enumerate(image_ids):
@@ -193,57 +156,13 @@ def save_plot_nodes():
             img = cv2.imread(os.path.join(image_path, iid))
             resized_img = cv2.resize(img, (img_h, img_w))
 
-            f = os.path.join(args.plot_dir, f"{iid.strip('.jpg')}_boxes.jpg")
-            plot_image(resized_img, boxes, None, None, f, None)
+            f1 = os.path.join(args.plot_dir, f"{iid.strip('.jpg')}_boxes.jpg")
+            mosaic = plot_image(resized_img, boxes, None, None, f1, None)
 
-
-# def load_image(iid, image_path):
-#     img = cv2.imread(os.path.join(image_path, iid))
-#     assert img is not None, 'Image Not Found ' + os.path.join(image_path, iid)
-#     h0, w0 = img.shape[:2]  # orig hw
-#     r = 640 / max(h0, w0)  # resize image to img_size
-#     if r != 1:  # always resize down, only resize up if training with augmentation
-#         interp = cv2.INTER_AREA if r < 1 else cv2.INTER_LINEAR
-#         img = cv2.resize(img, (int(w0 * r), int(h0 * r)),
-#                          interpolation=interp)
-#     return img
-#
-#
-# def letterbox(img, new_shape=(640, 640), color=(114, 114, 114), auto=True,
-#               scaleFill=False, scaleup=True):
-#     # Resize image to a 32-pixel-multiple rectangle https://github.com/ultralytics/yolov3/issues/232
-#     shape = img.shape[:2]  # current shape [height, width]
-#     if isinstance(new_shape, int):
-#         new_shape = (new_shape, new_shape)
-#
-#     # Scale ratio (new / old)
-#     r = min(new_shape[0] / shape[0], new_shape[1] / shape[1])
-#     if not scaleup:  # only scale down, do not scale up (for better test mAP)
-#         r = min(r, 1.0)
-#
-#     # Compute padding
-#     ratio = r, r  # width, height ratios
-#     new_unpad = int(round(shape[1] * r)), int(round(shape[0] * r))
-#     dw, dh = new_shape[1] - new_unpad[0], new_shape[0] - new_unpad[
-#         1]  # wh padding
-#     if auto:  # minimum rectangle
-#         dw, dh = np.mod(dw, 32), np.mod(dh, 32)  # wh padding
-#     elif scaleFill:  # stretch
-#         dw, dh = 0.0, 0.0
-#         new_unpad = (new_shape[1], new_shape[0])
-#         ratio = new_shape[1] / shape[1], new_shape[0] / shape[
-#             0]  # width, height ratios
-#
-#     dw /= 2  # divide padding into 2 sides
-#     dh /= 2
-#
-#     if shape[::-1] != new_unpad:  # resize
-#         img = cv2.resize(img, new_unpad, interpolation=cv2.INTER_LINEAR)
-#     # top, bottom = int(round(dh - 0.1)), int(round(dh + 0.1))
-#     # left, right = int(round(dw - 0.1)), int(round(dw + 0.1))
-#     # img = cv2.copyMakeBorder(img, top, bottom, left, right, cv2.BORDER_CONSTANT,
-#     #                          value=color)  # add border
-#     return img, ratio, (dw, dh)
+            h_max_idx = h_max_indices[j].detach().cpu().numpy()
+            h_max_boxes = boxes[h_max_idx]
+            f2 = os.path.join(args.plot_dir, f"{iid.strip('.jpg')}_h_max.jpg")
+            plot_line_between_boxes(mosaic, h_max_boxes, f2, color=None, label=None, line_thickness=None)
 
 
 if __name__ == '__main__':

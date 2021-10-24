@@ -44,11 +44,11 @@ def save(args, model, path, name):
     torch.save(model.state_dict(), os.path.join(path, name))
 
 
-def total_vqa_score(output_batch, n_votes_batch):
+def total_vqa_score(logits, n_votes_batch):
     # computes the total vqa score as assessed by the challenge
 
     vqa_score = 0
-    _, oix = output_batch.data.max(1)
+    _, oix = logits.data.max(1)
     for i, pred in enumerate(oix):
         count = n_votes_batch[i, pred]
         vqa_score += min(count.item() / 3, 1)
