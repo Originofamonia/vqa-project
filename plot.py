@@ -45,7 +45,7 @@ def plot_one_box(x, img, color=None, label=None, line_thickness=None):
     # Plots one bounding box on image img
     tl = line_thickness or round(
         0.002 * (img.shape[0] + img.shape[1]) / 2) + 1  # line/font thickness
-    color = color if color.any() else [random.randint(0, 255) for _ in range(3)]
+    color = color if color is not None else [random.randint(0, 255) for _ in range(3)]
     c1, c2 = (int(x[0]), int(x[1])), (int(x[2]), int(x[3]))
     cv2.rectangle(img, c1, c2, color, thickness=tl, lineType=cv2.LINE_AA)
     center = (int((x[0] + x[2]) / 2), int((x[1] + x[3]) / 2))
@@ -109,11 +109,11 @@ def plot_boxes(image, boxes, findings, paths=None, fname='images.jpg',
         image = cv2.resize(image, (w, h))
 
     mosaic = image
-    lower_red = np.array([0, 50, 50])
-    upper_red = np.array([10, 255, 255])
+    lower_red = np.array([0, 0, 50])  # BGR
+    upper_red = np.array([255, 255, 255])
     color_step = (upper_red - lower_red) / len(boxes)
     for j, box in enumerate(boxes):
-        c = upper_red - j * color_step
+        c = lower_red + j * color_step
         plot_one_box(box, mosaic, label=None, color=c,
                      line_thickness=tl)
 
