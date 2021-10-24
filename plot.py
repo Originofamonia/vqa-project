@@ -58,9 +58,22 @@ def plot_one_box(x, img, color=None, label=None, line_thickness=None):
                     thickness=tf, lineType=cv2.LINE_AA)
 
 
-def plot_line_between_boxes(img, h_max_idx, f, color=None, label=None, line_thickness=None):
-    pass
+def plot_connect_lines(img, h_max_boxes, fname, color=None, line_thickness=None):
+    tl = line_thickness or round(
+        0.002 * (img.shape[0] + img.shape[1]) / 2) + 1  # line/font thickness
+    color = color or [random.randint(0, 255) for _ in range(3)]
+    for i, box_i in enumerate(h_max_boxes):
+        for j, box_j in enumerate(h_max_boxes[i:]):
+            center_i = (
+                int((box_i[0] + box_i[2]) / 2), int((box_i[1] + box_i[3]) / 2))
+            center_j = (
+            int((box_j[0] + box_j[2]) / 2), int((box_j[1] + box_j[3]) / 2))
+            cv2.line(img, center_i, center_j, color=color, thickness=tl)
 
+    if fname:
+        cv2.imwrite(fname, cv2.cvtColor(img, cv2.COLOR_BGR2RGB))  # cv2 save
+
+    return img
 
 def plot_image(image, boxes, findings, paths=None, fname='images.jpg',
                names=None, max_size=1024, max_subplots=16):
@@ -148,8 +161,7 @@ def save_plot_nodes():
             batch_to_cuda(test_batch)
         image_ids = test_batch[-1]
         logits, adj_mat, h_max_indices = model(q_batch, i_batch, k_batch, qlen_batch)
-        # print(logits.size())
-        # print(adj_mat.size())
+
         for j, iid in enumerate(image_ids):
             boxes = np.asarray(dataset_test.bbox[str(iid)])
             img_h, img_w = np.asarray(dataset_test.sizes[str(iid)])
@@ -163,7 +175,7 @@ def save_plot_nodes():
             count_sort_ind = np.argsort(-count)
             h_max_boxes = boxes[h_max_idx[count_sort_ind][:10]]
             f2 = os.path.join(args.plot_dir, f"{iid.strip('.jpg')}_h_max.jpg")
-            plot_line_between_boxes(mosaic, h_max_boxes, f2, color=None, label=None, line_thickness=None)
+            plot_connect_lines(mosaic, h_max_boxes, f2, color=None, line_thickness=None)
 
 
 if __name__ == '__main__':
