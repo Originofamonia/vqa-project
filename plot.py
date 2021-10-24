@@ -177,7 +177,7 @@ def save_plot_nodes():
                 f"{dataset_test.vqa[qid]['answer']}")
 
         top_m, top_ind = torch.topk(
-            adj_mat, k=args.neighbourhood_size, dim=-1, sorted=True)
+            adj_mat, k=args.neighbourhood_size, dim=-1, sorted=False)
         top_m = torch.stack(
             [F.softmax(top_m[:, k], dim=-1) for k in range(top_m.size(1))]).transpose(0,
                                                                   1)  # (batch_size, K, neighbourhood_size)
