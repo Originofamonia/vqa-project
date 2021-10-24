@@ -193,6 +193,7 @@ def save_plot_nodes():
                                                                   1)  # (batch_size, K, neighbourhood_size)
         topm_degree = torch.count_nonzero(topm, dim=-1)
         topm_deg_sorted, topm_deg_ind = torch.sort(topm_degree, dim=-1)  # to sort boxes by degree
+        topm_deg_ind = topm_deg_ind.detach().cpu().numpy()
 
         for j, iid in enumerate(image_ids):
             boxes = np.asarray(dataset_test.bbox[str(iid)])
