@@ -185,6 +185,8 @@ def save_plot_nodes():
             batch_to_cuda(test_batch)
         image_ids = test_batch[-1]
         logits, adj_mat = model(q_batch, i_batch, k_batch, qlen_batch)
+        print(logits.size())
+        print(adj_mat.size())
         for j, iid in enumerate(image_ids):
             boxes = np.asarray(dataset_test.bbox[str(iid)])
             img_h, img_w = np.asarray(dataset_test.sizes[str(iid)])
