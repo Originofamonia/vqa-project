@@ -82,8 +82,8 @@ def plot_connect_lines2(img, boxes, rows, cols, fname, color=None, line_thicknes
     """
     plot by edge weight
     """
-    rows = rows[:100]
-    cols = cols[:100]
+    rows = rows[:1000]
+    cols = cols[:1000]
     tl = line_thickness or round(
         0.002 * (img.shape[0] + img.shape[1]) / 2) + 1  # line/font thickness
     color = color or [random.randint(0, 255) for _ in range(3)]
