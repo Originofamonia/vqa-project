@@ -209,7 +209,7 @@ def save_plot_nodes():
             # count_sort_ind = np.argsort(-count)
             # h_max_boxes = boxes[h_max_idx[count_sort_ind][:10]]
             edges = topm[j].flatten()
-            topm_sorted, topm_ind = torch.sort(topm[j])
+            topm_sorted, topm_ind = torch.sort(edges)
 
             f2 = os.path.join(args.plot_dir, f"{iid.strip('.jpg')}_h_max.jpg")
             plot_connect_lines(mosaic, h_max_boxes, f2, color=None, line_thickness=None)
