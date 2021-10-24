@@ -76,7 +76,7 @@ def plot_connect_lines(img, h_max_boxes, fname, color=None, line_thickness=None)
 
     return img
 
-def plot_image(image, boxes, findings, paths=None, fname='images.jpg',
+def plot_boxes(image, boxes, findings, paths=None, fname='images.jpg',
                names=None, max_size=1024, max_subplots=16):
     """
     image: [h, w, ch] ndarray
@@ -109,10 +109,12 @@ def plot_image(image, boxes, findings, paths=None, fname='images.jpg',
         image = cv2.resize(image, (w, h))
 
     mosaic = image
-
+    c = (0, 0, 255)  # BGR
+    color_step = int(255 / len(boxes))
     for j, box in enumerate(boxes):
-        plot_one_box(box, mosaic, label=None, color=None,
-                     line_thickness=tl / (j + 1))
+        c = (0, 0, 255 - j * color_step)
+        plot_one_box(box, mosaic, label=None, color=c,
+                     line_thickness=tl)
 
     if fname:
         r = min(1280. / max(h, w) / ns, 1.0)  # ratio to limit image size
@@ -189,15 +191,13 @@ def save_plot_nodes():
 
         for j, iid in enumerate(image_ids):
             boxes = np.asarray(dataset_test.bbox[str(iid)])
-            print(boxes)
             boxes = boxes[topn_ind[j]]
-            print(boxes)
             img_h, img_w = np.asarray(dataset_test.sizes[str(iid)])
             img = cv2.imread(os.path.join(image_path, iid))
             resized_img = cv2.resize(img, (img_h, img_w))
 
             f1 = os.path.join(args.plot_dir, f"{iid.strip('.jpg')}_boxes.jpg")
-            mosaic = plot_image(resized_img, boxes, None, None, f1, None)
+            mosaic = plot_boxes(resized_img, boxes, None, None, f1, None)
 
             h_max_idx, count = np.unique(h_max_indices[j].detach().cpu().numpy(), return_counts=True)
             count_sort_ind = np.argsort(-count)

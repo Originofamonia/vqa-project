@@ -38,7 +38,7 @@ os.environ['CUDA_VISIBLE_DEVICES'] = '1'
 
 def train(args, f):
     """
-        Train a VQA model using the training set
+    Train a VQA model using the training set
     """
 
     # set random seed
