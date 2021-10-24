@@ -49,13 +49,13 @@ def plot_one_box(x, img, color=None, label=None, line_thickness=None):
     cv2.rectangle(img, c1, c2, color, thickness=tl, lineType=cv2.LINE_AA)
     center = (int((x[0] + x[2]) / 2), int((x[1] + x[3]) / 2))
     cv2.circle(img, center, radius=0, color=color, thickness=tl*2)
-    if label:
-        tf = max(tl - 1, 1)  # font thickness
-        t_size = cv2.getTextSize(label, 0, fontScale=tl / 3, thickness=tf)[0]
-        c2 = c1[0] + t_size[0], c1[1] - t_size[1] - 3
-        cv2.rectangle(img, c1, c2, color, -1, cv2.LINE_AA)  # filled
-        cv2.putText(img, label, (c1[0], c1[1] - 2), 0, tl / 3, [225, 255, 255],
-                    thickness=tf, lineType=cv2.LINE_AA)
+    # if label:
+    #     tf = max(tl - 1, 1)  # font thickness
+    #     t_size = cv2.getTextSize(label, 0, fontScale=tl / 3, thickness=tf)[0]
+    #     c2 = c1[0] + t_size[0], c1[1] - t_size[1] - 3
+    #     cv2.rectangle(img, c1, c2, color, -1, cv2.LINE_AA)  # filled
+    #     cv2.putText(img, label, (c1[0], c1[1] - 2), 0, tl / 3, [225, 255, 255],
+    #                 thickness=tf, lineType=cv2.LINE_AA)
 
 
 def plot_connect_lines(img, h_max_boxes, fname, color=None, line_thickness=None):
@@ -111,7 +111,7 @@ def plot_image(image, boxes, findings, paths=None, fname='images.jpg',
 
     for j, box in enumerate(boxes):
         plot_one_box(box, mosaic, label=None, color=None,
-                     line_thickness=tl)
+                     line_thickness=tl / (j + 1))
 
     if fname:
         r = min(1280. / max(h, w) / ns, 1.0)  # ratio to limit image size
@@ -176,6 +176,7 @@ def save_plot_nodes():
                 f"{dataset_test.vqa[qid]['answer']}")
 
         for j, iid in enumerate(image_ids):
+            adj_m = adj_mat[j]
             boxes = np.asarray(dataset_test.bbox[str(iid)])
             img_h, img_w = np.asarray(dataset_test.sizes[str(iid)])
             img = cv2.imread(os.path.join(image_path, iid))
@@ -186,7 +187,7 @@ def save_plot_nodes():
 
             h_max_idx, count = np.unique(h_max_indices[j].detach().cpu().numpy(), return_counts=True)
             count_sort_ind = np.argsort(-count)
-            h_max_boxes = boxes[h_max_idx[count_sort_ind][:5]]
+            h_max_boxes = boxes[h_max_idx[count_sort_ind][:10]]
             f2 = os.path.join(args.plot_dir, f"{iid.strip('.jpg')}_h_max.jpg")
             plot_connect_lines(mosaic, h_max_boxes, f2, color=None, line_thickness=None)
 

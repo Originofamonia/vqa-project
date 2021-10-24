@@ -269,7 +269,7 @@ def input_args():
                         help='question embedding dimension')
     parser.add_argument('--neighbourhood_size', type=int, default=19,
                         help='topm number of graph neighbours to consider')
-    parser.add_argument('--n_obj', type=int, default=60,
+    parser.add_argument('--n_obj', type=int, default=51,
                         help='number of boxes per image')
     parser.add_argument('--data_dir', metavar='', type=str, default='data',
                         help='path to data directory')
