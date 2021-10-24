@@ -148,8 +148,8 @@ def save_plot_nodes():
             batch_to_cuda(test_batch)
         image_ids = test_batch[-1]
         logits, adj_mat, h_max_indices = model(q_batch, i_batch, k_batch, qlen_batch)
-        print(logits.size())
-        print(adj_mat.size())
+        # print(logits.size())
+        # print(adj_mat.size())
         for j, iid in enumerate(image_ids):
             boxes = np.asarray(dataset_test.bbox[str(iid)])
             img_h, img_w = np.asarray(dataset_test.sizes[str(iid)])
@@ -159,7 +159,7 @@ def save_plot_nodes():
             f1 = os.path.join(args.plot_dir, f"{iid.strip('.jpg')}_boxes.jpg")
             mosaic = plot_image(resized_img, boxes, None, None, f1, None)
 
-            h_max_idx = h_max_indices[j].detach().cpu().numpy()
+            h_max_idx, counts = np.unique(h_max_indices[j].detach().cpu().numpy(), return_counts=True)
             h_max_boxes = boxes[h_max_idx]
             f2 = os.path.join(args.plot_dir, f"{iid.strip('.jpg')}_h_max.jpg")
             plot_line_between_boxes(mosaic, h_max_boxes, f2, color=None, label=None, line_thickness=None)
