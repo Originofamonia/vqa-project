@@ -235,10 +235,10 @@ def save_plot_nodes():
             # h_max_boxes = boxes[h_max_idx[count_sort_ind][:10]]
             edges = topm[j].flatten()
             edges_sorted, edges_ind = torch.sort(edges, descending=True)
-            rows = edges_ind // topm.size(1)
+            rows = torch.div(edges_ind, topm.size(1), rounding_mode='trunc')
             cols = edges_ind % topm.size(-1)
             real_ind = topm_ind[j][rows, cols]  # fetch real indices
-            real_rows = real_ind // adj_mat.size(1)
+            real_rows = torch.div(real_ind, adj_mat.size(1), rounding_mode='trunc')
             real_cols = real_ind % adj_mat.size(-1)
             f2 = os.path.join(args.plot_dir, f"{iid.strip('.jpg')}_h_max.jpg")
             # plot_connect_lines(mosaic, h_max_boxes, f2, color=None, line_thickness=None)
