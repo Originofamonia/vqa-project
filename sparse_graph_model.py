@@ -223,7 +223,7 @@ class Model(nn.Module):
         # extract top k neighbours for each node and normalise
         top_k, top_ind = torch.topk(
             adjacency_matrix, k=neighbourhood_size, dim=-1, sorted=False)
-        top_k = torch.stack([F.softmax(top_k[:, k]) for k in range(K)]).transpose(0, 1)  # (batch_size, K, neighbourhood_size)
+        top_k = torch.stack([F.softmax(top_k[:, k], dim=-1) for k in range(K)]).transpose(0, 1)  # (batch_size, K, neighbourhood_size)
 
         # select top m features and their pseudo coordinates
         neighbourhood_image = \
