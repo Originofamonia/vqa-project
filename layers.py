@@ -179,7 +179,7 @@ class GraphLearner(Module):
         - adjacency matrix (batch_size, K, K)
         """
 
-        graph_nodes = graph_nodes.view(-1, self.in_dim)
+        # graph_nodes = graph_nodes.view(-1, self.in_dim)
 
         # layer 1
         h = self.edge_layer_1(graph_nodes)
