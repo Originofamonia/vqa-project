@@ -34,8 +34,8 @@ def parse_box_feat():
     gaze_on_detect_tensors = torch.load(gaze_on_detect_file)
     # {'feat': selected_feats, 'image_id': filepaths}
 
-    boxes = zarr.open_group('imageclef_boxes.zarr', mode='w')
-    features = zarr.open_group('imageclef_features.zarr', mode='w')
+    boxes = zarr.open_group('mimic_boxes.zarr', mode='w')
+    features = zarr.open_group('mimic_features.zarr', mode='w')
     image_size = {}
     num_det_boxes = []
     num_gaze_boxes = []
@@ -104,12 +104,12 @@ def parse_box_feat():
     for k in dw.keys():
         dwh[k] = np.array([d0[k] for d0 in d])
     image_sizes = pd.DataFrame(dwh)
-    image_sizes.to_csv('imageclef_image_size.csv')
+    image_sizes.to_csv('mimic_image_size.csv')
 
-    dataset_path = '/home/qiyuan/2021summer/imageclef'
-    text0 = 'VQAnswering_2020_Train_QA_pairs.txt'
-    text1 = 'VQAnswering_2020_Val_QA_Pairs.txt'
-    text2 = 'VQA-Med-2021-VQAnswering-Task1-New-ValidationSet.txt'
+    # dataset_path = '/home/qiyuan/2021summer/imageclef'
+    # text0 = 'VQAnswering_2020_Train_QA_pairs.txt'
+    # text1 = 'VQAnswering_2020_Val_QA_Pairs.txt'
+    # text2 = 'VQA-Med-2021-VQAnswering-Task1-New-ValidationSet.txt'
 
     # qa_pairs0 = all_qa_pairs(dataset_path, text0)
     # qa_pairs1 = all_qa_pairs(dataset_path, text1)
@@ -117,25 +117,15 @@ def parse_box_feat():
     # qa_pairs0.extend(qa_pairs1)
     # qa_pairs0.extend(qa_pairs2)
 
-    valid_qa_pairs0 = append_valid_qa_pairs(dataset_path, image_ids, text0)
-    valid_qa_pairs1 = append_valid_qa_pairs(dataset_path, image_ids, text1)
-    valid_qa_pairs2 = append_valid_qa_pairs(dataset_path, image_ids, text2)
-
-    valid_qa_pairs0.extend(valid_qa_pairs1)
-    valid_qa_pairs0.extend(valid_qa_pairs2)
-    with open('imageclef_qa_pairs.csv', 'w', newline='') as f:
-        writer = csv.writer(f)
-        writer.writerows(valid_qa_pairs0)
-
-
-def get_qa_pairs():
-    """
-    merged to parse_box_feat func, obsolete.
-    Get filtered QA pairs and save to a new txt file. Only need once.
-    """
-    filename = 'feat_path_yolo.pt'
-    tensors = torch.load(filename)
-    image_ids = tensors['image_id']
+    # valid_qa_pairs0 = append_valid_qa_pairs(dataset_path, image_ids, text0)
+    # valid_qa_pairs1 = append_valid_qa_pairs(dataset_path, image_ids, text1)
+    # valid_qa_pairs2 = append_valid_qa_pairs(dataset_path, image_ids, text2)
+    #
+    # valid_qa_pairs0.extend(valid_qa_pairs1)
+    # valid_qa_pairs0.extend(valid_qa_pairs2)
+    # with open('imageclef_qa_pairs.csv', 'w', newline='') as f:
+    #     writer = csv.writer(f)
+    #     writer.writerows(valid_qa_pairs0)
 
 
 def all_qa_pairs(dataset_path, text):
@@ -156,7 +146,7 @@ def append_valid_qa_pairs(dataset_path, image_ids, text):
 
 
 def process_text():
-    filename = 'imageclef_qa_pairs.csv'
+    filename = 'mimic_qa_pairs.csv'
     # Combine questions and answers in the same json file
     data = []
     with open(filename, newline='') as csvfile:
@@ -174,18 +164,18 @@ def process_text():
 
             data.append(row)
 
-    json.dump(data, open('vqa_imageclef_combined.json', 'w'))
+    json.dump(data, open('vqa_mimic_combined.json', 'w'))
 
 
 def tokenize_questions():
-    qa = json.load(open('vqa_imageclef_combined.json'))
+    qa = json.load(open('vqa_mimic_combined.json'))
     qas = len(qa)
     for i, row in enumerate(tqdm(qa)):
         row['question_toked'] = [t.text if '?' not in t.text else t.text[:-1]
                                  for t in tokenizer(row['question'].lower())]
         # get spacey tokens and remove question marks
         if i == qas - 1:
-            json.dump(qa, open('vqa_imageclef_toked.json', 'w'))
+            json.dump(qa, open('vqa_mimic_toked.json', 'w'))
 
 
 def process_questions(q):
@@ -220,7 +210,7 @@ def process_questions(q):
     # a 1-indexed vocab translation table
     itow = {i + 1: w for i, w in enumerate(vocab)}
     wtoi = {w: i + 1 for i, w in enumerate(vocab)}  # inverse table
-    pickle.dump({'itow': itow, 'wtoi': wtoi}, open('imageclef_q_dict.p', 'wb'))
+    pickle.dump({'itow': itow, 'wtoi': wtoi}, open('mimic_q_dict.p', 'wb'))
 
 
 def process_answers(q):
@@ -235,7 +225,7 @@ def process_answers(q):
     # a 0-indexed vocabulary translation table
     itow = {i: w for i, w in enumerate(vocab)}
     wtoi = {w: i for i, w in enumerate(vocab)}  # inverse table
-    pickle.dump({'itow': itow, 'wtoi': wtoi}, open('imageclef_a_dict.p', 'wb'))
+    pickle.dump({'itow': itow, 'wtoi': wtoi}, open('mimic_a_dict.p', 'wb'))
 
     for row in q:
         accepted_answers = 0
@@ -250,27 +240,11 @@ def process_answers(q):
 
         row['answers_w_scores'] = answers_scores
 
-    json.dump(q, open('vqa_imageclef_final.json', 'w'))
+    json.dump(q, open('vqa_mimic_final.json', 'w'))
 
 
 def count_labels():
-    # dataset_path = '/home/qiyuan/2021summer/imageclef'
-    # text0 = 'VQAnswering_2020_Train_QA_pairs.txt'
-    # text1 = 'VQAnswering_2020_Val_QA_Pairs.txt'
-    # text2 = 'VQA-Med-2021-VQAnswering-Task1-New-ValidationSet.txt'
-    #
-    # qa_pairs0 = all_qa_pairs(dataset_path, text0)
-    # qa_pairs1 = all_qa_pairs(dataset_path, text1)
-    # qa_pairs2 = all_qa_pairs(dataset_path, text2)
-    # qa_pairs0.extend(qa_pairs1)
-    # qa_pairs0.extend(qa_pairs2)
-    #
-    # with open('imageclef_all_qa_pairs.csv', 'w', newline='') as f:
-    #     writer = csv.writer(f)
-    #     writer.writerow(['image_id', 'question', 'answer'])
-    #     writer.writerows(qa_pairs0)
-
-    df = pd.read_csv('imageclef_qa_pairs.csv')
+    df = pd.read_csv('mimic_qa_pairs.csv')
     values, counts = np.unique(df['yes'].values, return_counts=True)
     reverse_indices = counts.argsort()[::-1]
     sorted_values = values[reverse_indices]
@@ -281,9 +255,11 @@ def count_labels():
 
 if __name__ == '__main__':
     parse_box_feat()  # run once
-    process_text()
-    tokenize_questions()
-    t = json.load(open('vqa_imageclef_toked.json'))
-    process_questions(t)
-    process_answers(t)
+
+    # process_text()
+    # tokenize_questions()
+    # t = json.load(open('vqa_mimic_toked.json'))
+    # process_questions(t)
+    # process_answers(t)
+
     # count_labels()
