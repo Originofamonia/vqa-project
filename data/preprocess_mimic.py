@@ -235,7 +235,7 @@ def process_answers(q):
     for row in q:
         accepted_answers = 0
         answers_scores = []
-        for w, c in row['answers'].items():
+        for w, c in row['answers']:
             if w in vocab:
                 accepted_answers += c
                 answers_scores.append((w, c / accepted_answers))
