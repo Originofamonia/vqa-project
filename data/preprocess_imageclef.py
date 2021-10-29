@@ -70,8 +70,9 @@ def parse_box_feat():
             merged_box = torch.cat((det_feat[:, -6:-2], gaze_feat[:, -6:-2], gaze_det_feat[:, -4:]), dim=0)
             # sorted_feat = sorted_feat[:n_obj]  # select top 10 conf feat
             item['num_boxes'] = len(merged_box)
-            img = Image.open(image_id)
-            item['image_id'] = image_id.split('/')[-1]
+            image_id = image_id.split('/')[-1]
+            img = Image.open(os.path.join(imgpath, image_id))
+            item['image_id'] = image_id
             image_ids.append(image_id)
             item['boxes'] = merged_box.cpu().numpy()
             item['feat'] = merged_feat.cpu().numpy()
