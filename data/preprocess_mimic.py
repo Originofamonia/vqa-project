@@ -258,8 +258,8 @@ def count_labels():
 if __name__ == '__main__':
     # parse_box_feat()  # run once
 
-    process_text()
-    # tokenize_questions()
+    # process_text()
+    tokenize_questions()
     # t = json.load(open('vqa_mimic_toked.json'))
     # process_questions(t)
     # process_answers(t)
