@@ -28,7 +28,7 @@ def parse_box_feat():
     gaze_file = 'mimic_gaze_feat_path.pt'
     gaze_on_detect_file = 'mimic_gaze_on_detect_feat_path.pt'
     # imgpath = '/home/qiyuan/2021summer/imageclef/images/'
-    # imgpath =
+
     detect_tensors = torch.load(detect_file)
     gaze_tensors = torch.load(gaze_file)
     gaze_on_detect_tensors = torch.load(gaze_on_detect_file)
@@ -71,7 +71,7 @@ def parse_box_feat():
             merged_box = torch.cat((det_feat[:, -6:-2], gaze_feat[:, -6:-2], gaze_det_feat[:, -4:]), dim=0)
             # sorted_feat = sorted_feat[:n_obj]  # select top 10 conf feat
             item['num_boxes'] = len(merged_box)
-            img = Image.open(os.path.join(imgpath, image_id))
+            img = Image.open(image_id)
             item['image_id'] = image_id
             image_ids.append(image_id)
             item['boxes'] = merged_box.cpu().numpy()
