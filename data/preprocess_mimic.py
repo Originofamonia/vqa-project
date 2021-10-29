@@ -7,6 +7,7 @@ import json
 import numpy as np
 import pandas as pd
 import zarr
+import collections
 from tqdm import tqdm
 import torch
 from PIL import Image
@@ -161,8 +162,9 @@ def process_text():
             row['image_id'] = q[3]
 
             # load answers
-            row['answer'] = q[5]
-            row['answers'] = {q[5]: 10}
+            answers = q[5].split(';')
+            # row['answer'] = q[5]
+            row['answers'] = collections.Counter(answers).most_common()
 
             data.append(row)
 
@@ -218,7 +220,7 @@ def process_questions(q):
 def process_answers(q):
     counts = {}
     for row in q:
-        counts[row['answer']] = counts.get(row['answer'], 0) + 1
+        counts[row['answers']] = counts.get(row['answers'], 0) + 1
 
     cw = sorted([(count, w) for w, count in counts.items()], reverse=True)
 
