@@ -157,12 +157,12 @@ def combine_qa():
                 continue
             row = {}
             # load questions info
-            row['question'] = q[4]
+            row['question'] = q[5]
             row['question_id'] = i
-            row['image_id'] = q[3]
+            row['image_id'] = q[4]
 
             # load answers
-            answers = q[5].split(';')
+            answers = q[6].split(';')
             # row['answer'] = q[5]
             row['answers'] = collections.Counter(answers).most_common()
 
