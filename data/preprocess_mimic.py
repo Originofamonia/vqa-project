@@ -156,13 +156,13 @@ def process_text():
                 continue
             row = {}
             # load questions info
-            row['question'] = q[1]
+            row['question'] = q[4]
             row['question_id'] = i
-            row['image_id'] = q[0]
+            row['image_id'] = q[3]
 
             # load answers
-            row['answer'] = q[2]
-            row['answers'] = {q[2]: 10}
+            row['answer'] = q[5]
+            row['answers'] = {q[5]: 10}
 
             data.append(row)
 
@@ -259,9 +259,9 @@ if __name__ == '__main__':
     # parse_box_feat()  # run once
 
     process_text()
-    tokenize_questions()
-    t = json.load(open('vqa_mimic_toked.json'))
-    process_questions(t)
-    process_answers(t)
+    # tokenize_questions()
+    # t = json.load(open('vqa_mimic_toked.json'))
+    # process_questions(t)
+    # process_answers(t)
 
     # count_labels()
