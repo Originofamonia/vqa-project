@@ -272,11 +272,11 @@ def select_mimic_qa_pairs():
 
 if __name__ == '__main__':
     # parse_box_feat()  # run once
-    # select_mimic_qa_pairs()
-    combine_qa()
-    tokenize_questions()
-    t = json.load(open('vqa_mimic_toked.json'))
-    process_questions(t)
-    process_answers(t)
+    select_mimic_qa_pairs()
+    # combine_qa()
+    # tokenize_questions()
+    # t = json.load(open('vqa_mimic_toked.json'))
+    # process_questions(t)
+    # process_answers(t)
 
     # count_labels()
