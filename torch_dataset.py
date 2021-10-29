@@ -300,7 +300,48 @@ class ImageclefDataset(Dataset):
 class MimicDataset(ImageclefDataset):
     def __init__(self, args, train=True):
         super(MimicDataset, self).__init__(args, train)
+        # Set parameters
+        self.data_dir = args.data_dir  # directory where the data is stored
+        self.emb_dim = args.emb  # question embedding dimension
+        self.train = train  # train (True) or eval (False) mode
+        self.seqlen = 15  # maximum question sequence length
 
+        # Load training question dictionary
+        q_dict = pickle.load(
+            open(os.path.join(self.data_dir, 'mimic_q_dict.p'), 'rb'))
+        self.q_itow = q_dict['itow']
+        self.q_wtoi = q_dict['wtoi']
+        self.q_words = len(self.q_itow) + 1
+
+        # Load training answer dictionary
+        a_dict = pickle.load(
+            open(os.path.join(self.data_dir, 'mimic_a_dict.p'), 'rb'))
+        self.a_itow = a_dict['itow']
+        self.a_wtoi = a_dict['wtoi']
+        self.n_answers = len(self.a_itow) + 1
+
+        # Load image features and bounding boxes
+        self.i_feat = zarr.open(os.path.join(
+            self.data_dir, 'mimic_features.zarr'), mode='r')
+        self.bbox = zarr.open(os.path.join(
+            self.data_dir, 'mimic_boxes.zarr'), mode='r')
+        self.sizes = pd.read_csv(os.path.join(
+            self.data_dir, 'mimic_image_size.csv'))
+
+        # Load questions
+        if train:
+            self.vqa = json.load(
+                open(os.path.join(self.data_dir, 'vqa_mimic_final.json')))
+        else:
+            self.vqa = json.load(
+                open(os.path.join(self.data_dir, 'vqa_mimic_final.json')))
+
+        self.n_questions = len(self.vqa)
+
+        print('Loading done')
+        self.feat_dim = self.i_feat[list(self.i_feat.keys())[
+            0]].shape[1] + 4  # + bbox
+        self.init_pretrained_wemb(self.emb_dim)
 
 
 class VQA_Dataset_Test(Dataset):
