@@ -262,9 +262,9 @@ def select_mimic_qa_pairs():
     detect_file = 'mimic_detect_feat_path.pt'
     detect_tensors = torch.load(detect_file)
     df = pd.read_csv('mimic_qa_pairs.csv')
-    # detect_tensors['image_id']
+    image_ids = [path.split('/')[-1].strip('.jpg') for path in detect_tensors['image_id']]
     for i, row in df.iterrows():
-        if row['image_id'] not in detect_tensors['image_id']:
+        if row['dicom_id'] not in image_ids:
             df = df.drop(i)
 
     df.to_csv('selected_mimic_qa_pairs.csv')
