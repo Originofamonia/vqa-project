@@ -141,9 +141,9 @@ def combine_qa(questions, annotations, phase):
 def main():
     parser = argparse.ArgumentParser(
         description='Preprocessing for VQA v2 text data')
-    parser.add_argument('--data', nargs='+',
+    parser.add_argument('--data', nargs='+', default='train',
                         help='train, val and/or test, list of data phases to be processed',
-                        required=True)
+                        )
     parser.add_argument('--nanswers', default=3000,
                         help='number of top answers to consider for classification.')
     args, unparsed = parser.parse_known_args()
