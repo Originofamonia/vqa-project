@@ -297,6 +297,12 @@ class ImageclefDataset(Dataset):
         return q, a, n_votes, qid, i, k, qlen, iid
 
 
+class MimicDataset(ImageclefDataset):
+    def __init__(self, args, train=True):
+        super(MimicDataset, self).__init__(args, train)
+
+
+
 class VQA_Dataset_Test(Dataset):
     def __init__(self, data_dir, emb_dim=300, train=True):
         self.data_dir = data_dir

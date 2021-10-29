@@ -255,9 +255,24 @@ def count_labels():
     print(new_qa_pairs)
 
 
+def select_mimic_qa_pairs():
+    """
+    select qa pairs from visual feature image_ids
+    """
+    detect_file = 'mimic_detect_feat_path.pt'
+    detect_tensors = torch.load(detect_file)
+    df = pd.read_csv('mimic_qa_pairs.csv')
+    # detect_tensors['image_id']
+    for i, row in df.iterrows():
+        if row['image_id'] not in detect_tensors['image_id']:
+            df = df.drop(i)
+
+    df.to_csv('selected_mimic_qa_pairs.csv')
+
+
 if __name__ == '__main__':
     # parse_box_feat()  # run once
-
+    select_mimic_qa_pairs()
     # combine_qa()
     # tokenize_questions()
     t = json.load(open('vqa_mimic_toked.json'))
