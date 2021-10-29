@@ -299,7 +299,6 @@ class ImageclefDataset(Dataset):
 
 class MimicDataset(ImageclefDataset):
     def __init__(self, args, train=True):
-        super(MimicDataset, self).__init__(args, train)
         # Set parameters
         self.data_dir = args.data_dir  # directory where the data is stored
         self.emb_dim = args.emb  # question embedding dimension
