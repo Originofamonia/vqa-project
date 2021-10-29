@@ -146,7 +146,7 @@ def append_valid_qa_pairs(dataset_path, image_ids, text):
     return valid_qa_pairs
 
 
-def process_text():
+def combine_qa():
     filename = 'mimic_qa_pairs.csv'
     # Combine questions and answers in the same json file
     data = []
@@ -257,10 +257,10 @@ def count_labels():
 if __name__ == '__main__':
     # parse_box_feat()  # run once
 
-    # process_text()
+    combine_qa()
     # tokenize_questions()
-    t = json.load(open('vqa_mimic_toked.json'))
-    process_questions(t)
-    process_answers(t)
+    # t = json.load(open('vqa_mimic_toked.json'))
+    # process_questions(t)
+    # process_answers(t)
 
     # count_labels()
