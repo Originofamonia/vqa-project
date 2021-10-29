@@ -199,12 +199,6 @@ def train(args, f):
                 f"{dataset_test.a_itow[oix[i]]},"
                 f"{dataset_test.vqa[qid]['answer']}")
 
-    # with open('infer_imageclef.csv', 'w') as f:
-    #     f.write('image_id,question,prediction,answer\n')
-    #     for line in results:
-    #         f.write(line)
-    #         f.write('\n')
-
     acc = test_correct / (10 * args.bsize) * 100
     print(f"neighbors: {args.neighbourhood_size}, kernels: {args.n_kernels}, Validation acc: {acc:.3f} %\n")
     f.write(f"neighbors: {args.neighbourhood_size}, kernels: {args.n_kernels}, Validation acc: {acc:.3f} %\n")
@@ -214,8 +208,12 @@ def train(args, f):
     epoch_acc = ep_correct * 100 / (n_batches * args.bsize)
 
     save(args, model, path=args.save_dir,
-         name=f"{args.name}_{args.n_obj}_{acc:.3f}.pt")
-
+         name=f"imageclef_{args.n_obj}_{epoch_acc:.3f}.pt")
+    with open(f'figures/imageclef_{args.n_obj}_{epoch_acc:.3f}.csv', 'w') as f:
+        f.write('image_id,question,prediction,answer\n')
+        for line in results:
+            f.write(line)
+            f.write('\n')
     print(
         'Epoch %02d done, average loss: %.3f, average accuracy: %.2f%%' % (
             args.ep, epoch_loss, epoch_acc))
