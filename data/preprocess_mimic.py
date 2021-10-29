@@ -236,9 +236,6 @@ def process_answers(q):
             if w in vocab:
                 accepted_answers += c
                 answers_scores.append((w, c / accepted_answers))
-        # for w, c in row['answers'].items():
-        #     if w in vocab:
-        #         answers_scores.append((w, c / accepted_answers))
 
         row['answers_w_scores'] = answers_scores
 
@@ -259,9 +256,9 @@ if __name__ == '__main__':
     # parse_box_feat()  # run once
 
     # process_text()
-    tokenize_questions()
-    # t = json.load(open('vqa_mimic_toked.json'))
-    # process_questions(t)
-    # process_answers(t)
+    # tokenize_questions()
+    t = json.load(open('vqa_mimic_toked.json'))
+    process_questions(t)
+    process_answers(t)
 
     # count_labels()
