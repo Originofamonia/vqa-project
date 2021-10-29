@@ -220,7 +220,8 @@ def process_questions(q):
 def process_answers(q):
     counts = {}
     for row in q:
-        counts[row['answers']] = counts.get(row['answers'], 0) + 1
+        for ans, c in row:
+            counts[ans] = counts.get(ans, 0) + 1
 
     cw = sorted([(count, w) for w, count in counts.items()], reverse=True)
 
