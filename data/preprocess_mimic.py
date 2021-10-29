@@ -152,6 +152,8 @@ def process_text():
     with open(filename, newline='') as csvfile:
         reader = csv.reader(csvfile)
         for i, q in enumerate(tqdm(reader)):
+            if i == 0:
+                continue
             row = {}
             # load questions info
             row['question'] = q[1]
