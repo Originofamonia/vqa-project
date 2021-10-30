@@ -192,6 +192,6 @@ class GraphLearner(Module):
         # outer product
         h = h.view(-1, self.n_obj, self.combined_dim)
 
-        # adjacency_matrix = torch.matmul(h, h.transpose(1, 2))
-        adjacency_matrix = torch.matmul(graph_nodes, graph_nodes.transpose(1, 2))
+        adjacency_matrix = torch.matmul(h, h.transpose(1, 2))
+        # adjacency_matrix = torch.matmul(graph_nodes, graph_nodes.transpose(1, 2))
         return adjacency_matrix

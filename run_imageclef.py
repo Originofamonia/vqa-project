@@ -121,10 +121,10 @@ def train(args, f):
     for ep in range(start_ep, start_ep + args.ep):
 
         scheduler.step()
-        ep_loss = 0.0
-        ep_correct = 0.0
-        ave_loss = 0.0
-        ave_correct = 0.0
+        ep_loss = 0
+        ep_correct = 0
+        ave_loss = 0
+        ave_correct = 0
         losses = []
         pbar = tqdm(enumerate(loader))
         for step, batch in pbar:
@@ -177,8 +177,7 @@ def train(args, f):
     print('Infer')
     test_correct = 0
     model.eval()
-
-    results = []
+    results = []  # inferred results
     for i, test_batch in tqdm(enumerate(loader_test)):
         q_batch, a_batch, vote_batch, i_batch, k_batch, qlen_batch = \
             batch_to_cuda(test_batch)
@@ -199,24 +198,18 @@ def train(args, f):
                 f"{dataset_test.a_itow[oix[i]]},"
                 f"{dataset_test.vqa[qid]['answer']}")
 
-    acc = test_correct / (10 * args.bsize) * 100
+    acc = test_correct * 100 / (n_batches * args.bsize)
     print(f"neighbors: {args.neighbourhood_size}, kernels: {args.n_kernels}, Validation acc: {acc:.3f} %\n")
     f.write(f"neighbors: {args.neighbourhood_size}, kernels: {args.n_kernels}, Validation acc: {acc:.3f} %\n")
 
     # save model and compute accuracy for epoch
-    epoch_loss = ep_loss / n_batches
-    epoch_acc = ep_correct * 100 / (n_batches * args.bsize)
+    # epoch_loss = ep_loss / n_batches
+    # epoch_acc = ep_correct * 100 / (n_batches * args.bsize)
 
     save(args, model, path=args.save_dir,
-         name=f"imageclef_{args.n_obj}_{epoch_acc:.3f}.pt")
-    with open(f'figures/imageclef_{args.n_obj}_{epoch_acc:.3f}.csv', 'w') as f:
-        f.write('image_id,question,prediction,answer\n')
-        for line in results:
-            f.write(line)
-            f.write('\n')
-    print(
-        'Epoch %02d done, average loss: %.3f, average accuracy: %.2f%%' % (
-            args.ep, epoch_loss, epoch_acc))
+         name=f"clef_{args.n_obj}_{args.n_kernels}_{args.neighbourhood_size}_{acc:.2f}.pt")
+
+    return results, acc
 
 
 
@@ -226,6 +219,7 @@ def main():
     kernels_list = [4, 8, 16, 32]  # can't be larger than n_obj
     # neighbors_list = [32]  # for 51 nodes best
     # kernels_list = [32]
+    best_acc = 0
     with open(f'grid_search_nodes_{args.n_obj}.txt', 'w') as f:
         for neighbors in neighbors_list:
             for kernels in kernels_list:
@@ -235,7 +229,14 @@ def main():
                 if len(unparsed) != 0:
                     raise SystemExit('Unknown argument: {}'.format(unparsed))
                 if args.train:
-                    train(args, f)
+                    results, acc = train(args, f)
+                    if acc > best_acc:
+                        best_acc = acc
+                        with open(f'figures/imageclef_{args.n_obj}_{acc:.2f}.csv', 'w') as f2:
+                            f2.write('image_id,question,prediction,answer\n')
+                            for line in results:
+                                f2.write(line)
+                                f2.write('\n')
 
                 if not args.train and not args.eval and not args.trainval and not args.test:
                     parser.print_help()
