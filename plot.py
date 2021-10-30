@@ -20,7 +20,6 @@ import torch.nn.functional as F
 from torch.utils.data import DataLoader
 from torch.utils.data.sampler import SequentialSampler
 
-
 from run_imageclef import input_args
 from sparse_graph_model import Model
 from torch_dataset import ImageclefDataset, collate_fn
@@ -45,12 +44,13 @@ def plot_one_box(x, img, color=None, label=None, line_thickness=None):
     # Plots one bounding box on image img
     tl = line_thickness or round(
         0.002 * (img.shape[0] + img.shape[1]) / 2) + 1  # line/font thickness
-    color = color if color is not None else [random.randint(0, 255) for _ in range(3)]
+    color = color if color is not None else [random.randint(0, 255) for _ in
+                                             range(3)]
     c1, c2 = (int(x[0]), int(x[1])), (int(x[2]), int(x[3]))
     # thickness must be integer
     cv2.rectangle(img, c1, c2, color, thickness=tl, lineType=cv2.LINE_AA)
     center = (int((x[0] + x[2]) / 2), int((x[1] + x[3]) / 2))
-    cv2.circle(img, center, radius=0, color=color, thickness=tl*2)
+    cv2.circle(img, center, radius=0, color=color, thickness=tl * 2)
     # if label:
     #     tf = max(tl - 1, 1)  # font thickness
     #     t_size = cv2.getTextSize(label, 0, fontScale=tl / 3, thickness=tf)[0]
@@ -60,7 +60,8 @@ def plot_one_box(x, img, color=None, label=None, line_thickness=None):
     #                 thickness=tf, lineType=cv2.LINE_AA)
 
 
-def plot_connect_lines(img, h_max_boxes, fname, color=None, line_thickness=None):
+def plot_connect_lines(img, h_max_boxes, fname, color=None,
+                       line_thickness=None):
     tl = line_thickness or round(
         0.002 * (img.shape[0] + img.shape[1]) / 2) + 1  # line/font thickness
     color = color or [random.randint(0, 255) for _ in range(3)]
@@ -69,7 +70,7 @@ def plot_connect_lines(img, h_max_boxes, fname, color=None, line_thickness=None)
             center_i = (
                 int((box_i[0] + box_i[2]) / 2), int((box_i[1] + box_i[3]) / 2))
             center_j = (
-            int((box_j[0] + box_j[2]) / 2), int((box_j[1] + box_j[3]) / 2))
+                int((box_j[0] + box_j[2]) / 2), int((box_j[1] + box_j[3]) / 2))
             cv2.line(img, center_i, center_j, color=color, thickness=tl)
 
     if fname:
@@ -78,7 +79,8 @@ def plot_connect_lines(img, h_max_boxes, fname, color=None, line_thickness=None)
     return img
 
 
-def plot_connect_lines2(img, boxes, rows, cols, fname, color=None, line_thickness=None):
+def plot_connect_lines2(img, boxes, rows, cols, fname, color=None,
+                        line_thickness=None):
     """
     plot by edge weight
     """
@@ -93,7 +95,7 @@ def plot_connect_lines2(img, boxes, rows, cols, fname, color=None, line_thicknes
         center_i = (
             int((box_i[0] + box_i[2]) / 2), int((box_i[1] + box_i[3]) / 2))
         center_j = (
-        int((box_j[0] + box_j[2]) / 2), int((box_j[1] + box_j[3]) / 2))
+            int((box_j[0] + box_j[2]) / 2), int((box_j[1] + box_j[3]) / 2))
         cv2.line(img, center_i, center_j, color=color, thickness=tl)
 
     if fname:
@@ -135,13 +137,13 @@ def plot_boxes(image, boxes, findings, paths=None, fname='images.jpg',
         image = cv2.resize(image, (w, h))
 
     mosaic = image
-    lower_red = np.uint8([0,100,100])  # RGB or HSV
-    # hsv_red = cv2.cvtColor(lower_red, cv2.COLOR_BGR2HSV)
-    white = np.uint8([0, 0, 100])
-    # hsv_white = cv2.cvtColor(white, cv2.COLOR_BGR2HSV)
-    color_step = (lower_red - white) / len(boxes)
+    red = np.uint8([255, 0, 0])  # RGB or HSV
+    # hsv_red = cv2.cvtColor(red, cv2.COLOR_BGR2HSV)
+    orange = np.uint8([255, 128, 0])
+    # hsv_white = cv2.cvtColor(orange, cv2.COLOR_BGR2HSV)
+    color_step = (red - orange) / len(boxes)
     for j, box in enumerate(boxes):
-        c = lower_red + j * color_step
+        c = red + j * color_step
         plot_one_box(box, mosaic, label=None, color=c,
                      line_thickness=tl)
 
@@ -193,7 +195,8 @@ def save_plot_nodes():
         q_batch, a_batch, vote_batch, i_batch, k_batch, qlen_batch = \
             batch_to_cuda(test_batch)
         image_ids = test_batch[-1]
-        logits, adj_mat, h_max_indices = model(q_batch, i_batch, k_batch, qlen_batch)
+        logits, adj_mat, h_max_indices = model(q_batch, i_batch, k_batch,
+                                               qlen_batch)
 
         qid_batch = test_batch[3]
         _, oix = logits.data.max(1)
@@ -215,8 +218,9 @@ def save_plot_nodes():
             adj_mat, k=args.neighbourhood_size, dim=-1, sorted=True)
         topm_ind = topm_ind.detach().cpu().numpy()
         topm = torch.stack(  # all edges
-            [F.softmax(topm[:, k], dim=-1) for k in range(topm.size(1))]).transpose(0,
-                                                                  1)  # (batch_size, K, neighbourhood_size)
+            [F.softmax(topm[:, k], dim=-1) for k in
+             range(topm.size(1))]).transpose(0,
+                                             1)  # (batch_size, K, neighbourhood_size)
 
         # topm_degree = torch.count_nonzero(topm, dim=-1)
         # print(topm_degree)
@@ -241,12 +245,14 @@ def save_plot_nodes():
             rows = torch.div(edges_ind, topm.size(1), rounding_mode='trunc')
             cols = edges_ind % topm.size(-1)
             real_ind = topm_ind[j][rows, cols]  # fetch real indices
-            real_rows = torch.div(real_ind, adj_mat.size(1), rounding_mode='trunc')
+            real_rows = torch.div(real_ind, adj_mat.size(1),
+                                  rounding_mode='trunc')
             real_cols = real_ind % adj_mat.size(-1)
             f2 = os.path.join(args.plot_dir, f"{iid.strip('.jpg')}_h_max.jpg")
             # plot_connect_lines(mosaic, h_max_boxes, f2, color=None, line_thickness=None)
-            plot_connect_lines2(mosaic, boxes, real_rows, real_cols, f2, color=None,
-                        line_thickness=None)
+            plot_connect_lines2(mosaic, boxes, real_rows, real_cols, f2,
+                                color=None,
+                                line_thickness=None)
     with open('infer_imageclef.csv', 'w') as f:
         f.write('image_id,question,prediction,answer\n')
         for line in results:
