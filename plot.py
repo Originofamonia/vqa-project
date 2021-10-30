@@ -216,7 +216,7 @@ def save_plot_nodes():
 
         topm, topm_ind = torch.topk(  # select topm neighbors node_j
             adj_mat, k=args.neighbourhood_size, dim=-1, sorted=True)
-        topm_ind = topm_ind.detach().cpu().numpy()
+        # topm_ind = topm_ind.detach().cpu().numpy()
         topm = torch.stack(  # all edges
             [F.softmax(topm[:, k], dim=-1) for k in
              range(topm.size(1))]).transpose(0,
@@ -244,8 +244,8 @@ def save_plot_nodes():
             edges_sorted, edges_ind = torch.sort(edges, descending=True)
             rows = torch.div(edges_ind, topm.size(1), rounding_mode='trunc')
             cols = edges_ind % topm.size(-1)
-            rows = rows.detach().cpu().numpy()
-            cols = cols.detach().cpu().numpy()
+            # rows = rows.detach().cpu().numpy()
+            # cols = cols.detach().cpu().numpy()
             real_ind = topm_ind[j][rows, cols]  # fetch real indices
             real_rows = torch.div(real_ind, adj_mat.size(1),
                                   rounding_mode='trunc')
