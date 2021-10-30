@@ -216,7 +216,9 @@ def save_plot_nodes():
         topm = torch.stack(  # all edges
             [F.softmax(topm[:, k], dim=-1) for k in range(topm.size(1))]).transpose(0,
                                                                   1)  # (batch_size, K, neighbourhood_size)
+        print(topm)
         topm_degree = torch.count_nonzero(topm, dim=-1)
+        print(topm_degree)
         topm_deg_sorted, topm_deg_ind = torch.sort(topm_degree, dim=-1)  # to sort boxes by degree
         topm_deg_ind = topm_deg_ind.detach().cpu().numpy()
 
