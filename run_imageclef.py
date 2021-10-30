@@ -198,7 +198,7 @@ def train(args, f):
                 f"{dataset_test.a_itow[oix[i]]},"
                 f"{dataset_test.vqa[qid]['answer']}")
 
-    acc = test_correct * 100 / (n_batches * args.bsize)
+    acc = test_correct * 100 / (n_batches * args.bsize)  # test_correct / (10 * args.bsize) * 100
     print(f"neighbors: {args.neighbourhood_size}, kernels: {args.n_kernels}, Validation acc: {acc:.3f} %\n")
     f.write(f"neighbors: {args.neighbourhood_size}, kernels: {args.n_kernels}, Validation acc: {acc:.3f} %\n")
 
@@ -232,7 +232,7 @@ def main():
                     results, acc = train(args, f)
                     if acc > best_acc:
                         best_acc = acc
-                        with open(f'figures/imageclef_{args.n_obj}_{acc:.2f}.csv', 'w') as f2:
+                        with open(f'figures/clef_{args.n_obj}_{acc:.2f}.csv', 'w') as f2:
                             f2.write('image_id,question,prediction,answer\n')
                             for line in results:
                                 f2.write(line)

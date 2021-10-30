@@ -161,13 +161,13 @@ def save_plot_nodes():
     3. winner box neighbors
     """
     image_path = '/home/qiyuan/2021summer/imageclef/images'
-    neighbors_list = [32]  # for 51 nodes best
+    neighbors_list = [36]  # for 51 nodes best
     kernels_list = [16]
     args, parser, unparsed = input_args()
     args.n_kernels = kernels_list[0]
     args.neighbourhood_size = neighbors_list[0]
 
-    model_file = os.path.join(args.save_dir, 'imageclef_51_41.250.pt')
+    model_file = os.path.join(args.save_dir, 'clef_51_16_36_97.50.pt')
     dataset_test = ImageclefDataset(args, train=False)
     test_sampler = SequentialSampler(dataset_test)
     loader_test = DataLoader(dataset_test, batch_size=args.bsize,
