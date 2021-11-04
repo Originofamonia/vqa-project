@@ -125,32 +125,31 @@ def append_valid_qa_pairs(dataset_path, image_ids, text):
     return valid_qa_pairs
 
 
-def combine_qa():
-    filename = 'mimic_train_qa_pairs.csv'
+def combine_qa(task):
+    filename = 'mimic_all_qa_pairs.csv'
     df = pd.read_csv(filename)
     train_df = df.iloc[:10000]
     test_df = df.iloc[10000:13000]
     # Combine questions and answers in the same json file
     data = []
-    with open(filename, newline='') as csvfile:
-        reader = csv.reader(csvfile)
-        for i, q in enumerate(tqdm(reader)):
-            if i == 0:
-                continue
-            row = {}
-            # load questions info
-            row['question'] = q[5]
-            row['question_id'] = i
-            row['image_id'] = q[4]
+    if task == 'train':
+        data = combine_qa_dict(data, train_df)
+    else:
+        data = combine_qa_dict(data, test_df)
 
-            # load answers
-            answers = q[6].split(';')
-            # row['answer'] = q[5]
-            row['answers'] = collections.Counter(answers).most_common()
+    json.dump(data, open(f'vqa_mimic_{task}_combined.json', 'w'))
 
-            data.append(row)
 
-    json.dump(data, open('vqa_mimic_combined.json', 'w'))
+def combine_qa_dict(data, df):
+    for i, row in df.iterrows():
+        # load questions info
+        row_dict = {'question': row[5], 'question_id': i, 'image_id': row[4]}
+
+        # load answers
+        answers = row[6].split(';')
+        row_dict['answers'] = collections.Counter(answers).most_common()
+        data.append(row_dict)
+    return data
 
 
 def tokenize_questions():
@@ -252,14 +251,18 @@ def select_mimic_qa_pairs():
     df.to_csv('selected_mimic_qa_pairs.csv')
 
 
-if __name__ == '__main__':
-    task = 'val'
-    parse_box_feat(task)
+def main():
+    task = 'train'
+    # parse_box_feat(task)
 
-    # combine_qa()
-    # tokenize_questions()
-    # t = json.load(open('vqa_mimic_toked.json'))
-    # process_questions(t)
-    # process_answers(t)
+    combine_qa(task)
+    tokenize_questions()
+    t = json.load(open('vqa_mimic_toked.json'))
+    process_questions(t)
+    process_answers(t)
 
     # count_labels()
+
+
+if __name__ == '__main__':
+    main()
