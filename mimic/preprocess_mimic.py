@@ -149,22 +149,23 @@ def combine_qa_dict(data, df):
         # load answers
         answers = row['answer'].split(';')
         row_dict['answers'] = collections.Counter(answers).most_common()
+        # row_dict['answers'] is list of dict(ans: count)
         data.append(row_dict)
     return data
 
 
-def tokenize_questions():
-    qa = json.load(open('vqa_mimic_combined.json'))
+def tokenize_questions(task):
+    qa = json.load(open(f'vqa_mimic_{task}_combined.json'))
     qas = len(qa)
     for i, row in enumerate(tqdm(qa)):
         row['question_toked'] = [t.text if '?' not in t.text else t.text[:-1]
                                  for t in tokenizer(row['question'].lower())]
         # get spacey tokens and remove question marks
         if i == qas - 1:
-            json.dump(qa, open('vqa_mimic_toked.json', 'w'))
+            json.dump(qa, open(f'vqa_mimic_{task}_toked.json', 'w'))
 
 
-def process_questions(q):
+def process_questions(q, task):
     # build question dictionary
     def build_vocab(questions):
         count_thr = 0
@@ -196,10 +197,10 @@ def process_questions(q):
     # a 1-indexed vocab translation table
     itow = {i + 1: w for i, w in enumerate(vocab)}
     wtoi = {w: i + 1 for i, w in enumerate(vocab)}  # inverse table
-    pickle.dump({'itow': itow, 'wtoi': wtoi}, open('mimic_q_dict.p', 'wb'))
+    pickle.dump({'itow': itow, 'wtoi': wtoi}, open(f'mimic_q_{task}_dict.p', 'wb'))
 
 
-def process_answers(q):
+def process_answers(q, task):
     counts = {}
     for row in q:
         for ans, c in row['answers']:
@@ -212,7 +213,7 @@ def process_answers(q):
     # a 0-indexed vocabulary translation table
     itow = {i: w for i, w in enumerate(vocab)}
     wtoi = {w: i for i, w in enumerate(vocab)}  # inverse table
-    pickle.dump({'itow': itow, 'wtoi': wtoi}, open('mimic_a_dict.p', 'wb'))
+    pickle.dump({'itow': itow, 'wtoi': wtoi}, open(f'mimic_a_{task}_dict.p', 'wb'))
 
     for row in q:
         accepted_answers = 0
@@ -224,7 +225,7 @@ def process_answers(q):
 
         row['answers_w_scores'] = answers_scores
 
-    json.dump(q, open('vqa_mimic_final.json', 'w'))
+    json.dump(q, open(f'vqa_mimic_{task}_final.json', 'w'))
 
 
 def count_labels():
@@ -257,10 +258,10 @@ def main():
     # parse_box_feat(task)
 
     combine_qa(task)
-    tokenize_questions()
-    t = json.load(open('vqa_mimic_toked.json'))
-    process_questions(t)
-    process_answers(t)
+    tokenize_questions(task)
+    t = json.load(open(f'vqa_mimic_{task}_toked.json'))
+    process_questions(t, task)
+    process_answers(t, task)
 
     # count_labels()
 
