@@ -143,10 +143,11 @@ def combine_qa(task):
 def combine_qa_dict(data, df):
     for i, row in df.iterrows():
         # load questions info
-        row_dict = {'question': row[5], 'question_id': i, 'image_id': row[4]}
+        row_dict = {'question': row['question'], 'question_id': i,
+                    'image_id': row['dicom_id']}
 
         # load answers
-        answers = row[6].split(';')
+        answers = row['answer'].split(';')
         row_dict['answers'] = collections.Counter(answers).most_common()
         data.append(row_dict)
     return data
