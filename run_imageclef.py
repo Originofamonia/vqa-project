@@ -133,6 +133,7 @@ def train(args, f):
             q_batch, a_batch, vote_batch, i_batch, k_batch, qlen_batch = \
                 batch_to_cuda(batch)
             # a = batch[-1]  # tuple of image_ids
+            optimizer.zero_grad()
             # forward pass
             logits, adjacency_matrix, h_max_indices = model(
                 q_batch, i_batch, k_batch, qlen_batch)
@@ -158,7 +159,6 @@ def train(args, f):
                 ave_loss = 0
 
             # Compute gradient and do optimisation step
-            optimizer.zero_grad()
             loss.backward()
             optimizer.step()
 

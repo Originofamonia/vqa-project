@@ -123,7 +123,7 @@ class Model(nn.Module):
 
         # Learn adjacency matrix, A = E*E^T
         image_qenc_cat = torch.cat((image, qenc_repeat), dim=-1)  # [64, 36, 3076]
-        print(image[0])
+        # print(image[0])
         adjacency_matrix = self.adjacency_1(image_qenc_cat)
 
         # Graph convolution 1
@@ -225,8 +225,8 @@ class Model(nn.Module):
         top_k, top_ind = torch.topk(
             adjacency_matrix, k=neighbourhood_size, dim=-1, sorted=False)
         top_k = torch.stack([F.softmax(top_k[:, k], dim=-1) for k in range(K)]).transpose(0, 1)  # (batch_size, K, neighbourhood_size)
-        print(adjacency_matrix.max(dim=-1))
-        print(top_k.count_nonzero(dim=-1))
+        # print(adjacency_matrix.max(dim=-1))
+        # print(top_k.count_nonzero(dim=-1))
         # after softmax, top_k will only select 1 neighbor
         # select top m features and their pseudo coordinates
         neighbourhood_image = \

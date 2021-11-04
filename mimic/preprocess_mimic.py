@@ -21,13 +21,13 @@ tokenizer = Tokenizer(nlp.vocab)
 exclude = set(string.punctuation)
 
 
-def parse_box_feat():
+def parse_box_feat(task):
     # fieldnames = ['image_id', 'image_w', 'image_h', 'num_boxes', 'boxes',
     #               'features']
     n_obj = 17  # n_obj per image
-    detect_file = 'mimic_detect_feat_path.pt'
-    gaze_file = 'mimic_gaze_feat_path.pt'
-    gaze_on_detect_file = 'mimic_gaze_on_detect_feat_path.pt'
+    detect_file = f'mimic_detect_{task}.pt'
+    gaze_file = f'mimic_gaze_{task}.pt'
+    gaze_on_detect_file = f'mimic_gaze_on_detect_{task}.pt'
     # imgpath = '/home/qiyuan/2021summer/imageclef/images/'
 
     detect_tensors = torch.load(detect_file)
@@ -35,13 +35,13 @@ def parse_box_feat():
     gaze_on_detect_tensors = torch.load(gaze_on_detect_file)
     # {'feat': selected_feats, 'image_id': filepaths}
 
-    boxes = zarr.open_group('mimic_boxes.zarr', mode='w')
-    features = zarr.open_group('mimic_features.zarr', mode='w')
+    boxes = zarr.open_group(f'mimic_{task}_boxes.zarr', mode='w')
+    features = zarr.open_group(f'mimic_{task}_features.zarr', mode='w')
     image_size = {}
     num_det_boxes = []
     num_gaze_boxes = []
     num_gaze_det_boxes = []
-    image_ids = []
+    # image_ids = []
     for i, (det_feat, image_id, img_sizes) in enumerate(zip(detect_tensors['feat'],
                                              detect_tensors['image_id'], detect_tensors['img_sizes'])):
         if det_feat.size(0) >= n_obj and image_id in gaze_tensors['image_id'] \
@@ -74,7 +74,7 @@ def parse_box_feat():
             item['num_boxes'] = len(merged_box)
             img = Image.open(image_id)
             item['image_id'] = image_id
-            image_ids.append(image_id)
+            # image_ids.append(image_id)
             item['boxes'] = merged_box.cpu().numpy()
             item['feat'] = merged_feat.cpu().numpy()
             item['image_w'], item['image_h'] = img.width, img.height
@@ -105,28 +105,7 @@ def parse_box_feat():
     for k in dw.keys():
         dwh[k] = np.array([d0[k] for d0 in d])
     image_sizes = pd.DataFrame(dwh)
-    image_sizes.to_csv('mimic_image_size.csv')
-
-    # dataset_path = '/home/qiyuan/2021summer/imageclef'
-    # text0 = 'VQAnswering_2020_Train_QA_pairs.txt'
-    # text1 = 'VQAnswering_2020_Val_QA_Pairs.txt'
-    # text2 = 'VQA-Med-2021-VQAnswering-Task1-New-ValidationSet.txt'
-
-    # qa_pairs0 = all_qa_pairs(dataset_path, text0)
-    # qa_pairs1 = all_qa_pairs(dataset_path, text1)
-    # qa_pairs2 = all_qa_pairs(dataset_path, text2)
-    # qa_pairs0.extend(qa_pairs1)
-    # qa_pairs0.extend(qa_pairs2)
-
-    # valid_qa_pairs0 = append_valid_qa_pairs(dataset_path, image_ids, text0)
-    # valid_qa_pairs1 = append_valid_qa_pairs(dataset_path, image_ids, text1)
-    # valid_qa_pairs2 = append_valid_qa_pairs(dataset_path, image_ids, text2)
-    #
-    # valid_qa_pairs0.extend(valid_qa_pairs1)
-    # valid_qa_pairs0.extend(valid_qa_pairs2)
-    # with open('imageclef_qa_pairs.csv', 'w', newline='') as f:
-    #     writer = csv.writer(f)
-    #     writer.writerows(valid_qa_pairs0)
+    image_sizes.to_csv(f'mimic_{task}_image_size.csv')
 
 
 def all_qa_pairs(dataset_path, text):
@@ -147,7 +126,10 @@ def append_valid_qa_pairs(dataset_path, image_ids, text):
 
 
 def combine_qa():
-    filename = 'selected_mimic_qa_pairs.csv'
+    filename = 'mimic_train_qa_pairs.csv'
+    df = pd.read_csv(filename)
+    train_df = df.iloc[:10000]
+    test_df = df.iloc[10000:13000]
     # Combine questions and answers in the same json file
     data = []
     with open(filename, newline='') as csvfile:
@@ -257,7 +239,7 @@ def count_labels():
 
 def select_mimic_qa_pairs():
     """
-    select qa pairs from visual feature image_ids
+    select qa pairs from visual feature image_ids， no need
     """
     detect_file = 'mimic_detect_feat_path.pt'
     detect_tensors = torch.load(detect_file)
@@ -271,8 +253,9 @@ def select_mimic_qa_pairs():
 
 
 if __name__ == '__main__':
-    parse_box_feat()
-    # select_mimic_qa_pairs()
+    task = 'train'
+    parse_box_feat(task)
+
     # combine_qa()
     # tokenize_questions()
     # t = json.load(open('vqa_mimic_toked.json'))
