@@ -226,7 +226,7 @@ class Model(nn.Module):
             adjacency_matrix, k=neighbourhood_size, dim=-1, sorted=False)
         top_k = torch.stack([F.softmax(top_k[:, k]) for k in range(K)]).transpose(0, 1)  # (batch_size, K, neighbourhood_size)
         # print(adjacency_matrix.max(dim=-1))
-        # print(top_k.count_nonzero(dim=-1))
+        print(top_k.count_nonzero(dim=-1))
         # after softmax, top_k will only select 1 neighbor
         # select top m features and their pseudo coordinates
         neighbourhood_image = \
