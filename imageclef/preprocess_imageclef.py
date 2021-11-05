@@ -123,7 +123,7 @@ def parse_box_feat():
 
     valid_qa_pairs0.extend(valid_qa_pairs1)
     valid_qa_pairs0.extend(valid_qa_pairs2)
-    with open('imageclef_qa_pairs.csv', 'w', newline='') as f:
+    with open('../data/imageclef_qa_pairs.csv', 'w', newline='') as f:
         writer = csv.writer(f)
         writer.writerows(valid_qa_pairs0)
 
@@ -156,7 +156,7 @@ def append_valid_qa_pairs(dataset_path, image_ids, text):
 
 
 def process_text():
-    filename = 'imageclef_qa_pairs.csv'
+    filename = '../data/imageclef_qa_pairs.csv'
     # Combine questions and answers in the same json file
     data = []
     with open(filename, newline='') as csvfile:
@@ -270,7 +270,7 @@ def count_labels():
     #     writer.writerow(['image_id', 'question', 'answer'])
     #     writer.writerows(qa_pairs0)
 
-    df = pd.read_csv('imageclef_qa_pairs.csv')
+    df = pd.read_csv('../data/imageclef_qa_pairs.csv')
     values, counts = np.unique(df['yes'].values, return_counts=True)
     reverse_indices = counts.argsort()[::-1]
     sorted_values = values[reverse_indices]
