@@ -418,7 +418,7 @@ def trainval(args):
             # batch to gpu
             q_batch, a_batch, vote_batch, i_batch, k_batch, qlen_batch = \
                 batch_to_cuda(next_batch)
-
+            print(q_batch.size(), i_batch.size(), k_batch.size(), qlen_batch.size())
             # Do model forward
             output, adjacency_matrix = model(
                 q_batch, i_batch, k_batch, qlen_batch)
@@ -470,14 +470,14 @@ def main():
                         help='set this to train+val mode.')
     parser.add_argument('--eval', action='store_true',
                         help='set this to evaluation mode.')
-    parser.add_argument('--test', action='store_true',
+    parser.add_argument('--test', action='store_true', default=False,
                         help='set this to test mode.')
     parser.add_argument('--lr', metavar='', type=float,
                         default=1e-4, help='initial learning rate')
     parser.add_argument('--ep', metavar='', type=int,
                         default=40, help='number of epochs.')
     parser.add_argument('--bsize', metavar='', type=int,
-                        default=64, help='batch size.')
+                        default=8, help='batch size.')
     parser.add_argument('--hid', metavar='', type=int,
                         default=1024, help='hidden dimension')
     parser.add_argument('--emb', metavar='', type=int, default=300,
