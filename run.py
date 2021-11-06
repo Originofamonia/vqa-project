@@ -418,7 +418,7 @@ def trainval(args):
             # batch to gpu
             q_batch, a_batch, vote_batch, i_batch, k_batch, qlen_batch = \
                 batch_to_cuda(next_batch)
-            print(q_batch.size(), i_batch.size(), k_batch.size(), qlen_batch.size())
+            # print(q_batch.size(), i_batch.size(), k_batch.size(), qlen_batch.size())
             # Do model forward
             output, adjacency_matrix = model(
                 q_batch, i_batch, k_batch, qlen_batch)
