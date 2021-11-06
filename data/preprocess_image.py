@@ -93,9 +93,9 @@ def features_to_zarr(phase):
 def main():
     parser = argparse.ArgumentParser(
         description='Preprocessing for VQA v2 image data')
-    parser.add_argument('--data', nargs='+',
+    parser.add_argument('--data', nargs='+', default='trainval',
                         help='trainval, and/or test, list of data phases to be processed',
-                        required=True)
+                        )
     args, unparsed = parser.parse_known_args()
     if len(unparsed) != 0:
         raise SystemExit('Unknown argument: {}'.format(unparsed))
@@ -105,9 +105,9 @@ def main():
     for phase in phase_list:
         # First download and extract
 
-        if not os.path.exists(phase + '.zarr'):
-            print('Converting features tsv to zarr file...')
-            features_to_zarr(phase)
+        # if not os.path.exists(phase + '.zarr'):
+        print('Converting features tsv to zarr file...')
+        features_to_zarr(phase)
 
     print('Done')
 
