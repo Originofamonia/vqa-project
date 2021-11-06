@@ -93,7 +93,7 @@ def features_to_zarr(phase):
 def main():
     parser = argparse.ArgumentParser(
         description='Preprocessing for VQA v2 image data')
-    parser.add_argument('--data', nargs='+', default='trainval',
+    parser.add_argument('--data', default=['trainval', 'test'], nargs='+',
                         help='trainval, and/or test, list of data phases to be processed',
                         )
     args, unparsed = parser.parse_known_args()
