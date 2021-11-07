@@ -317,7 +317,7 @@ def test(args):
     # Restore pre-trained model
     ckpt = torch.load(args.model_path)
     model.load_state_dict(ckpt['state_dict'])
-    model.train(False)
+    model.eval()
 
     result = []
     for step, next_batch in tqdm(enumerate(loader)):
@@ -326,7 +326,7 @@ def test(args):
             batch_to_cuda(next_batch, volatile=True)
 
         # get predictions
-        output, _ = model(q_batch, i_batch, k_batch, qlen_batch)
+        output, _, _ = model(q_batch, i_batch, k_batch, qlen_batch)
         qid_batch = next_batch[3]
         _, oix = output.data.max(1)
         # record predictions
@@ -415,7 +415,8 @@ def trainval(args):
         ave_loss = 0.0
         ave_correct = 0.0
         losses = []
-        for step, next_batch in tqdm(enumerate(loader)):
+        pbar = tqdm(loader)
+        for step, next_batch in enumerate(pbar):
             model.train()
             # batch to gpu
             q_batch, a_batch, vote_batch, i_batch, k_batch, qlen_batch = \
@@ -435,11 +436,17 @@ def trainval(args):
             ave_loss += loss.item()
             losses.append(loss.item())
             # This is a 40 step average
-            if step % 40 == 0 and step != 0:
-                print(
-                    'Epoch %02d(%03d/%03d), ave loss: %.7f, ave accuracy: '
-                    '%.2f%%' % (ep + 1, step, n_batches, ave_loss / 40,
-                                ave_correct * 100 / (args.bsize * 40)))
+            if step % args.log_interval == 0 and step != 0:
+                avg_loss = ave_loss / args.log_interval
+                avg_acc = ave_correct * 100 / (args.bsize * args.log_interval)
+                pbar.set_description(f'Epoch {ep}, step: {step} loss: '
+                                     f'{avg_loss:.3f}, ave accuracy: {avg_acc:.2f}')
+                # % (ep + 1, step, n_batches, ave_loss / args.log_interval,
+                #                 ))
+                # print(
+                #     'Epoch %02d(%03d/%03d), ave loss: %.7f, ave accuracy: '
+                #     '%.2f%%' % (ep + 1, step, n_batches, ave_loss / 40,
+                #                 ave_correct * 100 / (args.bsize * 40)))
 
                 # ave_correct = 0
                 # ave_loss = 0
@@ -478,7 +485,7 @@ def main():
     parser.add_argument('--lr', metavar='', type=float,
                         default=1e-4, help='initial learning rate')
     parser.add_argument('--ep', metavar='', type=int,
-                        default=40, help='number of epochs.')
+                        default=10, help='number of epochs.')
     parser.add_argument('--bsize', metavar='', type=int,
                         default=8, help='batch size.')
     parser.add_argument('--hid', metavar='', type=int,
@@ -493,6 +500,7 @@ def main():
     parser.add_argument('--data_dir', metavar='', type=str, default='./data',
                         help='path to data directory')
     parser.add_argument('--save_dir', metavar='', type=str, default='./save')
+    parser.add_argument('--log_interval', type=int, default=400)
     parser.add_argument('--name', metavar='', type=str,
                         default='model', help='model name')
     parser.add_argument('--dropout', metavar='', type=float, default=0.5,
