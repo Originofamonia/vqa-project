@@ -30,6 +30,8 @@ from sparse_graph_model import Model
 from torch_dataset import *
 from utils import *
 
+os.environ['CUDA_VISIBLE_DEVICES'] = '1'
+
 
 def eval_model(args):
     """
