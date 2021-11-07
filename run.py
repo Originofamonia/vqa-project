@@ -485,9 +485,9 @@ def main():
     parser.add_argument('--lr', metavar='', type=float,
                         default=1e-4, help='initial learning rate')
     parser.add_argument('--ep', metavar='', type=int,
-                        default=10, help='number of epochs.')
+                        default=5, help='number of epochs.')
     parser.add_argument('--bsize', metavar='', type=int,
-                        default=8, help='batch size.')
+                        default=16, help='batch size.')
     parser.add_argument('--hid', metavar='', type=int,
                         default=1024, help='hidden dimension')
     parser.add_argument('--emb', metavar='', type=int, default=300,
