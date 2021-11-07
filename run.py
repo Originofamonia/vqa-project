@@ -373,6 +373,7 @@ def trainval(args):
                   hid_dim=args.hid,
                   out_dim=dataset.n_answers,
                   dropout=args.dropout,
+                  n_kernels=args.n_kernels,
                   neighbourhood_size=args.neighbourhood_size,
                   pretrained_wemb=dataset.pretrained_wemb,
                   n_obj=args.n_obj)
@@ -474,11 +475,11 @@ def trainval(args):
 def main():
     parser = argparse.ArgumentParser(
         description='Conditional Graph Convolutions for VQA')
-    parser.add_argument('--train', action='store_true',
+    parser.add_argument('--train', action='store_true', default=False,
                         help='set this to training mode.')
     parser.add_argument('--trainval', action='store_true', default=True,
                         help='set this to train+val mode.')
-    parser.add_argument('--eval', action='store_true',
+    parser.add_argument('--eval', action='store_true', default=False,
                         help='set this to evaluation mode.')
     parser.add_argument('--test', action='store_true', default=False,
                         help='set this to test mode.')
@@ -488,12 +489,13 @@ def main():
                         default=5, help='number of epochs.')
     parser.add_argument('--bsize', metavar='', type=int,
                         default=16, help='batch size.')
+    parser.add_argument('--n_kernels', type=int, default=8,
+                        help='number of epochs.')
     parser.add_argument('--hid', metavar='', type=int,
                         default=1024, help='hidden dimension')
     parser.add_argument('--emb', metavar='', type=int, default=300,
                         help='question embedding dimension')
-    parser.add_argument('--neighbourhood_size', metavar='', type=int,
-                        default=16,
+    parser.add_argument('--neighbourhood_size', type=int, default=16,
                         help='number of graph neighbours to consider')
     parser.add_argument('--n_obj', type=int, default=36,
                         help='number of boxes per image')
