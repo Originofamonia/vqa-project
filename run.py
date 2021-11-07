@@ -422,7 +422,7 @@ def trainval(args):
                 batch_to_cuda(next_batch)
             # print(q_batch.size(), i_batch.size(), k_batch.size(), qlen_batch.size())
             # Do model forward
-            output, adjacency_matrix = model(
+            output, adjacency_matrix, _ = model(
                 q_batch, i_batch, k_batch, qlen_batch)
 
             loss = criterion(output, a_batch)
@@ -455,12 +455,13 @@ def trainval(args):
         epoch_loss = ep_loss / n_batches
         epoch_acc = ep_correct * 100 / (n_batches * args.bsize)
 
-        save(model, optimizer, ep, epoch_loss, epoch_acc,
-             path=args.save_dir, name=args.name + '_' + str(ep + 1))
-
-        print(
-            'Epoch %02d done, average loss: %.3f, average accuracy: %.2f%%' % (
-                ep + 1, epoch_loss, epoch_acc))
+        # save(model, optimizer, ep, epoch_loss, epoch_acc,
+        #      path=args.save_dir, name=args.name + '_' + str(ep + 1))
+    save(args, model, path=args.save_dir,
+         name=f"vqa_{args.n_obj}_{args.n_kernels}_{args.neighbourhood_size}_{epoch_acc:.2f}.pt")
+    print(
+        'Epoch %02d done, average loss: %.3f, average accuracy: %.2f%%' % (
+            ep + 1, epoch_loss, epoch_acc))
 
 
 def main():
