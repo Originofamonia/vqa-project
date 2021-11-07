@@ -374,7 +374,8 @@ def trainval(args):
                   out_dim=dataset.n_answers,
                   dropout=args.dropout,
                   neighbourhood_size=args.neighbourhood_size,
-                  pretrained_wemb=dataset.pretrained_wemb)
+                  pretrained_wemb=dataset.pretrained_wemb,
+                  n_obj=args.n_obj)
 
     criterion = nn.MultiLabelSoftMarginLoss()
 
