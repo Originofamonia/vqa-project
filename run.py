@@ -442,8 +442,8 @@ def trainval(args):
             if step % args.log_interval == 0 and step != 0:
                 avg_loss = ave_loss / args.log_interval
                 avg_acc = ave_correct * 100 / (args.bsize * args.log_interval)
-                pbar.set_description(f'Epoch {ep}, step: {step} loss: '
-                                     f'{avg_loss:.3f}, ave accuracy: {avg_acc:.2f}')
+                pbar.set_description(f'Epoch {ep}/{args.ep}, loss: {avg_loss:.3f}, '
+                                     f'ave accuracy: {avg_acc:.2f}')
                 # % (ep + 1, step, n_batches, ave_loss / args.log_interval,
                 #                 ))
                 # print(
