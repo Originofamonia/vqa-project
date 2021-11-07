@@ -128,7 +128,7 @@ def train(args):
     print('Loading data')
     dataset = VQA_Dataset(args.data_dir, args.emb)
     loader = DataLoader(dataset, batch_size=args.bsize,
-                        shuffle=True, num_workers=5, collate_fn=collate_fn)
+                        shuffle=True, num_workers=4, collate_fn=collate_fn)
 
     # Load the VQA validation set
     dataset_test = VQA_Dataset(args.data_dir, args.emb, train=False)
@@ -308,7 +308,8 @@ def test(args):
                   out_dim=dataset.n_answers,
                   dropout=args.dropout,
                   pretrained_wemb=dataset.pretrained_wemb,
-                  neighbourhood_size=args.neighbourhood_size)
+                  neighbourhood_size=args.neighbourhood_size,
+                  n_obj=args.n_obj)
 
     # move to CUDA
     model = model.cuda()
@@ -485,6 +486,8 @@ def main():
     parser.add_argument('--neighbourhood_size', metavar='', type=int,
                         default=16,
                         help='number of graph neighbours to consider')
+    parser.add_argument('--n_obj', type=int, default=36,
+                        help='number of boxes per image')
     parser.add_argument('--data_dir', metavar='', type=str, default='./data',
                         help='path to data directory')
     parser.add_argument('--save_dir', metavar='', type=str, default='./save')
