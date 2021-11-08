@@ -273,8 +273,8 @@ def train(args):
 
 def test(args):
     """
-        Creates a result.json for predictions on
-        the test set
+    Creates a result.json for predictions on
+    the test set
     """
     # Check that the model path is accurate
     if args.model_path and os.path.isfile(args.model_path):
@@ -318,7 +318,7 @@ def test(args):
 
     # Restore pre-trained model
     ckpt = torch.load(args.model_path)
-    model.load_state_dict(ckpt['state_dict'])
+    model.load_state_dict(ckpt)
     model.eval()
 
     result = []
@@ -479,11 +479,11 @@ def main():
         description='Conditional Graph Convolutions for VQA')
     parser.add_argument('--train', action='store_true', default=False,
                         help='set this to training mode.')
-    parser.add_argument('--trainval', action='store_true', default=True,
+    parser.add_argument('--trainval', action='store_true', default=False,
                         help='set this to train+val mode.')
     parser.add_argument('--eval', action='store_true', default=False,
                         help='set this to evaluation mode.')
-    parser.add_argument('--test', action='store_true', default=False,
+    parser.add_argument('--test', action='store_true', default=True,
                         help='set this to test mode.')
     parser.add_argument('--lr', metavar='', type=float,
                         default=1e-4, help='initial learning rate')
@@ -510,7 +510,7 @@ def main():
     parser.add_argument('--dropout', metavar='', type=float, default=0.5,
                         help='probability of dropping out FC nodes during '
                              'training')
-    parser.add_argument('--model_path', metavar='', type=str,
+    parser.add_argument('--model_path', type=str, default='save/vqa_36_8_16_54.42.pt',
                         help='trained model path.')
     args, unparsed = parser.parse_known_args()
     if len(unparsed) != 0:
