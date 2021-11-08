@@ -489,7 +489,7 @@ def main():
     parser.add_argument('--ep', metavar='', type=int,
                         default=5, help='number of epochs.')
     parser.add_argument('--bsize', metavar='', type=int,
-                        default=16, help='batch size.')
+                        default=8, help='batch size.')
     parser.add_argument('--n_kernels', type=int, default=8,
                         help='number of epochs.')
     parser.add_argument('--hid', metavar='', type=int,
