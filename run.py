@@ -324,8 +324,7 @@ def test(args):
     result = []
     for step, next_batch in tqdm(enumerate(loader)):
         # Batch preparation
-        q_batch, _, _, i_batch, k_batch, qlen_batch = \
-            batch_to_cuda(next_batch, volatile=True)
+        q_batch, _, _, i_batch, k_batch, qlen_batch = batch_to_cuda(next_batch)
 
         # get predictions
         output, _, _ = model(q_batch, i_batch, k_batch, qlen_batch)
@@ -398,9 +397,9 @@ def trainval(args):
     if args.model_path and os.path.isfile(args.model_path):
         print('Resuming from checkpoint %s' % args.model_path)
         ckpt = torch.load(args.model_path)
-        start_ep = ckpt['epoch']
-        model.load_state_dict(ckpt['state_dict'])
-        optimizer.load_state_dict(ckpt['optimizer'])
+        # start_ep = ckpt['epoch']
+        model.load_state_dict(ckpt)
+        # optimizer.load_state_dict(ckpt['optimizer'])
 
     # ensure you can load with new lr
     for param_group in optimizer.param_groups:
@@ -424,7 +423,7 @@ def trainval(args):
             # batch to gpu
             q_batch, a_batch, vote_batch, i_batch, k_batch, qlen_batch = \
                 batch_to_cuda(next_batch)
-            # print(q_batch.size(), i_batch.size(), k_batch.size(), qlen_batch.size())
+
             # Do model forward
             output, adjacency_matrix, _ = model(
                 q_batch, i_batch, k_batch, qlen_batch)
