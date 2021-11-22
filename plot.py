@@ -253,8 +253,7 @@ def save_plot_nodes():
             f2 = os.path.join(args.plot_dir, f"{iid.strip('.jpg')}_h_max.jpg")
             # plot_connect_lines(mosaic, h_max_boxes, f2, color=None, line_thickness=None)
             plot_connect_lines2(mosaic, boxes, real_rows, real_cols, f2,
-                                color=None,
-                                line_thickness=None)
+                                color=None, line_thickness=None)
     with open('infer_imageclef.csv', 'w') as f:
         f.write('image_id,question,prediction,answer\n')
         for line in results:
