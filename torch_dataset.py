@@ -305,14 +305,6 @@ class MimicDataset(ImageclefDataset):
         self.train = train  # train (True) or eval (False) mode
         self.seqlen = 15  # maximum question sequence length
 
-        # Load image features and bounding boxes
-        self.i_feat = zarr.open(os.path.join(
-            self.data_dir, 'mimic_features.zarr'), mode='r')
-        self.bbox = zarr.open(os.path.join(
-            self.data_dir, 'mimic_boxes.zarr'), mode='r')
-        self.sizes = pd.read_csv(os.path.join(
-            self.data_dir, 'mimic_image_size.csv'))
-
         # Load questions
         if train:
             # Load training question dictionary
@@ -321,6 +313,13 @@ class MimicDataset(ImageclefDataset):
             # Load training answer dictionary
             a_dict = pickle.load(
                 open(os.path.join(self.data_dir, 'mimic_a_train_dict.p'), 'rb'))
+            # Load image features and bounding boxes
+            self.i_feat = zarr.open(os.path.join(
+                self.data_dir, 'mimic_train_features.zarr'), mode='r')
+            self.bbox = zarr.open(os.path.join(
+                self.data_dir, 'mimic_train_boxes.zarr'), mode='r')
+            self.sizes = pd.read_csv(os.path.join(
+                self.data_dir, 'mimic_train_image_size.csv'))
             self.vqa = json.load(
                 open(os.path.join(self.data_dir, 'vqa_mimic_train_final.json')))
         else:
@@ -329,6 +328,13 @@ class MimicDataset(ImageclefDataset):
             # Load training answer dictionary
             a_dict = pickle.load(
                 open(os.path.join(self.data_dir, 'mimic_a_val_dict.p'), 'rb'))
+            # Load image features and bounding boxes
+            self.i_feat = zarr.open(os.path.join(
+                self.data_dir, 'mimic_val_features.zarr'), mode='r')
+            self.bbox = zarr.open(os.path.join(
+                self.data_dir, 'mimic_val_boxes.zarr'), mode='r')
+            self.sizes = pd.read_csv(os.path.join(
+                self.data_dir, 'mimic_val_image_size.csv'))
             self.vqa = json.load(
                 open(os.path.join(self.data_dir, 'vqa_mimic_val_final.json')))
 
