@@ -215,7 +215,7 @@ class ImageclefDataset(Dataset):
             Initialises words embeddings with pre-trained GLOVE embeddings
         """
         embeddings_index = {}
-        f = open(os.path.join(self.data_dir, 'glove.6B.') +
+        f = open(os.path.join('data', 'glove.6B.') +
                  str(emb_dim) + 'd.txt')
         for line in f:
             values = line.split()
