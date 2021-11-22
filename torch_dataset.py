@@ -305,20 +305,6 @@ class MimicDataset(ImageclefDataset):
         self.train = train  # train (True) or eval (False) mode
         self.seqlen = 15  # maximum question sequence length
 
-        # Load training question dictionary
-        q_dict = pickle.load(
-            open(os.path.join(self.data_dir, 'mimic_q_dict.p'), 'rb'))
-        self.q_itow = q_dict['itow']
-        self.q_wtoi = q_dict['wtoi']
-        self.q_words = len(self.q_itow) + 1
-
-        # Load training answer dictionary
-        a_dict = pickle.load(
-            open(os.path.join(self.data_dir, 'mimic_a_dict.p'), 'rb'))
-        self.a_itow = a_dict['itow']
-        self.a_wtoi = a_dict['wtoi']
-        self.n_answers = len(self.a_itow) + 1
-
         # Load image features and bounding boxes
         self.i_feat = zarr.open(os.path.join(
             self.data_dir, 'mimic_features.zarr'), mode='r')
@@ -329,11 +315,30 @@ class MimicDataset(ImageclefDataset):
 
         # Load questions
         if train:
+            # Load training question dictionary
+            q_dict = pickle.load(
+                open(os.path.join(self.data_dir, 'mimic_q_train_dict.p'), 'rb'))
+            # Load training answer dictionary
+            a_dict = pickle.load(
+                open(os.path.join(self.data_dir, 'mimic_a_train_dict.p'), 'rb'))
             self.vqa = json.load(
-                open(os.path.join(self.data_dir, 'vqa_mimic_final.json')))
+                open(os.path.join(self.data_dir, 'vqa_mimic_train_final.json')))
         else:
+            q_dict = pickle.load(
+                open(os.path.join(self.data_dir, 'mimic_q_val_dict.p'), 'rb'))
+            # Load training answer dictionary
+            a_dict = pickle.load(
+                open(os.path.join(self.data_dir, 'mimic_a_val_dict.p'), 'rb'))
             self.vqa = json.load(
-                open(os.path.join(self.data_dir, 'vqa_mimic_final.json')))
+                open(os.path.join(self.data_dir, 'vqa_mimic_val_final.json')))
+
+        self.q_itow = q_dict['itow']
+        self.q_wtoi = q_dict['wtoi']
+        self.q_words = len(self.q_itow) + 1
+
+        self.a_itow = a_dict['itow']
+        self.a_wtoi = a_dict['wtoi']
+        self.n_answers = len(self.a_itow) + 1
 
         self.n_questions = len(self.vqa)
 
