@@ -384,7 +384,10 @@ class MimicDataset(ImageclefDataset):
 
         # image sample
         iid = self.vqa[idx]['image_id']
-        img = self.i_feat[str(iid)]
+        try:
+            img = self.i_feat[str(iid)]
+        except:
+            print(f'i_feat doesn\'t have {iid}')
         bboxes = np.asarray(self.bbox[str(iid)])
         imsize = self.sizes[str(iid)]
 

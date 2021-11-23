@@ -141,6 +141,7 @@ def combine_qa(task):
 
 
 def combine_qa_dict(data, df):
+    img_df = pd.read_csv('')
     for i, row in df.iterrows():
         # load questions info
         row_dict = {'question': row['question'], 'question_id': i,
@@ -254,14 +255,14 @@ def select_mimic_qa_pairs():
 
 
 def main():
-    task = 'val'
-    # parse_box_feat(task)
+    task = 'train'  # train or val
+    parse_box_feat(task)
 
-    combine_qa(task)
-    tokenize_questions(task)
-    t = json.load(open(f'vqa_mimic_{task}_toked.json'))
-    process_questions(t, task)
-    process_answers(t, task)
+    # combine_qa(task)
+    # tokenize_questions(task)
+    # t = json.load(open(f'vqa_mimic_{task}_toked.json'))
+    # process_questions(t, task)
+    # process_answers(t, task)
 
     # count_labels()
 
