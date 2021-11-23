@@ -35,8 +35,10 @@ def parse_box_feat(task):
     gaze_on_detect_tensors = torch.load(gaze_on_detect_file)
     # {'feat': selected_feats, 'image_id': filepaths}
 
-    boxes = zarr.open_group(f'mimic_{task}_boxes.zarr', mode='w')
-    features = zarr.open_group(f'mimic_{task}_features.zarr', mode='w')
+    # boxes = zarr.open_group(f'mimic_{task}_boxes.zarr', mode='w')
+    # features = zarr.open_group(f'mimic_{task}_features.zarr', mode='w')
+    boxes = {}
+    features = {}
     image_size = {}
     num_det_boxes = []
     num_gaze_boxes = []
@@ -80,8 +82,8 @@ def parse_box_feat(task):
             item['image_w'], item['image_h'] = img.width, img.height
 
             # append to zarr files
-            boxes.create_dataset(item['image_id'], data=item['boxes'])
-            features.create_dataset(item['image_id'], data=item['feat'])
+            boxes[item['image_id']] = item['boxes']
+            features[item['image_id']] = item['feat']
             # image_size dict
             image_size[item['image_id']] = {
                 # 'image_h': item['image_h'],  # was
@@ -105,6 +107,7 @@ def parse_box_feat(task):
     for k in dw.keys():
         dwh[k] = np.array([d0[k] for d0 in d])
     image_sizes = pd.DataFrame(dwh)
+    torch.save({'box': boxes, 'feat': features}, f'mimic_{task}_box_feat.pt')
     image_sizes.to_csv(f'mimic_{task}_image_size.csv')
 
 
@@ -133,16 +136,17 @@ def combine_qa(task):
     # Combine questions and answers in the same json file
     data = []
     if task == 'train':
-        data = combine_qa_dict(data, train_df)
+        data = combine_qa_dict(data, train_df, task)
     else:
-        data = combine_qa_dict(data, test_df)
+        data = combine_qa_dict(data, test_df, task)
 
     json.dump(data, open(f'vqa_mimic_{task}_combined.json', 'w'))
 
 
-def combine_qa_dict(data, df):
-    img_df = pd.read_csv('')
+def combine_qa_dict(data, df, task):
+    feat_box_df = pd.read_csv(f'mimic_{task}_image_size.csv')
     for i, row in df.iterrows():
+
         # load questions info
         row_dict = {'question': row['question'], 'question_id': i,
                     'image_id': row['dicom_id']}
@@ -256,13 +260,13 @@ def select_mimic_qa_pairs():
 
 def main():
     task = 'train'  # train or val
-    parse_box_feat(task)
+    # parse_box_feat(task)
 
-    # combine_qa(task)
-    # tokenize_questions(task)
-    # t = json.load(open(f'vqa_mimic_{task}_toked.json'))
-    # process_questions(t, task)
-    # process_answers(t, task)
+    combine_qa(task)
+    tokenize_questions(task)
+    t = json.load(open(f'vqa_mimic_{task}_toked.json'))
+    process_questions(t, task)
+    process_answers(t, task)
 
     # count_labels()
 
