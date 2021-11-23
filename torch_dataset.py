@@ -353,6 +353,66 @@ class MimicDataset(ImageclefDataset):
             0]].shape[1] + 4  # + bbox
         self.init_pretrained_wemb(self.emb_dim)
 
+    def __getitem__(self, idx):
+        # question sample
+        qlen = len(self.vqa[idx]['question_toked'])
+        q = [0] * 100
+        for i, w in enumerate(self.vqa[idx]['question_toked']):
+            try:
+                q[i] = self.q_wtoi[w]
+            except:
+                q[i] = 0  # validation questions may contain unseen word
+
+        # soft label answers
+        a = np.zeros(self.n_answers, dtype=np.float32)
+        for w, c in self.vqa[idx]['answers_w_scores']:
+            try:
+                a[self.a_wtoi[w]] = c
+            except:
+                continue
+
+        # number of votes for each answer
+        n_votes = np.zeros(self.n_answers, dtype=np.float32)
+        for w, c in self.vqa[idx]['answers']:
+            try:
+                n_votes[self.a_wtoi[w]] = c
+            except:
+                continue
+
+        # id of the question
+        qid = self.vqa[idx]['question_id']
+
+        # image sample
+        iid = self.vqa[idx]['image_id'] + '.jpg'
+        img = self.i_feat[str(iid)]
+        bboxes = np.asarray(self.bbox[str(iid)])
+        imsize = self.sizes[str(iid)]
+
+        if np.logical_not(np.isfinite(img)).sum() > 0:
+            raise ValueError
+
+        # number of image objects
+        # k = 10
+
+        # scale bounding boxes by image dimensions
+        for i in range(bboxes.shape[0]):
+            bbox = bboxes[i]
+            bbox[0] /= imsize[0]
+            bbox[1] /= imsize[1]
+            bbox[2] /= imsize[0]
+            bbox[3] /= imsize[1]
+            bboxes[i] = bbox
+
+        # format variables
+        q = np.asarray(q)
+        a = np.asarray(a).reshape(-1)
+        n_votes = np.asarray(n_votes).reshape(-1)
+        qid = np.asarray(qid).reshape(-1)
+        i = np.concatenate([img, bboxes], axis=1)
+        k = np.asarray(bboxes.shape[0]).reshape(1)
+        # add return iid
+        return q, a, n_votes, qid, i, k, qlen, iid
+
 
 class VQA_Dataset_Test(Dataset):
     def __init__(self, data_dir, emb_dim=300, train=True):
