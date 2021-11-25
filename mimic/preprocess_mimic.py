@@ -46,6 +46,7 @@ def parse_box_feat(task):
     # image_ids = []
     for i, (det_feat, image_id, img_sizes) in enumerate(zip(detect_tensors['feat'],
                                              detect_tensors['image_id'], detect_tensors['img_sizes'])):
+        # img_sizes is from YOLO detection, not actual size
         if det_feat.size(0) >= n_obj and image_id in gaze_tensors['image_id'] \
                 and image_id in gaze_on_detect_tensors['image_id']:
 
