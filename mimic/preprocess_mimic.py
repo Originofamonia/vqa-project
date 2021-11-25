@@ -39,7 +39,7 @@ def parse_box_feat(task):
     # features = zarr.open_group(f'mimic_{task}_features.zarr', mode='w')
     boxes = {}
     features = {}
-    image_size = {}
+    image_sizes = {}
     num_det_boxes = []
     num_gaze_boxes = []
     num_gaze_det_boxes = []
@@ -84,8 +84,8 @@ def parse_box_feat(task):
             # append to zarr files
             boxes[item['image_id']] = item['boxes']
             features[item['image_id']] = item['feat']
-            # image_size dict
-            image_size[item['image_id']] = {
+            # image_sizes dict
+            image_sizes[item['image_id']] = {
                 # 'image_h': item['image_h'],  # was
                 # 'image_w': item['image_w'],
                 'image_h': img_sizes[0],
@@ -97,7 +97,7 @@ def parse_box_feat(task):
     # convert dict to pandas dataframe
     # create image sizes csv
     print('Writing image sizes csv...')
-    df = pd.DataFrame.from_dict(image_size)
+    df = pd.DataFrame.from_dict(image_sizes)
     df = df.transpose()
     d = df.to_dict()
     dw = d['image_w']
