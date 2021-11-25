@@ -89,8 +89,8 @@ def parse_box_feat(task):
             image_sizes[item['image_id']] = {
                 # 'image_h': item['image_h'],  # was
                 # 'image_w': item['image_w'],
-                'image_h': img_sizes[0],
-                'image_w': img_sizes[1],
+                'h': img_sizes[0],
+                'w': img_sizes[1],
             }
     print(f'len(num_det_boxes): {len(num_det_boxes)}')
     print(f'len(num_gaze_boxes): {len(num_gaze_boxes)}')
@@ -101,8 +101,8 @@ def parse_box_feat(task):
     df = pd.DataFrame.from_dict(image_sizes)
     df = df.transpose()
     d = df.to_dict()
-    dw = d['image_w']
-    dh = d['image_h']
+    dw = d['w']
+    dh = d['h']
     d = [dw, dh]
     dwh = {}
     for k in dw.keys():
