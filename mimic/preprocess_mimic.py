@@ -39,7 +39,7 @@ def parse_box_feat(task):
     # features = zarr.open_group(f'mimic_{task}_features.zarr', mode='w')
     boxes = {}
     features = {}
-    image_sizes = {}
+    img_sizes_df = pd.DataFrame(columns=['dicom_id', 'w', 'h'])
     num_det_boxes = []
     num_gaze_boxes = []
     num_gaze_det_boxes = []
@@ -85,31 +85,34 @@ def parse_box_feat(task):
             # append to zarr files
             boxes[item['image_id']] = item['boxes']
             features[item['image_id']] = item['feat']
-            # image_sizes dict
-            image_sizes[item['image_id']] = {
-                # 'image_h': item['image_h'],  # was
-                # 'image_w': item['image_w'],
-                'h': img_sizes[0],
-                'w': img_sizes[1],
-            }
+
+            img_sizes_df = img_sizes_df.append({'dicom_id': item['image_id'],
+                                              'w': img_sizes[0],
+                                              'h': img_sizes[1]}, ignore_index=True)
+            # img_sizes_df[item['image_id']] = {
+            #     # 'image_h': item['image_h'],  # was
+            #     # 'image_w': item['image_w'],
+            #     'h': img_sizes[0],
+            #     'w': img_sizes[1],
+            # }
     print(f'len(num_det_boxes): {len(num_det_boxes)}')
     print(f'len(num_gaze_boxes): {len(num_gaze_boxes)}')
     print(f'len(num_gaze_det_boxes): {len(num_gaze_det_boxes)}')
     # convert dict to pandas dataframe
     # create image sizes csv
-    print('Writing image sizes csv...')
-    df = pd.DataFrame.from_dict(image_sizes)
-    df = df.transpose()
-    d = df.to_dict()
-    dw = d['w']
-    dh = d['h']
-    d = [dw, dh]
-    dwh = {}
-    for k in dw.keys():
-        dwh[k] = np.array([d0[k] for d0 in d])
-    image_sizes = pd.DataFrame(dwh)
+    # print('Writing image sizes csv...')
+    # df = pd.DataFrame.from_dict(img_sizes_df)
+    # df = df.transpose()
+    # d = df.to_dict()
+    # dw = d['w']
+    # dh = d['h']
+    # d = [dw, dh]
+    # dwh = {}
+    # for k in dw.keys():
+    #     dwh[k] = np.array([d0[k] for d0 in d])
+    # img_sizes_df = pd.DataFrame(dwh)
     torch.save({'box': boxes, 'feat': features}, f'mimic_{task}_box_feat.pt')
-    image_sizes.to_csv(f'mimic_{task}_image_size.csv')
+    img_sizes_df.to_csv(f'mimic_{task}_image_size.csv')
 
 
 def all_qa_pairs(dataset_path, text):
