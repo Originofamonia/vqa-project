@@ -324,7 +324,7 @@ def test(args):
     result = []
     for step, next_batch in tqdm(enumerate(loader)):
         # Batch preparation
-        q_batch, _, _, i_batch, k_batch, qlen_batch = batch_to_cuda(next_batch)
+        q_batch, a_batch, vote_batch, i_batch, k_batch, qlen_batch = batch_to_cuda(next_batch)
 
         # get predictions
         output, _, _ = model(q_batch, i_batch, k_batch, qlen_batch)
