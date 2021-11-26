@@ -162,7 +162,8 @@ def save_plot_nodes():
     2. get winner box
     3. winner box neighbors
     """
-    image_path = '/home/qiyuan/2021summer/imageclef/images'
+    # image_path = '/home/qiyuan/2021summer/imageclef/images'
+    image_path = '/home/qiyuan/2021summer/vqa-project/data/coco/train2014'
     neighbors_list = [36]  # for 51 nodes best
     kernels_list = [16]
     args, parser, unparsed = input_args()
@@ -228,10 +229,13 @@ def save_plot_nodes():
         # topm_deg_ind = topm_deg_ind.detach().cpu().numpy()
 
         for j, iid in enumerate(image_ids):
+            img = cv2.imread(os.path.join(image_path, '000000' + iid + '.jpg'))
+            if not img:
+                continue
             boxes = np.asarray(dataset_test.bbox[str(iid)])
             # boxes = boxes[topm_ind[j]]
             img_h, img_w = np.asarray(dataset_test.sizes[str(iid)])
-            img = cv2.imread(os.path.join(image_path, iid))
+
             resized_img = cv2.resize(img, (img_h, img_w))
 
             f1 = os.path.join(args.plot_dir, f"{iid.strip('.jpg')}_boxes.jpg")

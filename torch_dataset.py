@@ -555,4 +555,4 @@ class VQA_Dataset_Test(Dataset):
         i = np.concatenate([img, bboxes], axis=1)
         k = np.asarray(k).reshape(1)
 
-        return q, a, n_votes, qid, i, k, qlen
+        return q, a, n_votes, qid, i, k, qlen, str(iid)
