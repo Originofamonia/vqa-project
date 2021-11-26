@@ -263,7 +263,7 @@ def select_mimic_qa_pairs():
 
 
 def main():
-    task = 'train'  # train or val
+    task = 'val'  # train or val
     parse_box_feat(task)
 
     # combine_qa(task)
