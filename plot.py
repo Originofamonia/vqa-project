@@ -231,7 +231,7 @@ def save_plot_nodes():
             results.append(
                 f"{dataset_test.vqa[idx]['image_id']},"
                 f"{dataset_test.vqa[idx]['question']},"
-                f"{dataset_test.a_itow[oix[i]]},"
+                f"{dataset_test.a_itow[oix[j]]},"
                 f"{dataset_test.vqa[idx]['answer']}"
             )
             boxes = np.asarray(dataset_test.bbox[str(iid)])
