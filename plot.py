@@ -197,7 +197,8 @@ def save_plot_nodes():
         q_batch, a_batch, vote_batch, i_batch, k_batch, qlen_batch = \
             batch_to_cuda(test_batch)
         idxs = test_batch[-1]  # vqa2.0 is idx, imageclef is iid
-        # print(idxs)
+        if i == 100:
+            break
         logits, adj_mat, h_max_indices = model(q_batch, i_batch, k_batch,
                                                qlen_batch)
 
@@ -260,6 +261,7 @@ def save_plot_nodes():
             # plot_connect_lines(mosaic, h_max_boxes, f2, color=None, line_thickness=None)
             plot_connect_lines2(mosaic, boxes, real_rows, real_cols, f2,
                                 color=None, line_thickness=None)
+
     with open('infer_vqa20.csv', 'w') as f:
         f.write('image_id,question,prediction,answer\n')
         for line in results:
