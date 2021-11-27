@@ -232,7 +232,8 @@ def save_plot_nodes():
         for j, idx in enumerate(idxs):
             idx = int(idx.cpu().numpy())
             iid = dataset_test.vqa[idx]['image_id']
-            img = cv2.imread(os.path.join(image_path, '000000' + str(iid) + '.jpg'))
+            img_path = os.path.join(image_path, 'COCO_train2014_000000' + str(iid) + '.jpg')
+            img = cv2.imread(img_path)
             if not img:
                 continue
             boxes = np.asarray(dataset_test.bbox[str(iid)])
