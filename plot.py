@@ -226,7 +226,7 @@ def save_plot_nodes():
             iid = dataset_test.vqa[idx]['image_id']
             img_path = os.path.join(image_path, 'COCO_train2014_000000' + str(iid) + '.jpg')
             img = cv2.imread(img_path)
-            if not img:
+            if img is None:
                 continue
             results.append(
                 f"{dataset_test.vqa[idx]['image_id']},"
