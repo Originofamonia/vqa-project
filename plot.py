@@ -195,21 +195,22 @@ def save_plot_nodes():
     for i, test_batch in tqdm(enumerate(loader_test)):
         q_batch, a_batch, vote_batch, i_batch, k_batch, qlen_batch = \
             batch_to_cuda(test_batch)
-        image_ids = test_batch[-1]
+        idxs = test_batch[-1]
         logits, adj_mat, h_max_indices = model(q_batch, i_batch, k_batch,
                                                qlen_batch)
 
-        qid_batch = test_batch[3]
+        # qid_batch = test_batch[3]
         _, oix = logits.data.max(1)
         oix = oix.cpu().numpy()
         # record predictions
-        for i, qid in enumerate(qid_batch):
-            qid = int(qid.cpu().numpy())
+        for i, idx in enumerate(idxs):
+            idx = int(idx.cpu().numpy())
             results.append(
-                # f"{dataset_test.vqa[qid]['image_id']},"
-                # f"{dataset_test.vqa[qid]['question']},"
+                f"{dataset_test.vqa[idx]['image_id']},"
+                f"{dataset_test.vqa[idx]['question']},"
                 f"{dataset_test.a_itow[oix[i]]},"
-                f"{dataset_test.vqa[qid]['answer']}")
+                f"{dataset_test.vqa[idx]['answer']}"
+            )
 
         # topn, topn_ind = torch.max(adj_mat, dim=-1)  # select top n node_i
         # topn, topn_ind = torch.topk(topn, k=topn.size(1), dim=-1, sorted=True)
@@ -228,7 +229,7 @@ def save_plot_nodes():
         # topm_deg_sorted, topm_deg_ind = torch.sort(topm_degree, dim=-1)  # to sort boxes by degree
         # topm_deg_ind = topm_deg_ind.detach().cpu().numpy()
 
-        for j, iid in enumerate(image_ids):
+        for j, iid in enumerate(idxs):
             img = cv2.imread(os.path.join(image_path, '000000' + iid + '.jpg'))
             if not img:
                 continue
