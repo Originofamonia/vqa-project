@@ -213,9 +213,9 @@ def save_plot_nodes():
         topm, topm_ind = torch.topk(  # select topm neighbors node_j
             adj_mat, k=args.neighbourhood_size, dim=-1, sorted=True)
         # topm = F.normalize(topm, p=2.0, dim=-1)
-        topm = torch.stack(  # all edges
-            [F.softmax(topm[:, k], dim=-1) for k in
-             range(topm.size(1))]).transpose(0, 1)  # (batch_size, K, neighbourhood_size)
+        # topm = torch.stack(  # all edges
+        #     [F.softmax(topm[:, k], dim=-1) for k in
+        #      range(topm.size(1))]).transpose(0, 1)  # (batch_size, K, neighbourhood_size)
         # print(topm[0], topm[1], topm[2], topm[3], topm[4])
         # topm_degree = torch.count_nonzero(topm, dim=-1)
         # print(topm_degree)
@@ -236,7 +236,8 @@ def save_plot_nodes():
                 f"{dataset_test.vqa[idx]['answer']}"
             )
             boxes = np.asarray(dataset_test.bbox[str(iid)])
-            # boxes = boxes[topm_ind[j]]
+            _, box_ind = torch.sort(torch.sum(topm[j], dim=1), dim=0)
+            boxes = boxes[box_ind]
             img_h, img_w = np.asarray(dataset_test.sizes[str(iid)])
 
             resized_img = cv2.resize(img, (img_h, img_w))
