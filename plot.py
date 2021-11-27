@@ -210,6 +210,7 @@ def save_plot_nodes():
 
         topm, topm_ind = torch.topk(  # select topm neighbors node_j
             adj_mat, k=args.neighbourhood_size, dim=-1, sorted=True)
+        print(topm[0])
         topm = F.normalize(topm, p=2.0, dim=-1)
         topm = torch.stack(  # all edges
             [F.softmax(topm[:, k], dim=-1) for k in
