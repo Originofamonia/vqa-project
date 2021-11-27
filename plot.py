@@ -197,6 +197,7 @@ def save_plot_nodes():
         q_batch, a_batch, vote_batch, i_batch, k_batch, qlen_batch = \
             batch_to_cuda(test_batch)
         idxs = test_batch[-1]  # vqa2.0 is idx, imageclef is iid
+        print(idxs)
         logits, adj_mat, h_max_indices = model(q_batch, i_batch, k_batch,
                                                qlen_batch)
 
