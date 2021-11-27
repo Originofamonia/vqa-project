@@ -195,7 +195,7 @@ def save_plot_nodes():
     for i, test_batch in tqdm(enumerate(loader_test)):
         q_batch, a_batch, vote_batch, i_batch, k_batch, qlen_batch = \
             batch_to_cuda(test_batch)
-        idxs = test_batch[-1]
+        idxs = test_batch[-1]  # vqa2.0 is idx, imageclef is iid
         logits, adj_mat, h_max_indices = model(q_batch, i_batch, k_batch,
                                                qlen_batch)
 
@@ -230,7 +230,8 @@ def save_plot_nodes():
         # topm_deg_ind = topm_deg_ind.detach().cpu().numpy()
 
         for j, iid in enumerate(idxs):
-            img = cv2.imread(os.path.join(image_path, '000000' + iid + '.jpg'))
+            iid = int(iid.cpu().numpy())
+            img = cv2.imread(os.path.join(image_path, '000000' + str(iid) + '.jpg'))
             if not img:
                 continue
             boxes = np.asarray(dataset_test.bbox[str(iid)])
