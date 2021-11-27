@@ -165,13 +165,14 @@ def save_plot_nodes():
     """
     # image_path = '/home/qiyuan/2021summer/imageclef/images'
     image_path = '/home/qiyuan/2021summer/vqa-project/data/coco/train2014'
+    # coco_imgs = os.listdir(image_path)
     args, parser, unparsed = input_args()
     # args.n_kernels = kernels_list[0]
     # args.neighbourhood_size = neighbors_list[0]
 
     model_file = os.path.join(args.save_dir, 'vqa_36_8_16_54.17.pt')
     # dataset_test = ImageclefDataset(args, train=False)
-    dataset_test = VQA_Dataset(args.data_dir, args.emb, train=False)
+    dataset_test = VQA_Dataset(args.data_dir, args.emb, train=True)
     test_sampler = SequentialSampler(dataset_test)
     loader_test = DataLoader(dataset_test, batch_size=args.bsize,
                              sampler=test_sampler, shuffle=False,
