@@ -259,7 +259,7 @@ def save_plot_nodes():
             # plot_connect_lines(mosaic, h_max_boxes, f2, color=None, line_thickness=None)
             plot_connect_lines2(mosaic, boxes, real_rows, real_cols, f2,
                                 color=None, line_thickness=None)
-    with open('infer_imageclef.csv', 'w') as f:
+    with open('infer_vqa20.csv', 'w') as f:
         f.write('image_id,question,prediction,answer\n')
         for line in results:
             f.write(line)
