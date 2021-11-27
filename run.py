@@ -90,7 +90,7 @@ def eval_model(args):
     for step, next_batch in tqdm(enumerate(loader)):
         # move batch to cuda
         q_batch, _, vote_batch, i_batch, k_batch, qlen_batch = \
-            batch_to_cuda(next_batch, volatile=True)
+            batch_to_cuda(next_batch)
 
         # get predictions
         output, _ = model(q_batch, i_batch, k_batch, qlen_batch)

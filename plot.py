@@ -206,8 +206,8 @@ def save_plot_nodes():
         for i, qid in enumerate(qid_batch):
             qid = int(qid.cpu().numpy())
             results.append(
-                f"{dataset_test.vqa[qid]['image_id']},"
-                f"{dataset_test.vqa[qid]['question']},"
+                # f"{dataset_test.vqa[qid]['image_id']},"
+                # f"{dataset_test.vqa[qid]['question']},"
                 f"{dataset_test.a_itow[oix[i]]},"
                 f"{dataset_test.vqa[qid]['answer']}")
 
