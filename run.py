@@ -474,6 +474,22 @@ def trainval(args):
 
 
 def main():
+    args, parser, unparsed = input_args()
+    if len(unparsed) != 0:
+        raise SystemExit('Unknown argument: {}'.format(unparsed))
+    if args.train:
+        train(args)
+    if args.trainval:
+        trainval(args)
+    if args.eval:
+        eval_model(args)
+    if args.test:
+        test(args)
+    if not args.train and not args.eval and not args.trainval and not args.test:
+        parser.print_help()
+
+
+def input_args():
     parser = argparse.ArgumentParser(
         description='Conditional Graph Convolutions for VQA')
     parser.add_argument('--train', action='store_true', default=False,
@@ -509,21 +525,11 @@ def main():
     parser.add_argument('--dropout', metavar='', type=float, default=0.5,
                         help='probability of dropping out FC nodes during '
                              'training')
-    parser.add_argument('--model_path', type=str, default='save/vqa_36_8_16_54.42.pt',
+    parser.add_argument('--model_path', type=str,
+                        default='save/vqa_36_8_16_54.42.pt',
                         help='trained model path.')
     args, unparsed = parser.parse_known_args()
-    if len(unparsed) != 0:
-        raise SystemExit('Unknown argument: {}'.format(unparsed))
-    if args.train:
-        train(args)
-    if args.trainval:
-        trainval(args)
-    if args.eval:
-        eval_model(args)
-    if args.test:
-        test(args)
-    if not args.train and not args.eval and not args.trainval and not args.test:
-        parser.print_help()
+    return args, parser, unparsed
 
 
 if __name__ == '__main__':

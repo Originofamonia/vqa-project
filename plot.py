@@ -20,9 +20,10 @@ import torch.nn.functional as F
 from torch.utils.data import DataLoader
 from torch.utils.data.sampler import SequentialSampler
 
-from run_imageclef import input_args
+# from run_imageclef import input_args
+from run import input_args
 from sparse_graph_model import Model
-from torch_dataset import ImageclefDataset, collate_fn
+from torch_dataset import ImageclefDataset, collate_fn, VQA_Dataset
 from utils import batch_to_cuda, xyxy2xywh
 from yolo_datasets import get_yolo_dataset
 
@@ -164,14 +165,13 @@ def save_plot_nodes():
     """
     # image_path = '/home/qiyuan/2021summer/imageclef/images'
     image_path = '/home/qiyuan/2021summer/vqa-project/data/coco/train2014'
-    neighbors_list = [36]  # for 51 nodes best
-    kernels_list = [16]
     args, parser, unparsed = input_args()
-    args.n_kernels = kernels_list[0]
-    args.neighbourhood_size = neighbors_list[0]
+    # args.n_kernels = kernels_list[0]
+    # args.neighbourhood_size = neighbors_list[0]
 
-    model_file = os.path.join(args.save_dir, 'clef_51_16_36_97.50.pt')
-    dataset_test = ImageclefDataset(args, train=False)
+    model_file = os.path.join(args.save_dir, 'vqa_36_8_16_54.17.pt')
+    # dataset_test = ImageclefDataset(args, train=False)
+    dataset_test = VQA_Dataset(args.data_dir, args.emb, train=False)
     test_sampler = SequentialSampler(dataset_test)
     loader_test = DataLoader(dataset_test, batch_size=args.bsize,
                              sampler=test_sampler, shuffle=False,
