@@ -202,15 +202,6 @@ def save_plot_nodes():
         # qid_batch = test_batch[3]
         _, oix = logits.data.max(1)
         oix = oix.cpu().numpy()
-        # record predictions
-        for i, idx in enumerate(idxs):
-            idx = int(idx.cpu().numpy())
-            results.append(
-                f"{dataset_test.vqa[idx]['image_id']},"
-                f"{dataset_test.vqa[idx]['question']},"
-                f"{dataset_test.a_itow[oix[i]]},"
-                f"{dataset_test.vqa[idx]['answer']}"
-            )
 
         # topn, topn_ind = torch.max(adj_mat, dim=-1)  # select top n node_i
         # topn, topn_ind = torch.topk(topn, k=topn.size(1), dim=-1, sorted=True)
@@ -236,6 +227,12 @@ def save_plot_nodes():
             img = cv2.imread(img_path)
             if not img:
                 continue
+            results.append(
+                f"{dataset_test.vqa[idx]['image_id']},"
+                f"{dataset_test.vqa[idx]['question']},"
+                f"{dataset_test.a_itow[oix[i]]},"
+                f"{dataset_test.vqa[idx]['answer']}"
+            )
             boxes = np.asarray(dataset_test.bbox[str(iid)])
             # boxes = boxes[topm_ind[j]]
             img_h, img_w = np.asarray(dataset_test.sizes[str(iid)])
