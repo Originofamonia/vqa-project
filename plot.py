@@ -229,8 +229,9 @@ def save_plot_nodes():
         # topm_deg_sorted, topm_deg_ind = torch.sort(topm_degree, dim=-1)  # to sort boxes by degree
         # topm_deg_ind = topm_deg_ind.detach().cpu().numpy()
 
-        for j, iid in enumerate(idxs):
-            iid = int(iid.cpu().numpy())
+        for j, idx in enumerate(idxs):
+            idx = int(idx.cpu().numpy())
+            iid = dataset_test.vqa[idx]['image_id']
             img = cv2.imread(os.path.join(image_path, '000000' + str(iid) + '.jpg'))
             if not img:
                 continue
