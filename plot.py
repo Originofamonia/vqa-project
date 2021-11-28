@@ -140,7 +140,7 @@ def plot_boxes(image, boxes, findings, paths=None, fname='images.jpg',
     mosaic = image
     red = np.uint8([255, 0, 0])  # RGB or HSV
     # hsv_red = cv2.cvtColor(red, cv2.COLOR_BGR2HSV)
-    orange = np.uint8([255, 128, 0])
+    orange = np.uint8([0, 255, 0])
     # hsv_white = cv2.cvtColor(orange, cv2.COLOR_BGR2HSV)
     color_step = (red - orange) / len(boxes)
     for j, box in enumerate(boxes):
@@ -236,8 +236,7 @@ def save_plot_nodes():
                 f"{dataset_test.vqa[idx]['answer']}"
             )
             boxes = np.asarray(dataset_test.bbox[str(iid)])
-            topm_weight_sum = torch.sum(topm[j], dim=1)
-            print(topm_weight_sum)
+            # sort boxes by sum of neighbors
             _, box_ind = torch.sort(torch.sum(topm[j], dim=1), dim=0)
             boxes = boxes[box_ind]
             img_h, img_w = np.asarray(dataset_test.sizes[str(iid)])
