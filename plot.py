@@ -85,12 +85,15 @@ def plot_connect_lines2(img, boxes, rows, cols, fname, color=None,
     """
     plot by edge weight
     """
-    num_lines = 100
+    num_lines = 60
     rows = rows[:num_lines]
     cols = cols[:num_lines]
     tl = line_thickness or round(
-        0.002 * (img.shape[0] + img.shape[1]) / 2) + 1  # line/font thickness
-    color = color or [random.randint(0, 255) for _ in range(3)]
+        0.002 * (img.shape[0] + img.shape[1]) / 2) + 0  # line/font thickness
+    # color = color or [random.randint(0, 255) for _ in range(3)]
+    from_color = np.uint8([255, 0, 0])
+    to_color = np.uint8([0, 0, 0])
+    color_step = (to_color - from_color) / num_lines
     for i, (r, c) in enumerate(zip(rows, cols)):
         box_i = boxes[r]
         box_j = boxes[c]
@@ -98,7 +101,8 @@ def plot_connect_lines2(img, boxes, rows, cols, fname, color=None,
             int((box_i[0] + box_i[2]) / 2), int((box_i[1] + box_i[3]) / 2))
         center_j = (
             int((box_j[0] + box_j[2]) / 2), int((box_j[1] + box_j[3]) / 2))
-        cv2.line(img, center_i, center_j, color=color, thickness=tl)
+        c = from_color + i * color_step
+        cv2.line(img, center_i, center_j, color=c, thickness=tl)
 
     if fname:
         cv2.imwrite(fname, img)  # cv2 save
@@ -226,7 +230,8 @@ def save_plot_nodes():
         for j, idx in enumerate(idxs):
             idx = int(idx.cpu().numpy())
             iid = dataset_test.vqa[idx]['image_id']
-            img_path = os.path.join(image_path, 'COCO_train2014_000000' + str(iid) + '.jpg')
+            img_path = os.path.join(image_path,
+                                    'COCO_train2014_000000' + str(iid) + '.jpg')
             img = cv2.imread(img_path)
             if img is None:
                 continue
@@ -245,7 +250,8 @@ def save_plot_nodes():
 
             resized_img = cv2.resize(img, (img_h, img_w))
 
-            f1 = os.path.join(args.plot_dir, f"{iid.strip('.jpg')}_{dataset_test.vqa[idx]['question'].strip('?')}_boxes.jpg")
+            f1 = os.path.join(args.plot_dir,
+                              f"{iid.strip('.jpg')}_{dataset_test.vqa[idx]['question'].strip('?')}_boxes.jpg")
             mosaic = plot_boxes(resized_img, boxes, None, None, f1, None)
 
             # h_max_idx, count = np.unique(h_max_indices[j].detach().cpu().numpy(), return_counts=True)
@@ -261,7 +267,8 @@ def save_plot_nodes():
             real_rows = torch.div(real_ind, adj_mat.size(1),
                                   rounding_mode='trunc')
             real_cols = real_ind % adj_mat.size(-1)
-            f2 = os.path.join(args.plot_dir, f"{iid.strip('.jpg')}_{dataset_test.vqa[idx]['question'].strip('?')}_lines.jpg")
+            f2 = os.path.join(args.plot_dir,
+                              f"{iid.strip('.jpg')}_{dataset_test.vqa[idx]['question'].strip('?')}_lines.jpg")
             # plot_connect_lines(mosaic, h_max_boxes, f2, color=None, line_thickness=None)
             plot_connect_lines2(mosaic, boxes, real_rows, real_cols, f2,
                                 color=None, line_thickness=None)
