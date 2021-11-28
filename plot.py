@@ -100,8 +100,8 @@ def plot_connect_lines2(img, boxes, rows, cols, fname, color=None,
         cv2.line(img, center_i, center_j, color=color, thickness=tl)
 
     if fname:
-        cv2.imwrite(fname, cv2.cvtColor(img, cv2.COLOR_BGR2RGB))  # cv2 save
-
+        cv2.imwrite(fname, img)  # cv2 save
+        # cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     return img
 
 
@@ -138,13 +138,13 @@ def plot_boxes(image, boxes, findings, paths=None, fname='images.jpg',
         image = cv2.resize(image, (w, h))
 
     mosaic = image
-    red = np.uint8([255, 0, 0])  # RGB or HSV
-    # hsv_red = cv2.cvtColor(red, cv2.COLOR_BGR2HSV)
-    orange = np.uint8([0, 255, 0])
+    from_color = np.uint8([10, 250, 25])  # RGB or HSV
+    # hsv_red = cv2.cvtColor(from_color, cv2.COLOR_BGR2HSV)
+    orange = np.uint8([255, 92, 0])
     # hsv_white = cv2.cvtColor(orange, cv2.COLOR_BGR2HSV)
-    color_step = (red - orange) / len(boxes)
+    color_step = (from_color - orange) / len(boxes)
     for j, box in enumerate(boxes):
-        c = red + j * color_step
+        c = from_color + j * color_step
         plot_one_box(box, mosaic, label=None, color=c,
                      line_thickness=tl)
 
@@ -265,7 +265,7 @@ def save_plot_nodes():
             plot_connect_lines2(mosaic, boxes, real_rows, real_cols, f2,
                                 color=None, line_thickness=None)
 
-    with open('infer_vqa20.csv', 'w') as f:
+    with open(f'{args.plot_dir}/infer_vqa20.csv', 'w') as f:
         f.write('image_id,question,prediction,answer\n')
         for line in results:
             f.write(line)
