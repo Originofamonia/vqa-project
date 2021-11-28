@@ -152,8 +152,8 @@ def plot_boxes(image, boxes, findings, paths=None, fname='images.jpg',
         r = min(1280. / max(h, w) / ns, 1.0)  # ratio to limit image size
         mosaic = cv2.resize(mosaic, (int(ns * w * r), int(ns * h * r)),
                             interpolation=cv2.INTER_AREA).astype(np.uint8)
-        cv2.imwrite(fname, cv2.cvtColor(mosaic, cv2.COLOR_BGR2RGB))  # cv2 save
-
+        cv2.imwrite(fname, mosaic)  # cv2 save
+        # cv2.cvtColor(mosaic, cv2.COLOR_BGR2RGB)
     return mosaic
 
 
