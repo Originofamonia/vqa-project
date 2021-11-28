@@ -238,6 +238,7 @@ def save_plot_nodes():
             boxes = dataset_test.bbox[str(iid)]
             # sort boxes by sum of neighbors
             _, box_ind = torch.sort(torch.sum(topm[j], dim=1), dim=0)
+            box_ind = np.asarray(box_ind)
             boxes = np.asarray(boxes[box_ind])
             img_h, img_w = np.asarray(dataset_test.sizes[str(iid)])
 
