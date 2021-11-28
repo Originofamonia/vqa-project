@@ -122,7 +122,7 @@ def plot_boxes(image, boxes, findings, paths=None, fname='images.jpg',
     if np.max(image) <= 1:
         image *= 255
 
-    tl = 2  # line thickness
+    tl = 1  # line thickness
     tf = max(tl - 1, 1)  # font thickness
     h, w, ch = image.shape  # height, width, ch
     bs = 1
@@ -139,11 +139,11 @@ def plot_boxes(image, boxes, findings, paths=None, fname='images.jpg',
         image = cv2.resize(image, (w, h))
 
     mosaic = image
-    from_color = np.uint8([10, 250, 25])  # RGB or HSV
+    from_color = np.uint8([0, 0, 255])  # RGB or HSV
     # hsv_red = cv2.cvtColor(from_color, cv2.COLOR_BGR2HSV)
-    orange = np.uint8([255, 92, 0])
-    # hsv_white = cv2.cvtColor(orange, cv2.COLOR_BGR2HSV)
-    color_step = (from_color - orange) / len(boxes)
+    to_color = np.uint8([0, 0, 0])
+    # hsv_white = cv2.cvtColor(to_color, cv2.COLOR_BGR2HSV)
+    color_step = (to_color - from_color) / len(boxes)
     for j, box in enumerate(boxes):
         c = from_color + j * color_step
         plot_one_box(box, mosaic, label=None, color=c,
@@ -203,7 +203,7 @@ def save_plot_nodes():
         logits, adj_mat, h_max_indices = model(q_batch, i_batch, k_batch,
                                                qlen_batch)
 
-        # qid_batch = test_batch[3]
+        qid_batch = test_batch[3]
         _, oix = logits.data.max(1)
         oix = oix.cpu().numpy()
 
@@ -245,7 +245,7 @@ def save_plot_nodes():
 
             resized_img = cv2.resize(img, (img_h, img_w))
 
-            f1 = os.path.join(args.plot_dir, f"{iid.strip('.jpg')}_boxes.jpg")
+            f1 = os.path.join(args.plot_dir, f"{iid.strip('.jpg')}_{dataset_test.vqa[idx]['question'].strip('?')}_boxes.jpg")
             mosaic = plot_boxes(resized_img, boxes, None, None, f1, None)
 
             # h_max_idx, count = np.unique(h_max_indices[j].detach().cpu().numpy(), return_counts=True)
@@ -261,7 +261,7 @@ def save_plot_nodes():
             real_rows = torch.div(real_ind, adj_mat.size(1),
                                   rounding_mode='trunc')
             real_cols = real_ind % adj_mat.size(-1)
-            f2 = os.path.join(args.plot_dir, f"{iid.strip('.jpg')}_h_max.jpg")
+            f2 = os.path.join(args.plot_dir, f"{iid.strip('.jpg')}_{dataset_test.vqa[idx]['question'].strip('?')}_lines.jpg")
             # plot_connect_lines(mosaic, h_max_boxes, f2, color=None, line_thickness=None)
             plot_connect_lines2(mosaic, boxes, real_rows, real_cols, f2,
                                 color=None, line_thickness=None)
