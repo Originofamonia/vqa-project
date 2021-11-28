@@ -235,11 +235,11 @@ def save_plot_nodes():
                 f"{dataset_test.a_itow[oix[j]]},"
                 f"{dataset_test.vqa[idx]['answer']}"
             )
-            boxes = dataset_test.bbox[str(iid)]
+            boxes = np.asarray(dataset_test.bbox[str(iid)])
             # sort boxes by sum of neighbors
             _, box_ind = torch.sort(torch.sum(topm[j], dim=1), dim=0)
             box_ind = np.asarray(box_ind.cpu())
-            boxes = np.asarray(boxes[box_ind])
+            boxes = boxes[box_ind]
             img_h, img_w = np.asarray(dataset_test.sizes[str(iid)])
 
             resized_img = cv2.resize(img, (img_h, img_w))
