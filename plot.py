@@ -237,6 +237,7 @@ def save_plot_nodes():
             )
             boxes = np.asarray(dataset_test.bbox[str(iid)])
             topm_weight_sum = torch.sum(topm[j], dim=1)
+            print(topm_weight_sum)
             _, box_ind = torch.sort(torch.sum(topm[j], dim=1), dim=0)
             boxes = boxes[box_ind]
             img_h, img_w = np.asarray(dataset_test.sizes[str(iid)])
