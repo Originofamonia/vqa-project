@@ -448,7 +448,7 @@ def plot_box_edge_mpl(args, boxes, dataset_test, idx, iid, im, adj_mats):
     f1 = os.path.join(args.plot_dir,
                       f"{iid.strip('.jpg')}_{dataset_test.vqa[idx]['question'].strip('?')}_boxes.jpg")
     plt.savefig(f1)
-
+    np.savez('adj_mat.npz', adj_mats)
     for a in adj_mats:
         print(a)
     plt.close()
