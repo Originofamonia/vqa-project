@@ -446,19 +446,18 @@ def plot_box_edge_mpl(args, boxes, dataset_test, idx, iid, im, adj_mat):
     for i in range(len(adj_mat)):
         for j in range(len(adj_mat[0])):
             edge_weight = adj_mat[i][j] / max_edge
-            if edge_weight < 0.5:
-                continue
-            b_i = boxes[i]
-            b_j = boxes[j]
-            ci0 = (b_i[0] + b_i[2]) / 2
-            ci1 = (b_i[1] + b_i[3]) / 2
-            cj0 = (b_j[0] + b_j[2]) / 2
-            cj1 = (b_j[1] + b_j[3]) / 2
-            seg = np.array([[ci0, ci1], [cj0, cj1]])
-            seg = np.expand_dims(seg, axis=0)
-            lc = mcoll.LineCollection(seg, array=z, cmap=cmap, norm=norm,
-                                      linewidth=2 * edge_weight, alpha=1 * edge_weight)
-            ax.add_collection(lc)
+            if edge_weight > 0.3:
+                b_i = boxes[i]
+                b_j = boxes[j]
+                ci0 = (b_i[0] + b_i[2]) / 2
+                ci1 = (b_i[1] + b_i[3]) / 2
+                cj0 = (b_j[0] + b_j[2]) / 2
+                cj1 = (b_j[1] + b_j[3]) / 2
+                seg = np.array([[ci0, ci1], [cj0, cj1]])
+                seg = np.expand_dims(seg, axis=0)
+                lc = mcoll.LineCollection(seg, array=z, cmap=cmap, norm=norm,
+                                          linewidth=2 * edge_weight, alpha=1 * edge_weight)
+                ax.add_collection(lc)
 
     f2 = os.path.join(args.plot_dir,
                       f"{iid.strip('.jpg')}_{dataset_test.vqa[idx]['question'].strip('?')}_lines.jpg")
