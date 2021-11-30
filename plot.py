@@ -394,7 +394,7 @@ def plot_by_mpl():
             iid = dataset_test.vqa[idx]['image_id']
             img_path = os.path.join(image_path,
                                     'COCO_train2014_000000' + str(iid) + '.jpg')
-            im = cv2.imread(img_path)
+            im = plt.imread(img_path)
             if im is None:
                 continue
             boxes = np.asarray(dataset_test.bbox[str(iid)])  # xyxy
@@ -404,7 +404,7 @@ def plot_by_mpl():
 def plot_box_mpl(args, boxes, dataset_test, idx, iid, im):
     fig, ax = plt.subplots()
     # Display the image
-    im = np.transpose(im, (2, 1, 0))
+    # im = np.transpose(im, (2, 1, 0))
     ax.imshow(im)
     for i, box in enumerate(boxes):
         w = box[2] - box[0]
