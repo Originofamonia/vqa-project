@@ -411,8 +411,8 @@ def plot_box_mpl(args, boxes, dataset_test, idx, iid, im):
         c0 = (box[0] + box[2]) / 2
         c1 = (box[1] + box[3]) / 2
         # Create a Rectangle patch, xywh (xy is top left)
-        rect = Rectangle((box[0], box[1]), w, h, linewidth=2 / (i+0.1), edgecolor='r',
-                         facecolor='none', alpha=1 / (i + 0.1))
+        rect = Rectangle((box[0], box[1]), w, h, linewidth=2 / (i+1), edgecolor='r',
+                         facecolor='none', alpha=1 / (i + 1))
         # Add the patch to the Axes
         ax.add_patch(rect)
         plt.plot(c0, c1, 'ro')
