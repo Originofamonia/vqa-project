@@ -445,6 +445,7 @@ def plot_box_edge_mpl(args, boxes, dataset_test, idx, iid, im, adj_mat):
     max_edge = adj_mat.max()
     for i in range(len(adj_mat)):
         for j in range(len(adj_mat[0])):
+            edge_weight = adj_mat[i][j] / max_edge
             b_i = boxes[i]
             b_j = boxes[j]
             ci0 = (b_i[0] + b_i[2]) / 2
@@ -454,7 +455,7 @@ def plot_box_edge_mpl(args, boxes, dataset_test, idx, iid, im, adj_mat):
             seg = np.array([[ci0, ci1], [cj0, cj1]])
             seg = np.expand_dims(seg, axis=0)
             lc = mcoll.LineCollection(seg, array=z, cmap=cmap, norm=norm,
-                                      linewidth=2 / (i + 1), alpha=1 / (i + 1))
+                                      linewidth=2 * edge_weight, alpha=1 * edge_weight)
             ax.add_collection(lc)
 
     f2 = os.path.join(args.plot_dir,
