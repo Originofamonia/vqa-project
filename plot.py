@@ -398,32 +398,21 @@ def plot_by_mpl():
             if exists(img_path):
                 im = plt.imread(img_path)
                 boxes = np.asarray(dataset_test.bbox[str(iid)])  # xyxy
-                plot_box_edge_mpl(args, boxes, dataset_test, idx, iid, im, adj_mat)
+                boxes = sort_boxes(boxes, adj_mat[j])
+                plot_box_edge_mpl(args, boxes, dataset_test, idx, iid, im, adj_mat[j])
                 # plot_connection_mpl(args, boxes, dataset_test, adj_mat, idx, iid, im)
 
 
-# def plot_connection_mpl(args, boxes, dataset_test, adj_mat, idx, iid, im):
-#     fig, ax = plt.subplots()
-#     # Display the image
-#     # im = np.transpose(im, (2, 1, 0)) # no need
-#     ax.imshow(im)
-#     n_boxes = len(boxes)
-#     for i, box in enumerate(boxes):
-#         w = box[2] - box[0]
-#         h = box[3] - box[1]
-#         c0 = (box[0] + box[2]) / 2
-#         c1 = (box[1] + box[3]) / 2
-#         # Create a Rectangle patch, xywh (xy is top left)
-#         rect = Rectangle((box[0], box[1]), w, h, linewidth=(3 - i / n_boxes),
-#                          edgecolor='r',
-#                          facecolor='none', alpha=(1 - i / n_boxes))
-#         # Add the patch to the Axes
-#         ax.add_patch(rect)
-#         plt.plot(c0, c1, 'r.')
-#     f1 = os.path.join(args.plot_dir,
-#                       f"{iid.strip('.jpg')}_{dataset_test.vqa[idx]['question'].strip('?')}_lines.jpg")
-#     plt.savefig(f1)
-#     plt.close()
+def sort_boxes(boxes, adj_mat):
+    """
+    sort boxes by sum of edges
+    """
+    adj_mat = adj_mat.detach().cpu().numpy()
+    node_weights = adj_mat.sum(-1)
+    print(node_weights)
+    boxes = boxes[np.argsort(node_weights, axis=0)]
+    return boxes
+
 
 def plot_box_edge_mpl(args, boxes, dataset_test, idx, iid, im, adj_mats):
     """

@@ -109,7 +109,17 @@ def find_question():
     #     f.writelines(qs)
 
 
+def read_adj():
+    adj_file = 'data/adj_mat.npz'
+    npzfile = np.load(adj_file)
+    a = npzfile['arr_0']
+    a0_sorted = np.sort(a[0], axis=0)
+    a0 = a0_sorted
+    print(a0)
+
+
 if __name__ == '__main__':
     # main()
-    main2()
+    # main2()
     # find_question()
+    read_adj()
