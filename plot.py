@@ -429,11 +429,11 @@ def plot_box_edge_mpl(args, boxes, dataset_test, idx, iid, im, adj_mat):
         c0 = (box[0] + box[2]) / 2
         c1 = (box[1] + box[3]) / 2
         # Create a Rectangle patch, xywh (xy is top left)
-        rect = Rectangle((box[0], box[1]), w, h, linewidth=(2 - i / n_boxes), edgecolor='r',
+        rect = Rectangle((box[0], box[1]), w, h, linewidth=(2 - i / n_boxes), edgecolor='m',
                          facecolor='none', alpha=(1 - i / n_boxes))
         # Add the patch to the Axes
         ax.add_patch(rect)
-        plt.plot(c0, c1, 'r.')
+        plt.plot(c0, c1, 'm.')
     f1 = os.path.join(args.plot_dir,
                       f"{iid.strip('.jpg')}_{dataset_test.vqa[idx]['question'].strip('?')}_boxes.jpg")
     plt.savefig(f1)
@@ -446,7 +446,7 @@ def plot_box_edge_mpl(args, boxes, dataset_test, idx, iid, im, adj_mat):
     for i in range(len(adj_mat)):
         for j in range(len(adj_mat[0])):
             edge_weight = adj_mat[i][j] / max_edge
-            if edge_weight > 0.3:
+            if edge_weight > 0.4:
                 b_i = boxes[i]
                 b_j = boxes[j]
                 ci0 = (b_i[0] + b_i[2]) / 2
