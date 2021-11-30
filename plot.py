@@ -446,6 +446,8 @@ def plot_box_edge_mpl(args, boxes, dataset_test, idx, iid, im, adj_mat):
     for i in range(len(adj_mat)):
         for j in range(len(adj_mat[0])):
             edge_weight = adj_mat[i][j] / max_edge
+            if edge_weight < 0.5:
+                continue
             b_i = boxes[i]
             b_j = boxes[j]
             ci0 = (b_i[0] + b_i[2]) / 2
