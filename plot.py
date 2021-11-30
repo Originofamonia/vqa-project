@@ -414,7 +414,7 @@ def sort_boxes(boxes, adj_mat):
     return boxes
 
 
-def plot_box_edge_mpl(args, boxes, dataset_test, idx, iid, im, adj_mats):
+def plot_box_edge_mpl(args, boxes, dataset_test, idx, iid, im, adj_mat):
     """
     plot boxes and edges
     """
@@ -437,10 +437,29 @@ def plot_box_edge_mpl(args, boxes, dataset_test, idx, iid, im, adj_mats):
     f1 = os.path.join(args.plot_dir,
                       f"{iid.strip('.jpg')}_{dataset_test.vqa[idx]['question'].strip('?')}_boxes.jpg")
     plt.savefig(f1)
-    adj_mats = adj_mats.detach().cpu().numpy()
-    np.savez('adj_mat.npz', adj_mats)
-    for a in adj_mats:
-        print(a)
+    # plot edges
+    norm = plt.Normalize(0.0, 1.0)
+    cmap = plt.get_cmap('jet')
+    adj_mat = adj_mat.detach().cpu().numpy()
+    z = np.linspace(0, 1, len(adj_mat))
+    max_edge = adj_mat.max()
+    for i in range(len(adj_mat)):
+        for j in range(len(adj_mat[0])):
+            b_i = boxes[i]
+            b_j = boxes[j]
+            ci0 = (b_i[0] + b_i[2]) / 2
+            ci1 = (b_i[1] + b_i[3]) / 2
+            cj0 = (b_j[0] + b_j[2]) / 2
+            cj1 = (b_j[1] + b_j[3]) / 2
+            seg = np.array([[ci0, ci1], [cj0, cj1]])
+            seg = np.expand_dims(seg, axis=0)
+            lc = mcoll.LineCollection(seg, array=z, cmap=cmap, norm=norm,
+                                      linewidth=2 / (i + 1), alpha=1 / (i + 1))
+            ax.add_collection(lc)
+
+    f2 = os.path.join(args.plot_dir,
+                      f"{iid.strip('.jpg')}_{dataset_test.vqa[idx]['question'].strip('?')}_lines.jpg")
+    plt.savefig(f2)
     plt.close()
 
 
