@@ -409,8 +409,8 @@ def sort_boxes(boxes, adj_mat):
     """
     adj_mat = adj_mat.detach().cpu().numpy()
     node_weights = adj_mat.sum(-1)
-    print(node_weights)
-    boxes = boxes[np.argsort(node_weights, axis=0)]
+    node_indices = np.argsort(node_weights, axis=0)
+    boxes = boxes[node_indices]
     return boxes
 
 
