@@ -5,6 +5,7 @@ Visualize:
 2. plot all boxes with central points
 3. plot winning box and its neighbors
 """
+from os.path import exists
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 import matplotlib.collections as mcoll
@@ -394,17 +395,16 @@ def plot_by_mpl():
             iid = dataset_test.vqa[idx]['image_id']
             img_path = os.path.join(image_path,
                                     'COCO_train2014_000000' + str(iid) + '.jpg')
-            im = plt.imread(img_path)
-            if im is None:
-                continue
-            boxes = np.asarray(dataset_test.bbox[str(iid)])  # xyxy
-            plot_box_mpl(args, boxes, dataset_test, idx, iid, im)
+            if exists(img_path):
+                im = plt.imread(img_path)
+                boxes = np.asarray(dataset_test.bbox[str(iid)])  # xyxy
+                plot_box_mpl(args, boxes, dataset_test, idx, iid, im)
 
 
 def plot_box_mpl(args, boxes, dataset_test, idx, iid, im):
     fig, ax = plt.subplots()
     # Display the image
-    # im = np.transpose(im, (2, 1, 0))
+    # im = np.transpose(im, (2, 1, 0)) # no need
     ax.imshow(im)
     for i, box in enumerate(boxes):
         w = box[2] - box[0]
