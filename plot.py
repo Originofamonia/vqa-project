@@ -406,14 +406,15 @@ def plot_box_mpl(args, boxes, dataset_test, idx, iid, im):
     # Display the image
     # im = np.transpose(im, (2, 1, 0)) # no need
     ax.imshow(im)
+    n_boxes = len(boxes)
     for i, box in enumerate(boxes):
         w = box[2] - box[0]
         h = box[3] - box[1]
         c0 = (box[0] + box[2]) / 2
         c1 = (box[1] + box[3]) / 2
         # Create a Rectangle patch, xywh (xy is top left)
-        rect = Rectangle((box[0], box[1]), w, h, linewidth=1, edgecolor='r',
-                         facecolor='none', alpha=1)
+        rect = Rectangle((box[0], box[1]), w, h, linewidth=(3 - i / n_boxes), edgecolor='r',
+                         facecolor='none', alpha=(1 - i / n_boxes))
         # Add the patch to the Axes
         ax.add_patch(rect)
         plt.plot(c0, c1, 'r.')
