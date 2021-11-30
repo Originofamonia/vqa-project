@@ -419,7 +419,7 @@ def plot_by_mpl():
 #                          facecolor='none', alpha=(1 - i / n_boxes))
 #         # Add the patch to the Axes
 #         ax.add_patch(rect)
-#         plt.plot(x=c0, y=c1, c='r.')
+#         plt.plot(c0, c1, 'r.')
 #     f1 = os.path.join(args.plot_dir,
 #                       f"{iid.strip('.jpg')}_{dataset_test.vqa[idx]['question'].strip('?')}_lines.jpg")
 #     plt.savefig(f1)
@@ -444,7 +444,7 @@ def plot_box_edge_mpl(args, boxes, dataset_test, idx, iid, im, adj_mats):
                          facecolor='none', alpha=(1 - i / n_boxes))
         # Add the patch to the Axes
         ax.add_patch(rect)
-        plt.plot(x=c0, y=c1, c='r')
+        plt.plot(c0, c1, 'r.')
     f1 = os.path.join(args.plot_dir,
                       f"{iid.strip('.jpg')}_{dataset_test.vqa[idx]['question'].strip('?')}_boxes.jpg")
     plt.savefig(f1)
