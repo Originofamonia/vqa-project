@@ -404,6 +404,7 @@ def plot_by_mpl():
 def plot_box_mpl(args, boxes, dataset_test, idx, iid, im):
     fig, ax = plt.subplots()
     # Display the image
+    im = np.transpose(im, (2, 1, 0))
     ax.imshow(im)
     for i, box in enumerate(boxes):
         w = box[2] - box[0]
@@ -415,7 +416,7 @@ def plot_box_mpl(args, boxes, dataset_test, idx, iid, im):
                          facecolor='none', alpha=1 / (i + 1))
         # Add the patch to the Axes
         ax.add_patch(rect)
-        plt.plot(c0, c1, 'ro')
+        plt.plot(c0, c1, 'r.')
     f1 = os.path.join(args.plot_dir,
                       f"{iid.strip('.jpg')}_{dataset_test.vqa[idx]['question'].strip('?')}_boxes.jpg")
     plt.savefig(f1)
