@@ -26,10 +26,7 @@ from spacy.tokenizer import Tokenizer
 # import en_core_web_sm
 import spacy
 
-try:
-    import cPickle as pickle
-except:
-    import pickle
+import pickle
 
 # nlp = en_core_web_sm.load()
 nlp = spacy.load('en_core_web_sm')
