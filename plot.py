@@ -339,22 +339,22 @@ def plot_by_mpl():
     # args.neighbourhood_size = neighbors_list[0]
 
     model_file = os.path.join(args.save_dir, 'vqa_36_8_16_54.17.pt')
-    # dataset_test = ImageclefDataset(args, train=False)
-    dataset_test = VQA_Dataset(args.data_dir, args.emb, train=True)
-    test_sampler = SequentialSampler(dataset_test)
-    loader_test = DataLoader(dataset_test, batch_size=args.bsize,
+    # dataset = ImageclefDataset(args, train=False)
+    dataset = VQA_Dataset(args.data_dir, args.emb, train=True)
+    test_sampler = SequentialSampler(dataset)
+    loader_test = DataLoader(dataset, batch_size=args.bsize,
                              sampler=test_sampler, shuffle=False,
                              num_workers=4, collate_fn=collate_fn)
 
-    model = Model(vocab_size=dataset_test.q_words,
+    model = Model(vocab_size=dataset.q_words,
                   emb_dim=args.emb,
-                  feat_dim=dataset_test.feat_dim,
+                  feat_dim=dataset.feat_dim,
                   hid_dim=args.hid,
-                  out_dim=dataset_test.n_answers,
+                  out_dim=dataset.n_answers,
                   dropout=args.dropout,
                   neighbourhood_size=args.neighbourhood_size,
                   n_kernels=args.n_kernels,
-                  pretrained_wemb=dataset_test.pretrained_wemb,
+                  pretrained_wemb=dataset.pretrained_wemb,
                   n_obj=args.n_obj)
     model.load_state_dict(torch.load(model_file))
     model = model.cuda()
@@ -392,15 +392,15 @@ def plot_by_mpl():
 
         for j, idx in enumerate(idxs):
             idx = int(idx.cpu().numpy())
-            iid = dataset_test.vqa[idx]['image_id']
+            iid = dataset.vqa[idx]['image_id']
             img_path = os.path.join(image_path,
                                     'COCO_train2014_000000' + str(iid) + '.jpg')
             if exists(img_path):
                 im = plt.imread(img_path)
-                boxes = np.asarray(dataset_test.bbox[str(iid)])  # xyxy
+                boxes = np.asarray(dataset.bbox[str(iid)])  # xyxy
                 boxes = sort_boxes(boxes, adj_mat[j])
-                plot_box_edge_mpl(args, boxes, dataset_test, idx, iid, im, adj_mat[j])
-                # plot_connection_mpl(args, boxes, dataset_test, adj_mat, idx, iid, im)
+                plot_box_edge_mpl(args, boxes, dataset, idx, iid, im, adj_mat[j])
+                # plot_connection_mpl(args, boxes, dataset, adj_mat, idx, iid, im)
 
 
 def sort_boxes(boxes, adj_mat):
@@ -414,7 +414,7 @@ def sort_boxes(boxes, adj_mat):
     return boxes
 
 
-def plot_box_edge_mpl(args, boxes, dataset_test, idx, iid, im, adj_mat):
+def plot_box_edge_mpl(args, boxes, dataset, idx, iid, im, adj_mat):
     """
     plot boxes and edges
     """
@@ -435,7 +435,7 @@ def plot_box_edge_mpl(args, boxes, dataset_test, idx, iid, im, adj_mat):
         ax.add_patch(rect)
         plt.plot(c0, c1, 'm.')
     f1 = os.path.join(args.plot_dir,
-                      f"{iid.strip('.jpg')}_{dataset_test.vqa[idx]['question'].strip('?')}_boxes.jpg")
+                      f"{iid.strip('.jpg')}_{dataset.vqa[idx]['question'].strip('?')}_boxes.jpg")
     plt.savefig(f1)
     # plot edges
     norm = plt.Normalize(0.0, 1.0)
@@ -460,7 +460,7 @@ def plot_box_edge_mpl(args, boxes, dataset_test, idx, iid, im, adj_mat):
                 ax.add_collection(lc)
 
     f2 = os.path.join(args.plot_dir,
-                      f"{iid.strip('.jpg')}_{dataset_test.vqa[idx]['question'].strip('?')}_lines.jpg")
+                      f"{iid.strip('.jpg')}_{dataset.vqa[idx]['question'].strip('?')}_lines.jpg")
     plt.savefig(f2)
     plt.close()
 

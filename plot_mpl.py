@@ -1,7 +1,7 @@
 """
 plot with matplotlib
 """
-
+import os
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.patches import Rectangle
@@ -92,7 +92,8 @@ def main2():
 
 
 def find_question():
-    target_question = 'Are there any trees in this picture?'
+    # target_question = 'Are there any trees in this picture?'
+    target_question = 'What is different about the two sheep\'s face?'
     tasks = ['train2014', 'test2015', 'test-dev2015', 'val2014']
 
     for t in tasks:
@@ -101,10 +102,16 @@ def find_question():
         all_q = [q['question'] for q in q1['questions']]
         qs_arr = np.array(all_q)
         indices = np.where(qs_arr == target_question)
-        print(indices)
+        print(f"{t}: {indices[0]}")
         for idx in indices[0]:
             q_dict = q1['questions'][idx]
             print(f"image_id: {q_dict['image_id']}")
+            iid = str(q_dict['image_id'])
+            if len(iid) < 6:
+                l_iid = len(iid)
+                iid = '0' * (6 - l_iid) + iid
+            os.system(f'scp qiyuan@goldmonkeyuta.uta.edu:/home/qiyuan/2021summer'
+                      f'/vqa-project/data/coco/{t}/COCO_{t}_000000{iid}.jpg coco')
     # with open(f'data/{task1}_q.txt', 'w') as f:
     #     f.writelines(qs)
 
@@ -121,5 +128,5 @@ def read_adj():
 if __name__ == '__main__':
     # main()
     # main2()
-    # find_question()
-    read_adj()
+    find_question()
+    # read_adj()
