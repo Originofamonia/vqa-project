@@ -373,22 +373,6 @@ def plot_by_mpl():
         _, oix = logits.data.max(1)
         oix = oix.cpu().numpy()
 
-        # topn, topn_ind = torch.max(adj_mat, dim=-1)  # select top n node_i
-        # topn, topn_ind = torch.topk(topn, k=topn.size(1), dim=-1, sorted=True)
-        # topn_ind = topn_ind.detach().cpu().numpy()
-
-        # topm, topm_ind = torch.topk(  # select topm neighbors node_j
-        #     adj_mat, k=args.neighbourhood_size, dim=-1, sorted=True)
-        # topm = F.normalize(topm, p=2.0, dim=-1)
-        # topm = torch.stack(  # all edges
-        #     [F.softmax(topm[:, k], dim=-1) for k in
-        #      range(topm.size(1))]).transpose(0, 1)  # (batch_size, K, neighbourhood_size)
-        # print(topm[0], topm[1], topm[2], topm[3], topm[4])
-        # topm_degree = torch.count_nonzero(topm, dim=-1)
-        # print(topm_degree)
-        # topm_deg_sorted, topm_deg_ind = torch.sort(topm_degree, dim=-1)  # to sort boxes by degree
-        # topm_deg_ind = topm_deg_ind.detach().cpu().numpy()
-
         for j, idx in enumerate(idxs):
             idx = int(idx.cpu().numpy())
             iid = dataset.vqa[idx]['image_id']
@@ -400,6 +384,68 @@ def plot_by_mpl():
                 boxes = sort_boxes(boxes, adj_mat[j])
                 plot_box_edge_mpl(args, boxes, dataset, idx, iid, im, adj_mat[j])
                 # plot_connection_mpl(args, boxes, dataset, adj_mat, idx, iid, im)
+
+
+def plot_given_fig():
+    """
+    plot fig4 in paper
+    """
+    task = 'val2014'
+    image_path = f'/home/qiyuan/2021summer/vqa-project/data/coco/{task}'
+    # coco_imgs = os.listdir(image_path)
+    args, parser, unparsed = input_args()
+    # args.n_kernels = kernels_list[0]
+    # args.neighbourhood_size = neighbors_list[0]
+
+    model_file = os.path.join(args.save_dir, 'vqa_36_8_16_54.17.pt')
+    dataset = VQA_Dataset(args.data_dir, args.emb, train=False)
+    question = 'What is different about the two sheep\'s face?'
+    iid = '013943'
+    get_iid_from_question(dataset, question, iid)
+    test_sampler = SequentialSampler(dataset)
+    loader_test = DataLoader(dataset, batch_size=args.bsize,
+                             sampler=test_sampler, shuffle=False,
+                             num_workers=4, collate_fn=collate_fn)
+
+    model = Model(vocab_size=dataset.q_words,
+                  emb_dim=args.emb,
+                  feat_dim=dataset.feat_dim,
+                  hid_dim=args.hid,
+                  out_dim=dataset.n_answers,
+                  dropout=args.dropout,
+                  neighbourhood_size=args.neighbourhood_size,
+                  n_kernels=args.n_kernels,
+                  pretrained_wemb=dataset.pretrained_wemb,
+                  n_obj=args.n_obj)
+    model.load_state_dict(torch.load(model_file))
+    model = model.cuda()
+    model.eval()
+    results = []
+
+    for i, test_batch in tqdm(enumerate(loader_test)):
+        q_batch, a_batch, vote_batch, i_batch, k_batch, qlen_batch = \
+            batch_to_cuda(test_batch)
+        idxs = test_batch[-1]  # vqa2.0 is idx, imageclef is iid
+        if i == 100:
+            break
+        logits, adj_mat, h_max_indices = model(q_batch, i_batch, k_batch,
+                                               qlen_batch)
+
+        qid_batch = test_batch[3]
+        _, oix = logits.data.max(1)
+        oix = oix.cpu().numpy()
+
+
+def get_iid_from_question(dataset, question, iid):
+    """
+    get index in dataset given question and iid
+    """
+    questions = [q['question'] for q in dataset.vqa]
+    images = [q['image_id'] for q in dataset.vqa]
+    qs_arr = np.array(questions)
+    im_arr = np.array(images)
+    indices = np.where(qs_arr == question and im_arr == iid)
+    print(indices)
 
 
 def sort_boxes(boxes, adj_mat):
@@ -466,5 +512,6 @@ def plot_box_edge_mpl(args, boxes, dataset, idx, iid, im, adj_mat):
 
 if __name__ == '__main__':
     # save_plot_nodes()
-    plot_by_mpl()
+    # plot_by_mpl()
     # main()
+    plot_given_fig()
