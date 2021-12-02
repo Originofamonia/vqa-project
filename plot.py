@@ -440,12 +440,14 @@ def plot_given_fig():
     )
 
     img_path = os.path.join(image_path,
-                            'COCO_val2014_000000' + str(iid) + '.jpg')
+                            f'COCO_{task}_000000' + str(iid) + '.jpg')
     if exists(img_path):
         im = plt.imread(img_path)
         boxes = np.asarray(dataset.bbox[str(iid)])  # xyxy
         boxes = sort_boxes(boxes, adj_mat)
         plot_box_edge_mpl(args, boxes, dataset, idx, iid, im, adj_mat)
+
+    print(results)
 
 
 def get_iid_from_question(dataset, question, iid):
