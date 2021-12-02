@@ -575,7 +575,7 @@ def plot_box_edge_mpl(args, boxes, dataset, idx, iid, im, adj_mat):
 
 
 if __name__ == '__main__':
-    # save_plot_nodes()
+    save_plot_nodes()
     # plot_by_mpl()
     # main()
-    plot_given_fig()
+    # plot_given_fig()
