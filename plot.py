@@ -488,12 +488,12 @@ def get_iid_from_question(dataset, question, iid):
         bbox[3] /= imsize[1]
         bboxes[i] = bbox
 
-    q = np.asarray(q)
-    a = np.asarray(a).reshape(-1)
-    n_votes = np.asarray(n_votes).reshape(-1)
-    qid = np.asarray(qid).reshape(-1)
-    i = np.concatenate([img, bboxes], axis=1)
-    k = np.asarray(k).reshape(1)
+    q = torch.from_numpy(np.asarray(q))
+    a = torch.from_numpy(np.asarray(a).reshape(-1))
+    n_votes = torch.from_numpy(np.asarray(n_votes).reshape(-1))
+    qid = torch.from_numpy(np.asarray(qid).reshape(-1))
+    i = torch.from_numpy(np.concatenate([img, bboxes], axis=1))
+    k = torch.from_numpy(np.asarray(k).reshape(1))
     return q, a, n_votes, qid, i, k, qlen, idx
 
 
