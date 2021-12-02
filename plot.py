@@ -446,9 +446,9 @@ def plot_given_fig():
                             f'COCO_{task}_000000' + str(iid) + '.jpg')
     if exists(img_path):
         im = plt.imread(img_path)
-        boxes = np.asarray(dataset.bbox[str(iid)])  # xyxy
-        boxes = sort_boxes(boxes, adj_mat)
-        plot_box_edge_mpl(args, boxes, dataset, idx, iid, im, adj_mat)
+        boxes = np.asarray(dataset.bbox[str(dataset.vqa[idx]['image_id'])])  # xyxy
+        boxes = sort_boxes(boxes, adj_mat[0])
+        plot_box_edge_mpl(args, boxes, dataset, idx, iid, im, adj_mat[0])
 
     print(results)
 
