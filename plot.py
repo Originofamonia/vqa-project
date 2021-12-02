@@ -447,7 +447,7 @@ def plot_given_fig():
     if exists(img_path):
         im = plt.imread(img_path)
         boxes = np.asarray(dataset.bbox[str(dataset.vqa[idx]['image_id'])])  # xyxy
-        plot_box_edge_adj(args, boxes, dataset, idx, iid, im, adj_mat[0])
+        plot_box_edge_adj(args, boxes, dataset, idx, iid, im, adj_mat[0], edge_th=0.4)
         # plot_box_edge_pool(args, boxes, dataset, idx, iid, im, adj_mat[0], h_max_indices)
     print(results)
 
@@ -527,7 +527,7 @@ def sort_boxes(boxes, adj_mat):
     return boxes
 
 
-def plot_box_edge_adj(args, boxes, dataset, idx, iid, im, adj_mat):
+def plot_box_edge_adj(args, boxes, dataset, idx, iid, im, adj_mat, edge_th):
     """
     plot boxes and edges by adj mat, box sort by sum rows, plot edge by adj
     """
@@ -560,7 +560,7 @@ def plot_box_edge_adj(args, boxes, dataset, idx, iid, im, adj_mat):
     for i in range(len(adj_mat)):
         for j in range(len(adj_mat[0])):
             edge_weight = adj_mat[i][j] / max_edge
-            if edge_weight > 0.3:
+            if edge_weight > edge_th:
                 b_i = boxes[i]
                 b_j = boxes[j]
                 ci0 = (b_i[0] + b_i[2]) / 2
