@@ -424,7 +424,7 @@ def plot_given_fig():
 
     q_batch, a_batch, vote_batch, i_batch, k_batch, qlen_batch = \
         batch_to_cuda(test_batch)
-    idx = test_batch[-1]  # vqa2.0 is idx, imageclef is iid
+    idx = int(test_batch[-1])  # vqa2.0 is idx, imageclef is iid
     logits, adj_mat, h_max_indices = model(q_batch, i_batch, k_batch,
                                            qlen_batch)
 
