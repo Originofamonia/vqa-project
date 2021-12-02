@@ -382,7 +382,7 @@ def plot_by_mpl():
                 im = plt.imread(img_path)
                 boxes = np.asarray(dataset.bbox[str(iid)])  # xyxy
                 boxes = sort_boxes(boxes, adj_mat[j])
-                plot_box_edge_mpl(args, boxes, dataset, idx, iid, im, adj_mat[j])
+                plot_box_edge_adj(args, boxes, dataset, idx, iid, im, adj_mat[j])
                 # plot_connection_mpl(args, boxes, dataset, adj_mat, idx, iid, im)
 
 
@@ -399,8 +399,8 @@ def plot_given_fig():
 
     model_file = os.path.join(args.save_dir, 'vqa_36_8_16_54.17.pt')
     dataset = VQA_Dataset(args.data_dir, args.emb, train=False)
-    question = 'How many giraffes are drinking?'
-    iid = '15085'
+    question = 'Are there any trees in this picture?'
+    iid = '88507'
     test_batch = get_iid_from_question(dataset, question, iid)
     # test_sampler = SequentialSampler(dataset)
     # loader_test = DataLoader(dataset, batch_size=args.bsize,
@@ -447,9 +447,8 @@ def plot_given_fig():
     if exists(img_path):
         im = plt.imread(img_path)
         boxes = np.asarray(dataset.bbox[str(dataset.vqa[idx]['image_id'])])  # xyxy
-        boxes = sort_boxes(boxes, adj_mat[0])
-        plot_box_edge_mpl(args, boxes, dataset, idx, iid, im, adj_mat[0])
-
+        plot_box_edge_adj(args, boxes, dataset, idx, iid, im, adj_mat[0])
+        # plot_box_edge_pool(args, boxes, dataset, idx, iid, im, adj_mat[0], h_max_indices)
     print(results)
 
 
@@ -528,10 +527,11 @@ def sort_boxes(boxes, adj_mat):
     return boxes
 
 
-def plot_box_edge_mpl(args, boxes, dataset, idx, iid, im, adj_mat):
+def plot_box_edge_adj(args, boxes, dataset, idx, iid, im, adj_mat):
     """
-    plot boxes and edges
+    plot boxes and edges by adj mat, box sort by sum rows, plot edge by adj
     """
+    boxes = sort_boxes(boxes, adj_mat)
     fig, ax = plt.subplots()
     # Display the image
     # im = np.transpose(im, (2, 1, 0)) # no need
@@ -575,6 +575,58 @@ def plot_box_edge_mpl(args, boxes, dataset, idx, iid, im, adj_mat):
 
     f2 = os.path.join(args.plot_dir,
                       f"{iid.strip('.jpg')}_{dataset.vqa[idx]['question'].strip('?')}_lines.jpg")
+    plt.savefig(f2)
+    plt.close()
+
+
+def plot_box_edge_pool(args, boxes, dataset, idx, iid, im, adj_mat, h_max_indices):
+    """
+    plot boxes and edges by pooling, box sort by graph after pool,
+    edge by adj
+    """
+    fig, ax = plt.subplots()
+    # Display the image
+    # im = np.transpose(im, (2, 1, 0)) # no need
+    ax.imshow(im)
+    n_boxes = len(boxes)
+    for i, box in enumerate(boxes):
+        w = box[2] - box[0]
+        h = box[3] - box[1]
+        c0 = (box[0] + box[2]) / 2
+        c1 = (box[1] + box[3]) / 2
+        # Create a Rectangle patch, xywh (xy is top left)
+        rect = Rectangle((box[0], box[1]), w, h, linewidth=(2 - i / n_boxes), edgecolor='m',
+                         facecolor='none', alpha=(1 - i / n_boxes))
+        # Add the patch to the Axes
+        ax.add_patch(rect)
+        plt.plot(c0, c1, 'm.')
+    f1 = os.path.join(args.plot_dir,
+                      f"{iid.strip('.jpg')}_{dataset.vqa[idx]['question'].strip('?')}_boxes_pool.jpg")
+    plt.savefig(f1)
+    # plot edges
+    norm = plt.Normalize(0.0, 1.0)
+    cmap = plt.get_cmap('jet')
+    adj_mat = adj_mat.detach().cpu().numpy()
+    z = np.linspace(0, 1, len(adj_mat))
+    max_edge = adj_mat.max()
+    for i in range(len(adj_mat)):
+        for j in range(len(adj_mat[0])):
+            edge_weight = adj_mat[i][j] / max_edge
+            if edge_weight > 0.3:
+                b_i = boxes[i]
+                b_j = boxes[j]
+                ci0 = (b_i[0] + b_i[2]) / 2
+                ci1 = (b_i[1] + b_i[3]) / 2
+                cj0 = (b_j[0] + b_j[2]) / 2
+                cj1 = (b_j[1] + b_j[3]) / 2
+                seg = np.array([[ci0, ci1], [cj0, cj1]])
+                seg = np.expand_dims(seg, axis=0)
+                lc = mcoll.LineCollection(seg, array=z, cmap=cmap, norm=norm,
+                                          linewidth=2 * edge_weight, alpha=1 * edge_weight)
+                ax.add_collection(lc)
+
+    f2 = os.path.join(args.plot_dir,
+                      f"{iid.strip('.jpg')}_{dataset.vqa[idx]['question'].strip('?')}_lines_pool.jpg")
     plt.savefig(f2)
     plt.close()
 
