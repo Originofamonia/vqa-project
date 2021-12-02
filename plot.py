@@ -435,7 +435,7 @@ def plot_given_fig():
     results.append(
         # f"{iid},"
         f"{dataset.vqa[idx]['question']},"
-        f"{dataset.a_itow[oix]},"
+        f"{dataset.a_itow[oix[0]]},"
         f"{dataset.vqa[idx]['answer']}"
     )
 
