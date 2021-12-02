@@ -339,7 +339,6 @@ def plot_by_mpl():
     # args.neighbourhood_size = neighbors_list[0]
 
     model_file = os.path.join(args.save_dir, 'vqa_36_8_16_54.17.pt')
-    # dataset = ImageclefDataset(args, train=False)
     dataset = VQA_Dataset(args.data_dir, args.emb, train=True)
     test_sampler = SequentialSampler(dataset)
     loader_test = DataLoader(dataset, batch_size=args.bsize,
