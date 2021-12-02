@@ -494,7 +494,7 @@ def get_iid_from_question(dataset, question, iid):
     qid = torch.from_numpy(np.asarray(qid).reshape(-1))
     i = torch.from_numpy(np.concatenate([img, bboxes], axis=1))
     k = torch.from_numpy(np.asarray(k).reshape(1))
-    return q, a, n_votes, qid, i, k, torch.from_numpy(qlen), idx
+    return q, a, n_votes, qid, i, k, torch.tensor(qlen), idx
 
 
 def sort_boxes(boxes, adj_mat):
