@@ -444,7 +444,8 @@ def get_iid_from_question(dataset, question, iid):
     images = [q['image_id'] for q in dataset.vqa]
     qs_arr = np.array(questions)
     im_arr = np.array(images)
-    indices = np.where(qs_arr == question and im_arr == iid)
+    indices = qs_arr[np.in1d(np.where(qs_arr == question)[0], np.where(im_arr == iid)[0])]
+
     print(indices)
 
 
