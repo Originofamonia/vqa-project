@@ -424,21 +424,21 @@ def plot_given_fig():
 
     q_batch, a_batch, vote_batch, i_batch, k_batch, qlen_batch = \
         batch_to_cuda(test_batch)
-    idx = test_batch[-1]  # vqa2.0 is idx, imageclef is iid
+    idx = int(test_batch[-1])  # vqa2.0 is idx, imageclef is iid
     logits, adj_mat, h_max_indices = model(q_batch, i_batch, k_batch,
                                            qlen_batch)
 
     qid_batch = test_batch[3]
     _, oix = logits.data.max(1)
     oix = oix.cpu().numpy()
-
+    iid = dataset.vqa[idx]['image_id']
     results.append(
-        f"{dataset.vqa[idx]['image_id']},"
+        f"{iid},"
         f"{dataset.vqa[idx]['question']},"
         f"{dataset.a_itow[oix]},"
         f"{dataset.vqa[idx]['answer']}"
     )
-    iid = dataset.vqa[idx]['image_id']
+
     img_path = os.path.join(image_path,
                             'COCO_val2014_000000' + str(iid) + '.jpg')
     if exists(img_path):
@@ -575,7 +575,7 @@ def plot_box_edge_mpl(args, boxes, dataset, idx, iid, im, adj_mat):
 
 
 if __name__ == '__main__':
-    save_plot_nodes()
+    # save_plot_nodes()
     # plot_by_mpl()
     # main()
-    # plot_given_fig()
+    plot_given_fig()
