@@ -399,7 +399,7 @@ def plot_given_fig():
 
     model_file = os.path.join(args.save_dir, 'vqa_36_8_16_54.17.pt')
     dataset = VQA_Dataset(args.data_dir, args.emb, train=False)
-    question = 'What is different about the two sheep\'s face?'
+    question = 'What is this horse pulling?'
     iid = '013943'
     get_iid_from_question(dataset, question, iid)
     test_sampler = SequentialSampler(dataset)
