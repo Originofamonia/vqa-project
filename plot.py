@@ -433,7 +433,7 @@ def plot_given_fig():
     oix = oix.cpu().numpy()
     iid = dataset.vqa[idx]['image_id']
     results.append(
-        f"{iid},"
+        # f"{iid},"
         f"{dataset.vqa[idx]['question']},"
         f"{dataset.a_itow[oix]},"
         f"{dataset.vqa[idx]['answer']}"
