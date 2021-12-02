@@ -401,11 +401,11 @@ def plot_given_fig():
     dataset = VQA_Dataset(args.data_dir, args.emb, train=False)
     question = 'How many giraffes are drinking?'
     iid = '15085'
-    idx = get_iid_from_question(dataset, question, iid)
-    test_sampler = SequentialSampler(dataset)
-    loader_test = DataLoader(dataset, batch_size=args.bsize,
-                             sampler=test_sampler, shuffle=False,
-                             num_workers=4, collate_fn=collate_fn)
+    test_batch = get_iid_from_question(dataset, question, iid)
+    # test_sampler = SequentialSampler(dataset)
+    # loader_test = DataLoader(dataset, batch_size=args.bsize,
+    #                          sampler=test_sampler, shuffle=False,
+    #                          num_workers=4, collate_fn=collate_fn)
 
     model = Model(vocab_size=dataset.q_words,
                   emb_dim=args.emb,
@@ -422,23 +422,20 @@ def plot_given_fig():
     model.eval()
     results = []
 
-    for i, test_batch in tqdm(enumerate(loader_test)):
-        q_batch, a_batch, vote_batch, i_batch, k_batch, qlen_batch = \
-            batch_to_cuda(test_batch)
-        idxs = test_batch[-1]  # vqa2.0 is idx, imageclef is iid
-        if i == 100:
-            break
-        logits, adj_mat, h_max_indices = model(q_batch, i_batch, k_batch,
-                                               qlen_batch)
+    q_batch, a_batch, vote_batch, i_batch, k_batch, qlen_batch = \
+        batch_to_cuda(test_batch)
+    idxs = test_batch[-1]  # vqa2.0 is idx, imageclef is iid
+    logits, adj_mat, h_max_indices = model(q_batch, i_batch, k_batch,
+                                           qlen_batch)
 
-        qid_batch = test_batch[3]
-        _, oix = logits.data.max(1)
-        oix = oix.cpu().numpy()
+    qid_batch = test_batch[3]
+    _, oix = logits.data.max(1)
+    oix = oix.cpu().numpy()
 
 
 def get_iid_from_question(dataset, question, iid):
     """
-    get index in dataset given question and iid
+    return input batch in dataset given question and iid
     """
     questions = [q['question'] for q in dataset.vqa]
     images = [q['image_id'] for q in dataset.vqa]
@@ -446,9 +443,58 @@ def get_iid_from_question(dataset, question, iid):
     im_arr = np.array(images)
     a = np.where(qs_arr == question)[0]
     b = np.where(im_arr == iid)[0]
-    q_idx = a[np.in1d(a, b)]
-    idx = dataset.vqa[q_idx[0]]
-    return idx
+    idx = a[np.in1d(a, b)][0]  # idx is idx in self.vqa[idx]
+
+    # add return all inputs here, follow getitem
+    qlen = len(dataset.vqa[idx]['question_toked'])
+    q = [0] * 100
+    for i, w in enumerate(dataset.vqa[idx]['question_toked']):
+        try:
+            q[i] = dataset.q_wtoi[w]
+        except:
+            q[i] = 0
+
+    a = np.zeros(dataset.n_answers, dtype=np.float32)
+    for w, c in dataset.vqa[idx]['answers_w_scores']:
+        try:
+            a[dataset.a_wtoi[w]] = c
+        except:
+            continue
+
+    # number of votes for each answer
+    n_votes = np.zeros(dataset.n_answers, dtype=np.float32)
+    for w, c in dataset.vqa[idx]['answers']:
+        try:
+            n_votes[dataset.a_wtoi[w]] = c
+        except:
+            continue
+
+    qid = dataset.vqa[idx]['question_id']
+    iid = dataset.vqa[idx]['image_id']
+    img = dataset.i_feat[str(iid)]
+    bboxes = np.asarray(dataset.bbox[str(iid)])
+    imsize = dataset.sizes[str(iid)]
+
+    k = 36
+
+    if np.logical_not(np.isfinite(img)).sum() > 0:
+        raise ValueError
+
+    for i in range(k):
+        bbox = bboxes[i]
+        bbox[0] /= imsize[0]
+        bbox[1] /= imsize[1]
+        bbox[2] /= imsize[0]
+        bbox[3] /= imsize[1]
+        bboxes[i] = bbox
+
+    q = np.asarray(q)
+    a = np.asarray(a).reshape(-1)
+    n_votes = np.asarray(n_votes).reshape(-1)
+    qid = np.asarray(qid).reshape(-1)
+    i = np.concatenate([img, bboxes], axis=1)
+    k = np.asarray(k).reshape(1)
+    return q, a, n_votes, qid, i, k, qlen, idx
 
 
 def sort_boxes(boxes, adj_mat):
