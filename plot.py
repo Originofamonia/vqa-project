@@ -239,7 +239,7 @@ def save_plot_nodes():
             if img is None:
                 continue
             results.append(
-                f"{dataset_test.vqa[idx]['image_id']},"
+                f"{iid},"
                 f"{dataset_test.vqa[idx]['question']},"
                 f"{dataset_test.a_itow[oix[j]]},"
                 f"{dataset_test.vqa[idx]['answer']}"
@@ -424,7 +424,7 @@ def plot_given_fig():
 
     q_batch, a_batch, vote_batch, i_batch, k_batch, qlen_batch = \
         batch_to_cuda(test_batch)
-    idx = int(test_batch[-1])  # vqa2.0 is idx, imageclef is iid
+    idx = test_batch[-1]  # vqa2.0 is idx, imageclef is iid
     logits, adj_mat, h_max_indices = model(q_batch, i_batch, k_batch,
                                            qlen_batch)
 
@@ -575,7 +575,7 @@ def plot_box_edge_mpl(args, boxes, dataset, idx, iid, im, adj_mat):
 
 
 if __name__ == '__main__':
-    # save_plot_nodes()
+    save_plot_nodes()
     # plot_by_mpl()
     # main()
-    plot_given_fig()
+    # plot_given_fig()
