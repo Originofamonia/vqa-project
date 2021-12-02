@@ -424,13 +424,28 @@ def plot_given_fig():
 
     q_batch, a_batch, vote_batch, i_batch, k_batch, qlen_batch = \
         batch_to_cuda(test_batch)
-    idxs = test_batch[-1]  # vqa2.0 is idx, imageclef is iid
+    idx = test_batch[-1]  # vqa2.0 is idx, imageclef is iid
     logits, adj_mat, h_max_indices = model(q_batch, i_batch, k_batch,
                                            qlen_batch)
 
     qid_batch = test_batch[3]
     _, oix = logits.data.max(1)
     oix = oix.cpu().numpy()
+
+    results.append(
+        f"{dataset.vqa[idx]['image_id']},"
+        f"{dataset.vqa[idx]['question']},"
+        f"{dataset.a_itow[oix]},"
+        f"{dataset.vqa[idx]['answer']}"
+    )
+    iid = dataset.vqa[idx]['image_id']
+    img_path = os.path.join(image_path,
+                            'COCO_val2014_000000' + str(iid) + '.jpg')
+    if exists(img_path):
+        im = plt.imread(img_path)
+        boxes = np.asarray(dataset.bbox[str(iid)])  # xyxy
+        boxes = sort_boxes(boxes, adj_mat)
+        plot_box_edge_mpl(args, boxes, dataset, idx, iid, im, adj_mat)
 
 
 def get_iid_from_question(dataset, question, iid):
@@ -540,7 +555,7 @@ def plot_box_edge_mpl(args, boxes, dataset, idx, iid, im, adj_mat):
     for i in range(len(adj_mat)):
         for j in range(len(adj_mat[0])):
             edge_weight = adj_mat[i][j] / max_edge
-            if edge_weight > 0.4:
+            if edge_weight > 0.5:
                 b_i = boxes[i]
                 b_j = boxes[j]
                 ci0 = (b_i[0] + b_i[2]) / 2
