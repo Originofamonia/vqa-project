@@ -447,7 +447,7 @@ def get_iid_from_question(dataset, question, iid):
     a = np.where(qs_arr == question)[0]
     b = np.where(im_arr == iid)[0]
     q_idx = a[np.in1d(a, b)]
-    idx = dataset.vqa[q_idx]
+    idx = dataset.vqa[q_idx[0]]
     return idx
 
 
