@@ -399,9 +399,9 @@ def plot_given_fig():
 
     model_file = os.path.join(args.save_dir, 'vqa_36_8_16_54.17.pt')
     dataset = VQA_Dataset(args.data_dir, args.emb, train=False)
-    question = 'What is this horse pulling?'
-    iid = '013943'
-    get_iid_from_question(dataset, question, iid)
+    question = 'How many giraffes are drinking?'
+    iid = '015085'
+    idx = get_iid_from_question(dataset, question, iid)
     test_sampler = SequentialSampler(dataset)
     loader_test = DataLoader(dataset, batch_size=args.bsize,
                              sampler=test_sampler, shuffle=False,
@@ -446,9 +446,9 @@ def get_iid_from_question(dataset, question, iid):
     im_arr = np.array(images)
     a = np.where(qs_arr == question)[0]
     b = np.where(im_arr == iid)[0]
-    indices = dataset.vqa[np.in1d(a, b)]
+    idx = dataset.vqa[np.in1d(a, b)]
 
-    print(indices)
+    return idx
 
 
 def sort_boxes(boxes, adj_mat):
