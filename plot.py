@@ -432,6 +432,9 @@ def plot_given_fig():
     _, oix = logits.data.max(1)
     oix = oix.cpu().numpy()
     iid = dataset.vqa[idx]['image_id']
+    if len(iid) < 6:
+        l_iid = len(iid)
+        iid = '0' * (6 - l_iid) + iid
     results.append(
         f"{iid},"
         f"{dataset.vqa[idx]['question']},"
