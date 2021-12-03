@@ -531,26 +531,28 @@ def plot_box_edge_adj(args, boxes, dataset, idx, iid, im, adj_mat, edge_th):
     """
     plot boxes and edges by adj mat, box sort by sum rows, plot edge by adj
     """
-    boxes = sort_boxes(boxes, adj_mat)
+    # boxes = sort_boxes(boxes, adj_mat)
     fig, ax = plt.subplots()
     # Display the image
     # im = np.transpose(im, (2, 1, 0)) # no need
     ax.imshow(im)
     n_boxes = len(boxes)
-    for i, box in enumerate(boxes):
-        w = box[2] - box[0]
-        h = box[3] - box[1]
-        c0 = (box[0] + box[2]) / 2
-        c1 = (box[1] + box[3]) / 2
-        # Create a Rectangle patch, xywh (xy is top left)
-        rect = Rectangle((box[0], box[1]), w, h, linewidth=(2 - i / n_boxes), edgecolor='m',
-                         facecolor='none', alpha=(1 - i / n_boxes))
-        # Add the patch to the Axes
-        ax.add_patch(rect)
-        plt.plot(c0, c1, 'm.')
-    f1 = os.path.join(args.plot_dir,
-                      f"{iid.strip('.jpg')}_{dataset.vqa[idx]['question'].strip('?')}_boxes.jpg")
-    plt.savefig(f1)
+
+    # for i, box in enumerate(boxes):
+    #     w = box[2] - box[0]
+    #     h = box[3] - box[1]
+    #     c0 = (box[0] + box[2]) / 2
+    #     c1 = (box[1] + box[3]) / 2
+    #     # Create a Rectangle patch, xywh (xy is top left)
+    #     rect = Rectangle((box[0], box[1]), w, h, linewidth=(2 - i / n_boxes), edgecolor='m',
+    #                      facecolor='none', alpha=(1 - i / n_boxes))
+    #     # Add the patch to the Axes
+    #     ax.add_patch(rect)
+    #     plt.plot(c0, c1, 'm.')
+    # f1 = os.path.join(args.plot_dir,
+    #                   f"{iid.strip('.jpg')}_{dataset.vqa[idx]['question'].strip('?')}_boxes.jpg")
+    # plt.savefig(f1)
+
     # plot edges
     norm = plt.Normalize(0.0, 1.0)
     cmap = plt.get_cmap('jet')
@@ -561,12 +563,20 @@ def plot_box_edge_adj(args, boxes, dataset, idx, iid, im, adj_mat, edge_th):
         for j in range(len(adj_mat[0])):
             edge_weight = adj_mat[i][j] / max_edge
             if edge_weight > edge_th:
-                b_i = boxes[i]
-                b_j = boxes[j]
-                ci0 = (b_i[0] + b_i[2]) / 2
-                ci1 = (b_i[1] + b_i[3]) / 2
-                cj0 = (b_j[0] + b_j[2]) / 2
-                cj1 = (b_j[1] + b_j[3]) / 2
+                box_i = boxes[i]
+                box_j = boxes[j]
+                ci0 = (box_i[0] + box_i[2]) / 2
+                ci1 = (box_i[1] + box_i[3]) / 2
+                w_i = box_i[2] - box_i[0]
+                h_i = box_i[3] - box_i[1]
+                cj0 = (box_j[0] + box_j[2]) / 2
+                cj1 = (box_j[1] + box_j[3]) / 2
+                w_j = box_j[2] - box_j[0]
+                h_j = box_j[3] - box_j[1]
+
+                plot_box(ax, box_i, ci0, ci1, h_i, w_i, i, n_boxes, edge_weight)
+                plot_box(ax, box_j, cj0, cj1, h_j, w_j, j, n_boxes, edge_weight)
+
                 seg = np.array([[ci0, ci1], [cj0, cj1]])
                 seg = np.expand_dims(seg, axis=0)
                 lc = mcoll.LineCollection(seg, array=z, cmap=cmap, norm=norm,
@@ -577,6 +587,15 @@ def plot_box_edge_adj(args, boxes, dataset, idx, iid, im, adj_mat, edge_th):
                       f"{iid.strip('.jpg')}_{dataset.vqa[idx]['question'].strip('?')}_lines.jpg")
     plt.savefig(f2)
     plt.close()
+
+
+def plot_box(ax, box, ci0, ci1, h, w, i, n_boxes, edge_weight):
+    rect = Rectangle((box[0], box[1]), w, h,
+                     linewidth=(2 * edge_weight), edgecolor=np.random.rand(3,),
+                     facecolor='none', alpha=(1 * edge_weight))
+    # Add the patch to the Axes
+    ax.add_patch(rect)
+    plt.plot(ci0, ci1, 'm.')
 
 
 def plot_box_edge_pool(args, boxes, dataset, idx, iid, im, adj_mat, h_max_indices):
