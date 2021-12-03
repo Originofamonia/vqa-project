@@ -539,20 +539,20 @@ def plot_box_edge_adj(args, boxes, dataset, idx, iid, im, adj_mat, edge_th):
     n_boxes = len(boxes)
 
     # plot boxes
-    for i, box in enumerate(boxes):
-        w = box[2] - box[0]
-        h = box[3] - box[1]
-        c0 = (box[0] + box[2]) / 2
-        c1 = (box[1] + box[3]) / 2
-        # Create a Rectangle patch, xywh (xy is top left)
-        rect = Rectangle((box[0], box[1]), w, h, linewidth=(2 - i / n_boxes), edgecolor='m',
-                         facecolor='none', alpha=(1 - i / n_boxes))
-        # Add the patch to the Axes
-        ax.add_patch(rect)
-        plt.plot(c0, c1, 'm.')
-    f1 = os.path.join(args.plot_dir,
-                      f"{iid.strip('.jpg')}_{dataset.vqa[idx]['question'].strip('?')}_boxes.jpg")
-    plt.savefig(f1)
+    # for i, box in enumerate(boxes):
+    #     w = box[2] - box[0]
+    #     h = box[3] - box[1]
+    #     c0 = (box[0] + box[2]) / 2
+    #     c1 = (box[1] + box[3]) / 2
+    #     # Create a Rectangle patch, xywh (xy is top left)
+    #     rect = Rectangle((box[0], box[1]), w, h, linewidth=(2 - i / n_boxes), edgecolor='m',
+    #                      facecolor='none', alpha=(1 - i / n_boxes))
+    #     # Add the patch to the Axes
+    #     ax.add_patch(rect)
+    #     plt.plot(c0, c1, 'm.')
+    # f1 = os.path.join(args.plot_dir,
+    #                   f"{iid.strip('.jpg')}_{dataset.vqa[idx]['question'].strip('?')}_boxes.jpg")
+    # plt.savefig(f1)
 
     # plot edges
     norm = plt.Normalize(0.0, 1.0)
