@@ -399,7 +399,7 @@ def plot_given_fig():
 
     model_file = os.path.join(args.save_dir, 'vqa_36_8_16_54.17.pt')
     dataset = VQA_Dataset(args.data_dir, args.emb, train=False)
-    question = 'What is the room?'
+    question = 'What is the color of the table?'
     iid = '325114'
     test_batch = get_iid_from_question(dataset, question, iid)
     # test_sampler = SequentialSampler(dataset)
@@ -448,7 +448,8 @@ def plot_given_fig():
         im = plt.imread(img_path)
         boxes = np.asarray(dataset.bbox[str(dataset.vqa[idx]['image_id'])])  # xyxy
         # plot_box_edge_adj(args, boxes, dataset, idx, iid, im, adj_mat[0], edge_th=0.5)
-        plot_box_edge_pool(args, boxes, dataset, idx, iid, im, adj_mat[0], h_max_indices, edge_th=0.3)
+        plot_box_edge_pool(args, boxes, dataset, idx, iid, im, adj_mat[0],
+                           h_max_indices, edge_th=0.3)
     print(results)
 
 
