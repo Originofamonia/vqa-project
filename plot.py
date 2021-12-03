@@ -610,6 +610,7 @@ def plot_box_edge_pool(args, boxes, dataset, idx, iid, im, adj_mat, h_max_indice
     obj_indices, obj_counts = torch.unique(h_max_indices, return_counts=True)
     sorted_counts, sort_indices = torch.sort(obj_counts, descending=True)
     obj_idx_order = obj_indices[sort_indices].detach().cpu().numpy()
+    obj_idx_order = obj_idx_order[:10]
     fig, ax = plt.subplots()
     # Display the image
     ax.imshow(im)
