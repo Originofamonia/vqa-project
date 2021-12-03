@@ -606,12 +606,14 @@ def plot_box_edge_pool(args, boxes, dataset, idx, iid, im, adj_mat, h_max_indice
     """
     obj_indices, obj_counts = torch.unique(h_max_indices, return_counts=True)
     sorted_counts, sort_indices = torch.sort(obj_counts, descending=True)
+    obj_idx_order = obj_indices[sort_indices].detach().cpu().numpy()
     fig, ax = plt.subplots()
     # Display the image
-    # im = np.transpose(im, (2, 1, 0)) # no need
     ax.imshow(im)
-    n_boxes = len(boxes)
-    for i, box in enumerate(boxes):
+    n_boxes = len(obj_idx_order)  # n_boxes to plot
+    # plot boxes
+    for i, box_idx in enumerate(obj_idx_order):
+        box = boxes[box_idx]
         w = box[2] - box[0]
         h = box[3] - box[1]
         c0 = (box[0] + box[2]) / 2
@@ -631,8 +633,8 @@ def plot_box_edge_pool(args, boxes, dataset, idx, iid, im, adj_mat, h_max_indice
     adj_mat = adj_mat.detach().cpu().numpy()
     z = np.linspace(0, 1, len(adj_mat))
     max_edge = adj_mat.max()
-    for i in range(len(adj_mat)):
-        for j in range(len(adj_mat[0])):
+    for i in obj_idx_order:
+        for j in obj_idx_order:
             edge_weight = adj_mat[i][j] / max_edge
             if edge_weight > 0.3:
                 b_i = boxes[i]
