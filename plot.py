@@ -399,8 +399,8 @@ def plot_given_fig():
 
     model_file = os.path.join(args.save_dir, 'vqa_36_8_16_54.17.pt')
     dataset = VQA_Dataset(args.data_dir, args.emb, train=False)
-    question = 'Is this healthy?'
-    iid = '192458'
+    question = 'Is the lady at the back in black top?'
+    iid = '329957'
     test_batch = get_iid_from_question(dataset, question, iid)
     # test_sampler = SequentialSampler(dataset)
     # loader_test = DataLoader(dataset, batch_size=args.bsize,
