@@ -604,6 +604,8 @@ def plot_box_edge_pool(args, boxes, dataset, idx, iid, im, adj_mat, h_max_indice
     plot boxes and edges from maxpooling, box sort by graph after pool,
     edge by adj
     """
+    obj_indices, obj_counts = torch.unique(h_max_indices, return_counts=True)
+    sorted_counts, sort_indices = torch.sort(obj_counts)
     fig, ax = plt.subplots()
     # Display the image
     # im = np.transpose(im, (2, 1, 0)) # no need
