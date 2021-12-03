@@ -449,7 +449,7 @@ def plot_given_fig():
         boxes = np.asarray(dataset.bbox[str(dataset.vqa[idx]['image_id'])])  # xyxy
         # plot_box_edge_adj(args, boxes, dataset, idx, iid, im, adj_mat[0], edge_th=0.5)
         plot_box_edge_pool(args, boxes, dataset, idx, iid, im, adj_mat[0],
-                           h_max_indices, edge_th=0.3)
+                           h_max_indices, edge_th=0.2)
     print(results)
 
 
@@ -530,6 +530,7 @@ def sort_boxes(boxes, adj_mat):
 
 def plot_box_edge_adj(args, boxes, dataset, idx, iid, im, adj_mat, edge_th):
     """
+    box and edge denotes the node degree and edge weight
     plot boxes and edges by adj mat, box sort by sum rows, plot edge by adj
     """
     # boxes = sort_boxes(boxes, adj_mat)
@@ -540,20 +541,20 @@ def plot_box_edge_adj(args, boxes, dataset, idx, iid, im, adj_mat, edge_th):
     n_boxes = len(boxes)
 
     # plot boxes
-    # for i, box in enumerate(boxes):
-    #     w = box[2] - box[0]
-    #     h = box[3] - box[1]
-    #     c0 = (box[0] + box[2]) / 2
-    #     c1 = (box[1] + box[3]) / 2
-    #     # Create a Rectangle patch, xywh (xy is top left)
-    #     rect = Rectangle((box[0], box[1]), w, h, linewidth=(2 - i / n_boxes), edgecolor='m',
-    #                      facecolor='none', alpha=(1 - i / n_boxes))
-    #     # Add the patch to the Axes
-    #     ax.add_patch(rect)
-    #     plt.plot(c0, c1, 'm.')
-    # f1 = os.path.join(args.plot_dir,
-    #                   f"{iid.strip('.jpg')}_{dataset.vqa[idx]['question'].strip('?')}_boxes.jpg")
-    # plt.savefig(f1)
+    for i, box in enumerate(boxes):
+        w = box[2] - box[0]
+        h = box[3] - box[1]
+        c0 = (box[0] + box[2]) / 2
+        c1 = (box[1] + box[3]) / 2
+        # Create a Rectangle patch, xywh (xy is top left)
+        rect = Rectangle((box[0], box[1]), w, h, linewidth=(2 - i / n_boxes), edgecolor='m',
+                         facecolor='none', alpha=(1 - i / n_boxes))
+        # Add the patch to the Axes
+        ax.add_patch(rect)
+        plt.plot(c0, c1, 'm.', linewidth=(2 - i / n_boxes), alpha=(1 - i / n_boxes))
+    f1 = os.path.join(args.plot_dir,
+                      f"{iid.strip('.jpg')}_{dataset.vqa[idx]['question'].strip('?')}_boxes.jpg")
+    plt.savefig(f1)
 
     # plot edges
     norm = plt.Normalize(0.0, 1.0)
@@ -602,6 +603,7 @@ def plot_box(ax, box, ci0, ci1, h, w, i, n_boxes, edge_weight):
 
 def plot_box_edge_pool(args, boxes, dataset, idx, iid, im, adj_mat, h_max_indices, edge_th):
     """
+    My idea
     plot boxes and edges from maxpooling, box sort by graph after pool,
     edge by adj
     """
