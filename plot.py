@@ -707,6 +707,7 @@ def plot_edge_weights():
     _, oix = logits.data.max(1)
     oix = oix.cpu().numpy()
     iid = dataset.vqa[idx]['image_id']
+    print(iid)
 
 
 if __name__ == '__main__':
