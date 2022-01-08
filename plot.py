@@ -421,7 +421,7 @@ def plot_given_fig():
     model.load_state_dict(torch.load(model_file))
     model = model.cuda()
     model.eval()
-    results = []
+    caption = []
 
     q_batch, a_batch, vote_batch, i_batch, k_batch, qlen_batch = \
         batch_to_cuda(test_batch)
@@ -436,22 +436,19 @@ def plot_given_fig():
     if len(iid) < 6:
         l_iid = len(iid)
         iid = '0' * (6 - l_iid) + iid
-    results.append(
-        f"{iid},"
-        f"{dataset.vqa[idx]['question']},"
-        f"{dataset.a_itow[oix[0]]},"
-        f"{dataset.vqa[idx]['answer']}"
-    )
+    caption = f"img id: {iid}, q: {dataset.vqa[idx]['question']}, pred: " \
+              f"{dataset.a_itow[oix[0]]}, ans: {dataset.vqa[idx]['answer']}"
+
 
     img_path = os.path.join(image_path,
                             f'COCO_{task}_000000' + str(iid) + '.jpg')
     if exists(img_path):
         im = plt.imread(img_path)
         boxes = np.asarray(dataset.bbox[str(dataset.vqa[idx]['image_id'])])  # xyxy [36, 4]
-        plot_box_edge_adj(args, boxes, dataset, idx, iid, im, adj_mat[0], results, edge_th=0.5)
+        plot_box_edge_adj(args, boxes, dataset, idx, iid, im, adj_mat[0], caption, edge_th=0.5)
         # plot_box_edge_pool(args, boxes, dataset, idx, iid, im, adj_mat[0],
         #                    h_max_indices, edge_th=0.1)
-    print(results)
+    print(caption)
 
 
 def get_iid_from_question(dataset, question, iid):
@@ -531,22 +528,22 @@ def sort_boxes(boxes, adj_mat):
 
 def plot_box_edge_adj(args, boxes, dataset, idx, iid, im, adj_mat, caption, edge_th):
     """
-    todo: change this
+    reuse this function, change this
     From paper: box and edge denotes the node degree and edge weight
     plot boxes and edges by adj mat, box sort by sum rows, plot edge by adj
     """
-    # boxes = sort_boxes(boxes, adj_mat)
     fig, ax = plt.subplots()
-    # Display the image
-    # im = np.transpose(im, (2, 1, 0)) # no need
     ax.imshow(im)
-    n_boxes = len(boxes)
+
     # sum adj by rows
     roi_weights = torch.sum(adj_mat, dim=-1)
     roi_ws, roi_indices = torch.topk(roi_weights, k=3)
+    roi_indices = roi_indices.detach().cpu().numpy()
+    selected_boxes = boxes[roi_indices]
+    n_boxes = len(selected_boxes)
 
     # plot boxes
-    for i, box in enumerate(boxes):
+    for i, box in enumerate(selected_boxes):
         w = box[2] - box[0]
         h = box[3] - box[1]
         c0 = (box[0] + box[2]) / 2
@@ -557,6 +554,7 @@ def plot_box_edge_adj(args, boxes, dataset, idx, iid, im, adj_mat, caption, edge
         # Add the patch to the Axes
         ax.add_patch(rect)
         plt.plot(c0, c1, 'm.', linewidth=(2 - i / n_boxes), alpha=(1 - i / n_boxes))
+    fig.text(0.5, 0.01, f'{caption}')
     f1 = os.path.join(args.plot_dir,
                       f"{iid.strip('.jpg')}_{dataset.vqa[idx]['question'].strip('?')}_boxes.jpg")
     plt.savefig(f1)
@@ -567,29 +565,29 @@ def plot_box_edge_adj(args, boxes, dataset, idx, iid, im, adj_mat, caption, edge
     adj_mat = adj_mat.detach().cpu().numpy()
     z = np.linspace(0, 1, len(adj_mat))
     max_edge = adj_mat.max()
-    for i in range(len(adj_mat)):
-        for j in range(len(adj_mat[0])):
+    for i in range(len(roi_indices)):
+        for j in range(len(roi_indices)):
             edge_weight = adj_mat[i][j] / max_edge
-            if edge_weight > edge_th:
-                box_i = boxes[i]
-                box_j = boxes[j]
-                ci0 = (box_i[0] + box_i[2]) / 2
-                ci1 = (box_i[1] + box_i[3]) / 2
-                w_i = box_i[2] - box_i[0]
-                h_i = box_i[3] - box_i[1]
-                cj0 = (box_j[0] + box_j[2]) / 2
-                cj1 = (box_j[1] + box_j[3]) / 2
-                w_j = box_j[2] - box_j[0]
-                h_j = box_j[3] - box_j[1]
+            # if edge_weight > edge_th:
+            box_i = boxes[i]
+            box_j = boxes[j]
+            ci0 = (box_i[0] + box_i[2]) / 2
+            ci1 = (box_i[1] + box_i[3]) / 2
+            w_i = box_i[2] - box_i[0]
+            h_i = box_i[3] - box_i[1]
+            cj0 = (box_j[0] + box_j[2]) / 2
+            cj1 = (box_j[1] + box_j[3]) / 2
+            w_j = box_j[2] - box_j[0]
+            h_j = box_j[3] - box_j[1]
 
-                plot_box(ax, box_i, ci0, ci1, h_i, w_i, i, n_boxes, edge_weight)
-                plot_box(ax, box_j, cj0, cj1, h_j, w_j, j, n_boxes, edge_weight)
+            plot_box(ax, box_i, ci0, ci1, h_i, w_i, i, n_boxes, edge_weight)
+            plot_box(ax, box_j, cj0, cj1, h_j, w_j, j, n_boxes, edge_weight)
 
-                seg = np.array([[ci0, ci1], [cj0, cj1]])
-                seg = np.expand_dims(seg, axis=0)
-                lc = mcoll.LineCollection(seg, array=z, cmap=cmap, norm=norm,
-                                          linewidth=2 * edge_weight, alpha=1 * edge_weight)
-                ax.add_collection(lc)
+            seg = np.array([[ci0, ci1], [cj0, cj1]])
+            seg = np.expand_dims(seg, axis=0)
+            lc = mcoll.LineCollection(seg, array=z, cmap=cmap, norm=norm,
+                                      linewidth=2 * edge_weight, alpha=1 * edge_weight)
+            ax.add_collection(lc)
 
     f2 = os.path.join(args.plot_dir,
                       f"{iid.strip('.jpg')}_{dataset.vqa[idx]['question'].strip('?')}_lines.jpg")
