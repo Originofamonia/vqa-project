@@ -530,7 +530,7 @@ def sort_boxes(boxes, adj_mat):
 
 def plot_box_edge_adj(args, boxes, dataset, idx, iid, im, adj_mat, edge_th):
     """
-    box and edge denotes the node degree and edge weight
+    From paper: box and edge denotes the node degree and edge weight
     plot boxes and edges by adj mat, box sort by sum rows, plot edge by adj
     """
     # boxes = sort_boxes(boxes, adj_mat)
@@ -659,8 +659,59 @@ def plot_box_edge_pool(args, boxes, dataset, idx, iid, im, adj_mat, h_max_indice
     plt.close()
 
 
+def plot_edge_weights():
+    """
+    plot by adj matrix edge weights again
+    box: sum each row then sort by weighted node degree
+    edge: plot above corresponding edge
+    """
+    task = 'val2014'
+    image_path = f'/home/qiyuan/2021summer/vqa-project/data/coco/{task}'
+    # coco_imgs = os.listdir(image_path)
+    args, parser, unparsed = input_args()
+    # args.n_kernels = kernels_list[0]
+    # args.neighbourhood_size = neighbors_list[0]
+
+    model_file = os.path.join(args.save_dir, 'vqa_36_8_16_54.17.pt')
+    dataset = VQA_Dataset(args.data_dir, args.emb, train=False)
+    question = 'Is the lady at the back in black top?'
+    iid = '329957'
+    test_batch = get_iid_from_question(dataset, question, iid)
+    # test_sampler = SequentialSampler(dataset)
+    # loader_test = DataLoader(dataset, batch_size=args.bsize,
+    #                          sampler=test_sampler, shuffle=False,
+    #                          num_workers=4, collate_fn=collate_fn)
+
+    model = Model(vocab_size=dataset.q_words,
+                  emb_dim=args.emb,
+                  feat_dim=dataset.feat_dim,
+                  hid_dim=args.hid,
+                  out_dim=dataset.n_answers,
+                  dropout=args.dropout,
+                  neighbourhood_size=args.neighbourhood_size,
+                  n_kernels=args.n_kernels,
+                  pretrained_wemb=dataset.pretrained_wemb,
+                  n_obj=args.n_obj)
+    model.load_state_dict(torch.load(model_file))
+    model = model.cuda()
+    model.eval()
+    results = []
+
+    q_batch, a_batch, vote_batch, i_batch, k_batch, qlen_batch = \
+        batch_to_cuda(test_batch)
+    idx = int(test_batch[-1])  # vqa2.0 is idx, imageclef is iid
+    logits, adj_mat, h_max_indices = model(q_batch, i_batch, k_batch,
+                                           qlen_batch)
+
+    qid_batch = test_batch[3]
+    _, oix = logits.data.max(1)
+    oix = oix.cpu().numpy()
+    iid = dataset.vqa[idx]['image_id']
+
+
 if __name__ == '__main__':
     # save_plot_nodes()
     # plot_by_mpl()
     # main()
-    plot_given_fig()
+    # plot_given_fig()
+    plot_edge_weights()
