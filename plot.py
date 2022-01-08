@@ -543,6 +543,7 @@ def plot_box_edge_adj(args, boxes, dataset, idx, iid, im, adj_mat, caption, edge
     n_boxes = len(boxes)
     # sum adj by rows
     roi_weights = torch.sum(adj_mat, dim=-1)
+    roi_ws, roi_indices = torch.topk(roi_weights, k=3)
 
     # plot boxes
     for i, box in enumerate(boxes):
