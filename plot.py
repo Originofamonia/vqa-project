@@ -551,7 +551,7 @@ def plot_box_edge_adj(args, boxes, dataset, idx, iid, im, adj_mat, caption, edge
                          facecolor='none', alpha=(1 - i / n_boxes))
         # Add the patch to the Axes
         ax.add_patch(rect)
-        ax.plot(c0, c1, 'm.', linewidth=(2 - i / n_boxes), alpha=(1 - i / n_boxes))
+        plt.plot(c0, c1, 'm.', linewidth=(2 - i / n_boxes), alpha=(1 - i / n_boxes))  # can only use plt.plot, not ax, fig
     fig.text(0.0, 0.05, f'{caption}')
     f1 = os.path.join(args.plot_dir,
                       f"{iid.strip('.jpg')}_{dataset.vqa[idx]['question'].strip('?')}_boxes.jpg")
@@ -581,7 +581,7 @@ def plot_box_edge_adj(args, boxes, dataset, idx, iid, im, adj_mat, caption, edge
             # w_j = box_j[2] - box_j[0]
             # h_j = box_j[3] - box_j[1]
             x_values, y_values = [cix, cjx], [ciy, cjy]
-            fig.plot(x_values, y_values, c='c', linewidth=2 * edge_weight,
+            plt.plot(x_values, y_values, c='c', linewidth=2 * edge_weight,
                      alpha=1 * edge_weight)
             # seg = np.array([[ci0, ci1], [cj0, cj1]])
             # seg = np.expand_dims(seg, axis=0)
