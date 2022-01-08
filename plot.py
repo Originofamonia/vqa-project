@@ -397,8 +397,8 @@ def plot_given_fig():
 
     model_file = os.path.join(args.save_dir, 'vqa_36_8_16_54.17.pt')
     dataset = VQA_Dataset(args.data_dir, args.emb, train=False)
-    question = 'Is the lady at the back in black top?'
-    iid = '329957'
+    question = 'Are there any trees in this picture?'
+    iid = '088507'
     test_batch = get_iid_from_question(dataset, question, iid)
     # test_sampler = SequentialSampler(dataset)
     # loader_test = DataLoader(dataset, batch_size=args.bsize,
@@ -552,7 +552,7 @@ def plot_box_edge_adj(args, boxes, dataset, idx, iid, im, adj_mat, caption, edge
         # Add the patch to the Axes
         ax.add_patch(rect)
         plt.plot(c0, c1, 'm.', linewidth=(2 - i / n_boxes), alpha=(1 - i / n_boxes))  # can only use plt.plot, not ax, fig
-    fig.text(0.01, 0.06, f'{caption}')
+    fig.text(0.01, 0.05, f'{caption}')
     f1 = os.path.join(args.plot_dir,
                       f"{iid.strip('.jpg')}_{dataset.vqa[idx]['question'].strip('?')}_boxes.jpg")
     plt.savefig(f1)
