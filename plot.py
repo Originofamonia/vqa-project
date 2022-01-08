@@ -388,7 +388,7 @@ def plot_by_mpl():
 
 def plot_given_fig():
     """
-    TODO: reuse this one, change this
+    reuse this one, change this
     plot fig4 in paper
     """
     task = 'val2014'
@@ -447,7 +447,7 @@ def plot_given_fig():
                             f'COCO_{task}_000000' + str(iid) + '.jpg')
     if exists(img_path):
         im = plt.imread(img_path)
-        boxes = np.asarray(dataset.bbox[str(dataset.vqa[idx]['image_id'])])  # xyxy
+        boxes = np.asarray(dataset.bbox[str(dataset.vqa[idx]['image_id'])])  # xyxy [36, 4]
         plot_box_edge_adj(args, boxes, dataset, idx, iid, im, adj_mat[0], results, edge_th=0.5)
         # plot_box_edge_pool(args, boxes, dataset, idx, iid, im, adj_mat[0],
         #                    h_max_indices, edge_th=0.1)
@@ -541,6 +541,8 @@ def plot_box_edge_adj(args, boxes, dataset, idx, iid, im, adj_mat, caption, edge
     # im = np.transpose(im, (2, 1, 0)) # no need
     ax.imshow(im)
     n_boxes = len(boxes)
+    # sum adj by rows
+    roi_weights = torch.sum(adj_mat, dim=-1)
 
     # plot boxes
     for i, box in enumerate(boxes):
