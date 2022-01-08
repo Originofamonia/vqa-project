@@ -298,8 +298,7 @@ def colorline(x, y, z=None, cmap=plt.get_cmap('copper'),
         z = np.linspace(0.0, 1.0, len(x))
 
     # Special case if a single number:
-    if not hasattr(z,
-                   "__iter__"):  # to check for numerical input -- this is a hack
+    if not hasattr(z, "__iter__"):
         z = np.array([z])
 
     z = np.asarray(z)
@@ -395,8 +394,6 @@ def plot_given_fig():
     image_path = f'/home/qiyuan/2021summer/vqa-project/data/coco/{task}'
     # coco_imgs = os.listdir(image_path)
     args, parser, unparsed = input_args()
-    # args.n_kernels = kernels_list[0]
-    # args.neighbourhood_size = neighbors_list[0]
 
     model_file = os.path.join(args.save_dir, 'vqa_36_8_16_54.17.pt')
     dataset = VQA_Dataset(args.data_dir, args.emb, train=False)
@@ -421,7 +418,7 @@ def plot_given_fig():
     model.load_state_dict(torch.load(model_file))
     model = model.cuda()
     model.eval()
-    caption = []
+    # caption = []
 
     q_batch, a_batch, vote_batch, i_batch, k_batch, qlen_batch = \
         batch_to_cuda(test_batch)
@@ -531,6 +528,7 @@ def plot_box_edge_adj(args, boxes, dataset, idx, iid, im, adj_mat, caption, edge
     reuse this function, change this
     From paper: box and edge denotes the node degree and edge weight
     plot boxes and edges by adj mat, box sort by sum rows, plot edge by adj
+    https://www.tutorialspoint.com/how-do-you-create-line-segments-between-two-points-in-matplotlib
     """
     fig, ax = plt.subplots()
     ax.imshow(im)
@@ -553,8 +551,8 @@ def plot_box_edge_adj(args, boxes, dataset, idx, iid, im, adj_mat, caption, edge
                          facecolor='none', alpha=(1 - i / n_boxes))
         # Add the patch to the Axes
         ax.add_patch(rect)
-        plt.plot(c0, c1, 'm.', linewidth=(2 - i / n_boxes), alpha=(1 - i / n_boxes))
-    fig.text(0.5, 0.01, f'{caption}')
+        fig.plot(c0, c1, 'm.', linewidth=(2 - i / n_boxes), alpha=(1 - i / n_boxes))
+    fig.text(0.0, 0.05, f'{caption}')
     f1 = os.path.join(args.plot_dir,
                       f"{iid.strip('.jpg')}_{dataset.vqa[idx]['question'].strip('?')}_boxes.jpg")
     plt.savefig(f1)
@@ -565,29 +563,31 @@ def plot_box_edge_adj(args, boxes, dataset, idx, iid, im, adj_mat, caption, edge
     adj_mat = adj_mat.detach().cpu().numpy()
     z = np.linspace(0, 1, len(adj_mat))
     max_edge = adj_mat.max()
+
     for i in range(len(roi_indices)):
-        for j in range(len(roi_indices)):
-            edge_weight = adj_mat[i][j] / max_edge
+        for j in range(i + 1, len(roi_indices)):
+            box_idx_i = roi_indices[i]
+            box_idx_j = roi_indices[j]
+            edge_weight = adj_mat[box_idx_i][box_idx_j] / max_edge
             # if edge_weight > edge_th:
-            box_i = boxes[i]
-            box_j = boxes[j]
-            ci0 = (box_i[0] + box_i[2]) / 2
-            ci1 = (box_i[1] + box_i[3]) / 2
-            w_i = box_i[2] - box_i[0]
-            h_i = box_i[3] - box_i[1]
-            cj0 = (box_j[0] + box_j[2]) / 2
-            cj1 = (box_j[1] + box_j[3]) / 2
-            w_j = box_j[2] - box_j[0]
-            h_j = box_j[3] - box_j[1]
-
-            plot_box(ax, box_i, ci0, ci1, h_i, w_i, i, n_boxes, edge_weight)
-            plot_box(ax, box_j, cj0, cj1, h_j, w_j, j, n_boxes, edge_weight)
-
-            seg = np.array([[ci0, ci1], [cj0, cj1]])
-            seg = np.expand_dims(seg, axis=0)
-            lc = mcoll.LineCollection(seg, array=z, cmap=cmap, norm=norm,
-                                      linewidth=2 * edge_weight, alpha=1 * edge_weight)
-            ax.add_collection(lc)
+            box_i = boxes[box_idx_i]
+            box_j = boxes[box_idx_j]
+            cix = (box_i[0] + box_i[2]) / 2
+            ciy = (box_i[1] + box_i[3]) / 2
+            # w_i = box_i[2] - box_i[0]
+            # h_i = box_i[3] - box_i[1]
+            cjx = (box_j[0] + box_j[2]) / 2
+            cjy = (box_j[1] + box_j[3]) / 2
+            # w_j = box_j[2] - box_j[0]
+            # h_j = box_j[3] - box_j[1]
+            x_values, y_values = [cix, cjx], [ciy, cjy]
+            fig.plot(x_values, y_values, c='c', linewidth=2 * edge_weight,
+                     alpha=1 * edge_weight)
+            # seg = np.array([[ci0, ci1], [cj0, cj1]])
+            # seg = np.expand_dims(seg, axis=0)
+            # lc = mcoll.LineCollection(seg, array=z, cmap=cmap, norm=norm,
+            #                           linewidth=2 * edge_weight, alpha=1 * edge_weight)
+            # ax.add_collection(lc)
 
     f2 = os.path.join(args.plot_dir,
                       f"{iid.strip('.jpg')}_{dataset.vqa[idx]['question'].strip('?')}_lines.jpg")
