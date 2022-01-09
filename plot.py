@@ -398,11 +398,11 @@ def plot_given_fig():
     # coco_imgs = os.listdir(image_path)
     args, parser, unparsed = input_args()
 
-    # model_file = os.path.join(args.save_dir, 'vqa_36_8_16_54.17.pt')
-    model_file = os.path.join(args.save_dir, 'model_38.pth.tar')  # xinyue's model
+    model_file = os.path.join(args.save_dir, 'vqa_36_8_16_83.44.pt')
+    # model_file = os.path.join(args.save_dir, 'model_38.pth.tar')  # xinyue's model
     dataset = VQA_Dataset(args.data_dir, args.emb, train=False)
-    question = 'Is the lady at the back in black top?'
-    iid = '329957'
+    question = 'Are there any trees in this picture?'
+    iid = '88507'
     test_batch = get_iid_from_question(dataset, question, iid)
     # test_sampler = SequentialSampler(dataset)
     # loader_test = DataLoader(dataset, batch_size=args.bsize,
@@ -419,11 +419,10 @@ def plot_given_fig():
                   n_kernels=args.n_kernels,
                   pretrained_wemb=dataset.pretrained_wemb,
                   n_obj=args.n_obj)
-    # model.load_state_dict(torch.load(model_file))  # mine
-    model.load_state_dict(torch.load(model_file)['state_dict'])  # xinyue's
+    model.load_state_dict(torch.load(model_file))  # mine
+    # model.load_state_dict(torch.load(model_file)['state_dict'])  # xinyue's
     model = model.cuda()
     model.eval()
-    # caption = []
 
     q_batch, a_batch, vote_batch, i_batch, k_batch, qlen_batch = \
         batch_to_cuda(test_batch)
