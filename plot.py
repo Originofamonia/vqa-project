@@ -539,7 +539,7 @@ def plot_box_edge_adj(args, boxes, dataset, idx, iid, im, adj_mat, caption, edge
     # sum adj by rows
     roi_weights = torch.sum(adj_mat, dim=-1)
     max_box = torch.max(roi_weights).item()
-    roi_ws, roi_indices = torch.topk(roi_weights, k=6)
+    roi_ws, roi_indices = torch.topk(roi_weights, k=3)
     roi_ws = roi_ws.detach().cpu().numpy()
     roi_indices = roi_indices.detach().cpu().numpy()
     selected_boxes = boxes[roi_indices]
