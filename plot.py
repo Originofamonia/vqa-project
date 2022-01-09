@@ -398,7 +398,8 @@ def plot_given_fig():
     # coco_imgs = os.listdir(image_path)
     args, parser, unparsed = input_args()
 
-    model_file = os.path.join(args.save_dir, 'vqa_36_8_16_54.17.pt')
+    # model_file = os.path.join(args.save_dir, 'vqa_36_8_16_54.17.pt')
+    model_file = os.path.join(args.save_dir, 'model_38.pth.tar')  # xinyue's model
     dataset = VQA_Dataset(args.data_dir, args.emb, train=False)
     question = 'Is the lady at the back in black top?'
     iid = '329957'

@@ -518,7 +518,7 @@ def input_args():
                         help='number of boxes per image')
     parser.add_argument('--data_dir', metavar='', type=str, default='./data',
                         help='path to data directory')
-    parser.add_argument('--save_dir', type=str, default='./save')
+    parser.add_argument('--save_dir', type=str, default='/home/xinyue/vqa-project/save')
     parser.add_argument('--plot_dir', type=str, default='./figures')
     parser.add_argument('--log_interval', type=int, default=400)
     parser.add_argument('--name', metavar='', type=str,
