@@ -505,7 +505,7 @@ def input_args():
     parser.add_argument('--ep', metavar='', type=int,
                         default=40, help='number of epochs.')
     parser.add_argument('--bsize', metavar='', type=int,
-                        default=128, help='batch size.')
+                        default=1, help='batch size.')
     parser.add_argument('--n_kernels', type=int, default=8,
                         help='number of epochs.')
     parser.add_argument('--hid', metavar='', type=int,
@@ -518,7 +518,7 @@ def input_args():
                         help='number of boxes per image')
     parser.add_argument('--data_dir', metavar='', type=str, default='./data',
                         help='path to data directory')
-    parser.add_argument('--save_dir', type=str, default='/home/xinyue/vqa-project/save')
+    parser.add_argument('--save_dir', type=str, default='./save')
     parser.add_argument('--plot_dir', type=str, default='./figures')
     parser.add_argument('--log_interval', type=int, default=400)
     parser.add_argument('--name', metavar='', type=str,
