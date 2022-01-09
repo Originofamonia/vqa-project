@@ -419,7 +419,8 @@ def plot_given_fig():
                   n_kernels=args.n_kernels,
                   pretrained_wemb=dataset.pretrained_wemb,
                   n_obj=args.n_obj)
-    model.load_state_dict(torch.load(model_file))
+    # model.load_state_dict(torch.load(model_file))  # mine
+    model.load_state_dict(torch.load(model_file)['state_dict'])  # xinyue's
     model = model.cuda()
     model.eval()
     # caption = []
