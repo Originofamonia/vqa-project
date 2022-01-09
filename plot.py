@@ -401,8 +401,8 @@ def plot_given_fig():
     model_file = os.path.join(args.save_dir, 'vqa_36_8_16_83.44.pt')
     # model_file = os.path.join(args.save_dir, 'model_38.pth.tar')  # xinyue's model
     dataset = VQA_Dataset(args.data_dir, args.emb, train=False)
-    question = 'What is this horse pulling?'
-    iid = '13943'
+    question = 'How many giraffes are drinking?'
+    iid = '15085'
     test_batch = get_iid_from_question(dataset, question, iid)
     # test_sampler = SequentialSampler(dataset)
     # loader_test = DataLoader(dataset, batch_size=args.bsize,
