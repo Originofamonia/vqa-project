@@ -400,8 +400,8 @@ def plot_given_fig():
 
     model_file = os.path.join(args.save_dir, 'vqa_36_8_16_54.17.pt')
     dataset = VQA_Dataset(args.data_dir, args.emb, train=False)
-    question = 'What animals are on the bed?'
-    iid = '71226'
+    question = 'How many arms are in the picture?'
+    iid = '67765'
     test_batch = get_iid_from_question(dataset, question, iid)
     # test_sampler = SequentialSampler(dataset)
     # loader_test = DataLoader(dataset, batch_size=args.bsize,
@@ -543,7 +543,7 @@ def plot_box_edge_adj(args, boxes, dataset, idx, iid, im, adj_mat, caption, edge
     roi_ws = roi_ws.detach().cpu().numpy()
     roi_indices = roi_indices.detach().cpu().numpy()
     selected_boxes = boxes[roi_indices]
-    n_boxes = len(selected_boxes)
+    # n_boxes = len(selected_boxes)
 
     # plot boxes
     for i, box in enumerate(selected_boxes):
