@@ -538,7 +538,9 @@ def plot_box_edge_adj(args, boxes, dataset, idx, iid, im, adj_mat, caption, edge
 
     # sum adj by rows
     roi_weights = torch.sum(adj_mat, dim=-1)
-    roi_ws, roi_indices = torch.topk(roi_weights, k=3)
+    max_box = torch.max(roi_weights).item()
+    roi_ws, roi_indices = torch.topk(roi_weights, k=6)
+    roi_ws = roi_ws.detach().cpu().numpy()
     roi_indices = roi_indices.detach().cpu().numpy()
     selected_boxes = boxes[roi_indices]
     n_boxes = len(selected_boxes)
@@ -550,21 +552,19 @@ def plot_box_edge_adj(args, boxes, dataset, idx, iid, im, adj_mat, caption, edge
         c0 = (box[0] + box[2]) / 2
         c1 = (box[1] + box[3]) / 2
         # Create a Rectangle patch, xywh (xy is top left)
-        rect = Rectangle((box[0], box[1]), w, h, linewidth=(2 - i / n_boxes), edgecolor='m',
-                         facecolor='none', alpha=(1 - i / n_boxes))
+        box_weight = roi_ws[i] / max_box
+        rect = Rectangle((box[0], box[1]), w, h, linewidth=(2 * box_weight), edgecolor='m',
+                         facecolor='none', alpha=2 * box_weight)
         # Add the patch to the Axes
         ax.add_patch(rect)
         plt.plot(c0, c1, 'm.', linewidth=(2 - i / n_boxes), alpha=(1 - i / n_boxes))  # can only use plt.plot, not ax, fig
-    fig.text(0.01, 0.05, f'{caption}')
+    fig.text(0.01, 0.98, f'{caption}')
     f1 = os.path.join(args.plot_dir,
                       f"{iid.strip('.jpg')}_{dataset.vqa[idx]['question'].strip('?')}_boxes.jpg")
     plt.savefig(f1)
 
     # plot edges
-    norm = plt.Normalize(0.0, 1.0)
-    cmap = plt.get_cmap('jet')
     adj_mat = adj_mat.detach().cpu().numpy()
-    z = np.linspace(0, 1, len(adj_mat))
     max_edge = adj_mat.max()
 
     for i in range(len(roi_indices)):
@@ -572,25 +572,16 @@ def plot_box_edge_adj(args, boxes, dataset, idx, iid, im, adj_mat, caption, edge
             box_idx_i = roi_indices[i]
             box_idx_j = roi_indices[j]
             edge_weight = adj_mat[box_idx_i][box_idx_j] / max_edge
-            # if edge_weight > edge_th:
+
             box_i = boxes[box_idx_i]
             box_j = boxes[box_idx_j]
             cix = (box_i[0] + box_i[2]) / 2
             ciy = (box_i[1] + box_i[3]) / 2
-            # w_i = box_i[2] - box_i[0]
-            # h_i = box_i[3] - box_i[1]
             cjx = (box_j[0] + box_j[2]) / 2
             cjy = (box_j[1] + box_j[3]) / 2
-            # w_j = box_j[2] - box_j[0]
-            # h_j = box_j[3] - box_j[1]
             x_values, y_values = [cix, cjx], [ciy, cjy]
             plt.plot(x_values, y_values, c='c', linewidth=2 * edge_weight,
-                     alpha=1 * edge_weight)
-            # seg = np.array([[ci0, ci1], [cj0, cj1]])
-            # seg = np.expand_dims(seg, axis=0)
-            # lc = mcoll.LineCollection(seg, array=z, cmap=cmap, norm=norm,
-            #                           linewidth=2 * edge_weight, alpha=1 * edge_weight)
-            # ax.add_collection(lc)
+                     alpha=2 * edge_weight)
 
     f2 = os.path.join(args.plot_dir,
                       f"{iid.strip('.jpg')}_{dataset.vqa[idx]['question'].strip('?')}_lines.jpg")
@@ -601,7 +592,7 @@ def plot_box_edge_adj(args, boxes, dataset, idx, iid, im, adj_mat, caption, edge
 def plot_box(ax, box, ci0, ci1, h, w, i, n_boxes, edge_weight):
     rect = Rectangle((box[0], box[1]), w, h,
                      linewidth=(2 * edge_weight), edgecolor=np.random.rand(3,),
-                     facecolor='none', alpha=(1 * edge_weight))
+                     facecolor='none', alpha=2 * edge_weight)
     # Add the patch to the Axes
     ax.add_patch(rect)
     plt.plot(ci0, ci1, 'm.')
