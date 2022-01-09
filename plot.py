@@ -401,8 +401,8 @@ def plot_given_fig():
     model_file = os.path.join(args.save_dir, 'vqa_36_8_16_83.44.pt')
     # model_file = os.path.join(args.save_dir, 'model_38.pth.tar')  # xinyue's model
     dataset = VQA_Dataset(args.data_dir, args.emb, train=False)
-    question = 'Is this a prison toilet?'
-    iid = '325114'
+    question = 'Are there any trees in this picture?'
+    iid = '88507'
     test_batch = get_iid_from_question(dataset, question, iid)
     # test_sampler = SequentialSampler(dataset)
     # loader_test = DataLoader(dataset, batch_size=args.bsize,
