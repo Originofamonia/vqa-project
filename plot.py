@@ -554,10 +554,10 @@ def plot_box_edge_adj(args, boxes, dataset, idx, iid, im, adj_mat, caption, edge
         # Create a Rectangle patch, xywh (xy is top left)
         box_weight = roi_ws[i] / max_box
         rect = Rectangle((box[0], box[1]), w, h, linewidth=(2 * box_weight), edgecolor='m',
-                         facecolor='none', alpha=2 * box_weight)
+                         facecolor='none', alpha=box_weight)
         # Add the patch to the Axes
         ax.add_patch(rect)
-        plt.plot(c0, c1, 'm.', linewidth=(2 - i / n_boxes), alpha=(1 - i / n_boxes))  # can only use plt.plot, not ax, fig
+        plt.plot(c0, c1, 'm.', linewidth=(2 * box_weight), alpha=box_weight)  # can only use plt.plot, not ax, fig
     fig.text(0.01, 0.98, f'{caption}')
     f1 = os.path.join(args.plot_dir,
                       f"{iid.strip('.jpg')}_{dataset.vqa[idx]['question'].strip('?')}_boxes.jpg")
@@ -581,7 +581,7 @@ def plot_box_edge_adj(args, boxes, dataset, idx, iid, im, adj_mat, caption, edge
             cjy = (box_j[1] + box_j[3]) / 2
             x_values, y_values = [cix, cjx], [ciy, cjy]
             plt.plot(x_values, y_values, c='c', linewidth=2 * edge_weight,
-                     alpha=2 * edge_weight)
+                     alpha=edge_weight)
 
     f2 = os.path.join(args.plot_dir,
                       f"{iid.strip('.jpg')}_{dataset.vqa[idx]['question'].strip('?')}_lines.jpg")
