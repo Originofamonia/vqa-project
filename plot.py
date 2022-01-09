@@ -400,7 +400,7 @@ def plot_given_fig():
 
     model_file = os.path.join(args.save_dir, 'vqa_36_8_16_54.17.pt')
     dataset = VQA_Dataset(args.data_dir, args.emb, train=False)
-    question = 'What is the colour of the table?'
+    question = 'What is the color of the table?'
     iid = '325114'
     test_batch = get_iid_from_question(dataset, question, iid)
     # test_sampler = SequentialSampler(dataset)
