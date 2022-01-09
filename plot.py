@@ -31,6 +31,9 @@ from utils import batch_to_cuda, xyxy2xywh
 from yolo_datasets import get_yolo_dataset
 
 
+os.environ["CUDA_VISIBLE_DEVICES"] = '1'
+
+
 def color_list():
     # Return first 10 plt colors as (r,g,b)
     # https://stackoverflow.com/questions/51350872/python-from-color-name-to-rgb
