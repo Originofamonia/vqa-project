@@ -494,16 +494,16 @@ def input_args():
         description='Conditional Graph Convolutions for VQA')
     parser.add_argument('--train', action='store_true', default=False,
                         help='set this to training mode.')
-    parser.add_argument('--trainval', action='store_true', default=False,
+    parser.add_argument('--trainval', action='store_true', default=True,
                         help='set this to train+val mode.')
     parser.add_argument('--eval', action='store_true', default=False,
                         help='set this to evaluation mode.')
-    parser.add_argument('--test', action='store_true', default=True,
+    parser.add_argument('--test', action='store_true', default=False,
                         help='set this to test mode.')
     parser.add_argument('--lr', metavar='', type=float,
                         default=1e-4, help='initial learning rate')
     parser.add_argument('--ep', metavar='', type=int,
-                        default=5, help='number of epochs.')
+                        default=40, help='number of epochs.')
     parser.add_argument('--bsize', metavar='', type=int,
                         default=1, help='batch size.')
     parser.add_argument('--n_kernels', type=int, default=8,
