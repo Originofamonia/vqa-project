@@ -404,10 +404,6 @@ def plot_given_fig():
     question = 'What animals are on the bed?'
     iid = '71226'
     test_batch = get_iid_from_question(dataset, question, iid)
-    # test_sampler = SequentialSampler(dataset)
-    # loader_test = DataLoader(dataset, batch_size=args.bsize,
-    #                          sampler=test_sampler, shuffle=False,
-    #                          num_workers=4, collate_fn=collate_fn)
 
     model = Model(vocab_size=dataset.q_words,
                   emb_dim=args.emb,
@@ -540,7 +536,7 @@ def plot_box_edge_adj(args, boxes, dataset, idx, iid, im, adj_mat, caption, edge
     # sum adj by rows
     roi_weights = torch.sum(adj_mat, dim=-1)
     max_box = torch.max(roi_weights).item()
-    roi_ws, roi_indices = torch.topk(roi_weights, k=3)
+    roi_ws, roi_indices = torch.topk(roi_weights, k=10)
     roi_ws = roi_ws.detach().cpu().numpy()
     roi_indices = roi_indices.detach().cpu().numpy()
     selected_boxes = boxes[roi_indices]
@@ -554,11 +550,11 @@ def plot_box_edge_adj(args, boxes, dataset, idx, iid, im, adj_mat, caption, edge
         c1 = (box[1] + box[3]) / 2
         # Create a Rectangle patch, xywh (xy is top left)
         box_weight = roi_ws[i] / max_box
-        rect = Rectangle((box[0], box[1]), w, h, linewidth=(2 * box_weight), edgecolor='m',
+        rect = Rectangle((box[0], box[1]), w, h, linewidth=(2 * box_weight), edgecolor=np.random.rand(3,),
                          facecolor='none', alpha=box_weight)
         # Add the patch to the Axes
         ax.add_patch(rect)
-        plt.plot(c0, c1, 'm.', linewidth=(2 * box_weight), alpha=box_weight)  # can only use plt.plot, not ax, fig
+        plt.plot(c0, c1, '.', c=np.random.rand(3,), linewidth=(2 * box_weight), alpha=box_weight)  # can only use plt.plot, not ax, fig
     fig.text(0.01, 0.91, f'{caption}')
     f1 = os.path.join(args.plot_dir,
                       f"{iid.strip('.jpg')}_{dataset.vqa[idx]['question'].strip('?')}_boxes.jpg")
@@ -581,11 +577,11 @@ def plot_box_edge_adj(args, boxes, dataset, idx, iid, im, adj_mat, caption, edge
             cjx = (box_j[0] + box_j[2]) / 2
             cjy = (box_j[1] + box_j[3]) / 2
             x_values, y_values = [cix, cjx], [ciy, cjy]
-            plt.plot(x_values, y_values, c='c', linewidth=2 * edge_weight,
+            plt.plot(x_values, y_values, c='w', linewidth=2 * edge_weight,
                      alpha=edge_weight)
 
     f2 = os.path.join(args.plot_dir,
-                      f"{iid.strip('.jpg')}_{dataset.vqa[idx]['question'].strip('?')}_lines.jpg")
+                      f"{iid.strip('.jpg')}_{dataset.vqa[idx]['question'].strip('?')}_edges.jpg")
     plt.savefig(f2)
     plt.close()
 
