@@ -334,14 +334,15 @@ def plot_by_mpl():
     https://stackoverflow.com/questions/37435369/matplotlib-how-to-draw-a-rectangle-on-image
     https://stackoverflow.com/questions/8500700/how-to-plot-a-gradient-color-line-in-matplotlib
     """
-    image_path = '/home/qiyuan/2021summer/vqa-project/data/coco/train2014'
+    task = 'val2014'
+    image_path = f'/home/qiyuan/2021summer/vqa-project/data/coco/{task}'
     # coco_imgs = os.listdir(image_path)
     args, parser, unparsed = input_args()
     # args.n_kernels = kernels_list[0]
     # args.neighbourhood_size = neighbors_list[0]
 
     model_file = os.path.join(args.save_dir, 'vqa_36_8_16_83.44.pt')
-    dataset = VQA_Dataset(args.data_dir, args.emb, train=True)
+    dataset = VQA_Dataset(args.data_dir, args.emb, train=False)
     test_sampler = SequentialSampler(dataset)
     loader_test = DataLoader(dataset, batch_size=args.bsize,
                              sampler=test_sampler, shuffle=False,
@@ -380,13 +381,15 @@ def plot_by_mpl():
         for j, idx in enumerate(idxs):
             idx = int(idx.cpu().numpy())
             iid = dataset.vqa[idx]['image_id']
+            caption = f"img id: {iid}, q: {dataset.vqa[idx]['question']}, \npred: " \
+                      f"{dataset.a_itow[oix[0]]}, ans: {dataset.vqa[idx]['answer']}"
             img_path = os.path.join(image_path,
-                                    'COCO_train2014_000000' + str(iid) + '.jpg')
+                                    f'COCO_{task}_000000' + str(iid) + '.jpg')
             if exists(img_path):
                 im = plt.imread(img_path)
                 boxes = np.asarray(dataset.bbox[str(iid)])  # xyxy
-                boxes = sort_boxes(boxes, adj_mat[j])
-                plot_box_edge_adj(args, boxes, dataset, idx, iid, im, adj_mat[j])
+                # boxes = sort_boxes(boxes, adj_mat[j])
+                plot_box_edge_adj(args, boxes, dataset, idx, iid, im, adj_mat[j], caption, edge_th=0)
                 # plot_connection_mpl(args, boxes, dataset, adj_mat, idx, iid, im)
 
 
@@ -552,11 +555,11 @@ def plot_box_edge_adj(args, boxes, dataset, idx, iid, im, adj_mat, caption, edge
         c1 = (box[1] + box[3]) / 2
         # Create a Rectangle patch, xywh (xy is top left)
         box_weight = roi_ws[i] / max_box
-        rect = Rectangle((box[0], box[1]), w, h, linewidth=(2 * box_weight), edgecolor=np.random.rand(3,),
+        rect = Rectangle((box[0], box[1]), w, h, linewidth=box_weight, edgecolor=np.random.rand(3, ),
                          facecolor='none', alpha=box_weight)
         # Add the patch to the Axes
         ax.add_patch(rect)
-        plt.plot(c0, c1, '.', c=np.random.rand(3,), linewidth=(2 * box_weight), alpha=box_weight)  # can only use plt.plot, not ax, fig
+        plt.plot(c0, c1, '.', c=np.random.rand(3,), linewidth=box_weight, alpha=box_weight)  # can only use plt.plot, not ax, fig
     fig.text(0.01, 0.91, f'{caption}')
     f1 = os.path.join(args.plot_dir,
                       f"{iid.strip('.jpg')}_{dataset.vqa[idx]['question'].strip('?')}_boxes.jpg")
@@ -579,7 +582,7 @@ def plot_box_edge_adj(args, boxes, dataset, idx, iid, im, adj_mat, caption, edge
             cjx = (box_j[0] + box_j[2]) / 2
             cjy = (box_j[1] + box_j[3]) / 2
             x_values, y_values = [cix, cjx], [ciy, cjy]
-            plt.plot(x_values, y_values, c='w', linewidth=2 * edge_weight,
+            plt.plot(x_values, y_values, c='w', linewidth=edge_weight,
                      alpha=edge_weight)
 
     f2 = os.path.join(args.plot_dir,
@@ -657,6 +660,6 @@ def plot_box_edge_pool(args, boxes, dataset, idx, iid, im, adj_mat, h_max_indice
 
 if __name__ == '__main__':
     # save_plot_nodes()
-    # plot_by_mpl()
     # main()
-    plot_given_fig()
+    plot_by_mpl()
+    # plot_given_fig()
