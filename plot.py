@@ -340,7 +340,7 @@ def plot_by_mpl():
     # args.n_kernels = kernels_list[0]
     # args.neighbourhood_size = neighbors_list[0]
 
-    model_file = os.path.join(args.save_dir, 'vqa_36_8_16_54.17.pt')
+    model_file = os.path.join(args.save_dir, 'vqa_36_8_16_83.44.pt')
     dataset = VQA_Dataset(args.data_dir, args.emb, train=True)
     test_sampler = SequentialSampler(dataset)
     loader_test = DataLoader(dataset, batch_size=args.bsize,
@@ -363,6 +363,8 @@ def plot_by_mpl():
     results = []
 
     for i, test_batch in tqdm(enumerate(loader_test)):
+        if i == 100:
+            break
         q_batch, a_batch, vote_batch, i_batch, k_batch, qlen_batch = \
             batch_to_cuda(test_batch)
         idxs = test_batch[-1]  # vqa2.0 is idx, imageclef is iid
@@ -401,7 +403,7 @@ def plot_given_fig():
     model_file = os.path.join(args.save_dir, 'vqa_36_8_16_83.44.pt')
     # model_file = os.path.join(args.save_dir, 'model_38.pth.tar')  # xinyue's model
     dataset = VQA_Dataset(args.data_dir, args.emb, train=False)
-    question = 'Are there pentagons?'
+    question = 'What is the man catching?'
     iid = '516733'
     test_batch = get_iid_from_question(dataset, question, iid)
 
