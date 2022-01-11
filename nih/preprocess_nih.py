@@ -260,13 +260,13 @@ def select_mimic_qa_pairs():
 
 def main():
     task = 'train'  # train or val
-    # parse_box_feat(task)
+    parse_box_feat(task)
 
-    combine_qa(task)
-    tokenize_questions(task)
-    t = json.load(open(f'vqa_mimic_{task}_toked.json'))
-    process_questions(t, task)
-    process_answers(t, task)
+    # combine_qa(task)
+    # tokenize_questions(task)
+    # t = json.load(open(f'vqa_mimic_{task}_toked.json'))
+    # process_questions(t, task)
+    # process_answers(t, task)
 
     # count_labels()
 
